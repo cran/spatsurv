@@ -66,6 +66,9 @@ simsurv <- function(X=cbind(age=runif(100,5,50),sex=rbinom(100,1,0.5),cancer=rbi
     
     oldltar <- do.call(paste(dist,"_ltar",sep=""),list(t=t,XbetaplusY=XbetaplusY,expXbetaplusY=expXbetaplusY,theta=theta))
     
+    tbar <- rep(0,n)
+    nsamp <- 0
+    
     while(nextStep(mcmcloop)){        
     
         newt <- rexp(n,rate=1/t) 
@@ -80,9 +83,13 @@ simsurv <- function(X=cbind(age=runif(100,5,50),sex=rbinom(100,1,0.5),cancer=rbi
         oldltar[keepnew] <- newltar[keepnew]
     
         if(is.retain(mcmcloop)){
+            nsamp <- nsamp + 1 # note the purpose of this counter is different to the "count" counter
             if(savechains){        
                 T[count,] <- t
             }
+            
+            tbar <- ((nsamp-1)/nsamp)*tbar + (1/nsamp)*t            
+            
             tarrec[count,] <- oldltar
             acrec[count] <- mean(ac)
             count <- count + 1
@@ -97,12 +104,8 @@ simsurv <- function(X=cbind(age=runif(100,5,50),sex=rbinom(100,1,0.5),cancer=rbi
         acrec <- acrec[-nmatrows]
     }
     
-    if(savechains){
-        tchoice <- T[nrow(T),]
-    }
-    else{
-        tchoice <- t
-    }
+    cat("Returning last set of simulated survival times.\n")
+    tchoice <- t
     
     cat("Mean acceptance:",mean(acrec),"\n")
     

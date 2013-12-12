@@ -78,6 +78,7 @@ plotsurv <- function(spp,ss,maxcex=1,background=NULL,eventpt=19,eventcol="red",c
 }
 
 
+
 ##' inference.control function
 ##'
 ##' A function to control inferential settings. 
@@ -96,4 +97,91 @@ inference.control <- function(gridded=FALSE,cellwidth=NULL,ext=2){
     ans$ext <- ext 
     class(ans) <- c("inference.control","list")
     return(ans)
+}
+
+
+
+##' labelomegamatrix function
+##'
+##' A function to label output matrices for the omegavariable
+##'
+##' @param m a matrix 
+##' @param dist distribution function of the baseline hazard
+##' @return a lebelled matrix
+##' @export
+
+labelomegamatrix <- function(m,dist){
+    if(dist=="exp"){
+        pn <- "rate"
+    }
+    else if(dist=="weibull"){
+        pn <- c("shape","scale")
+    }
+    else{
+        stop("Unknown baseline hazard in function labelomegamatrix")    
+    }
+    colnames(m) <- pn
+    return(m)
+}
+
+
+
+##' getsurvdata function
+##'
+##' A function to return the survival data from an object of class mcmcspatsurv
+##'
+##' @param x an object of class mcmcspatsurv 
+##' @return the survival data from an object of class mcmcspatsurv
+##' @export
+
+getsurvdata <- function(x){
+    responsename <- as.character(x$formula[[2]])
+    return(x$data[[responsename]])
+}
+
+
+##' getomegatrans function
+##'
+##' A function to return the internal transformation function (and its inverse) for each baseline hazard type. E.g. for an Exponential baseline hazard, we work with the log rate, so log is the transformation function. 
+##'
+##' @param dist the distribution from which the baseline hazard is derived  
+##' @return the transformation and inverse transformation
+##' @export
+
+getomegatrans <- function(dist){
+    retlist <- list()
+    if(dist=="exp" | dist=="weibull"){
+        retlist$trans <- log
+        retlist$itrans <- exp
+    }
+    else{
+        stop("Unknown baseline hazard distribution.")    
+    }
+    return(retlist)
+}
+
+
+
+
+##' checkSurvivalData function
+##'
+##' A function to check whether the survival data to be passed to survspat is in the correct format
+##'
+##' @param s an object of class Surv, from the survival package 
+##' @return if there are any issues with data format, these are returned with the data an error message explaining any issues with the data
+##' @export
+
+checkSurvivalData <- function(s){
+    if(class(s)!="Surv"){
+        stop("Survival data must be of class 'Surv', see ?Surv")
+    }
+    
+    if(attr(s,"type")=="right" | attr(s,"type")=="left" | attr(s,"type")=="interval"){
+        if(any(as.matrix(s)<0,na.rm=TRUE)){
+            stop("Survival data must not contain negative times, please change the offset of your data so that all times are non-negative")
+        }    
+    }
+    else{
+        stop("Survival data must be of type 'left', 'right', or 'interval', see ?Surv")
+    }
 }

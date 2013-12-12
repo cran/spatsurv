@@ -22,7 +22,15 @@ survspat <- function(   formula,
                         mcmc.control,
                         priors,
                         control=inference.control(gridded=FALSE)){
+    
+    # initial checks
+    if(!inherits(data,"SpatialPointsDataFrame")){
+        stop("'data' must be of class 'SpatialPointsDataFrame'.")
+    }                    
+    responsename <- as.character(formula[[2]])
+    checkSurvivalData(data@data[[responsename]])                        
 
+    # okay, start the MCMC!
     start <- Sys.time()
 
     if(!inherits(data,"SpatialPointsDataFrame")){
@@ -68,6 +76,8 @@ survspat <- function(   formula,
     else{
         u <- as.vector(as.matrix(dist(coords)))
     }
+
+    DATA <- data    
     
     data <- data@data  
                         
@@ -124,16 +134,22 @@ survspat <- function(   formula,
     cat("Calibrating MCMC algorithm and finding initial values ...\n")
     
     
-
+    
+    trns <- getomegatrans(dist)  
+    
     if(dist=="exp"){    
         betahat <- estim[2:length(estim)]
         omegahat <- do.call(paste("transformestimates.",dist,sep=""),args=list(x=exp(estim[1]))) 
         omegahat <- log(omegahat)
+        omegatrans <- trns$trans
+        omegaitrans <- trns$itrans
     }
     else if(dist=="weibull"){    
         betahat <- estim[3:length(estim)]
         omegahat <- do.call(paste("transformestimates.",dist,sep=""),args=list(x=exp(estim[1:2])))
-        omegahat <- log(omegahat) 
+        omegahat <- log(omegahat)
+        omegatrans <- trns$trans
+        omegaitrans <- trns$itrans
     }
     else{
         stop("Unknown dist, must be one of 'exp' or 'weibull'")    
@@ -174,7 +190,7 @@ survspat <- function(   formula,
     
     npars <- lenbeta + lenomega + leneta + lengamma
     
-    SIGMA[1:(lenbeta+lenomega),1:(lenbeta+lenomega)] <- 0.0001*(1.65^2/((lenbeta+lenomega)^(1/3)))*SIGMA[1:(lenbeta+lenomega),1:(lenbeta+lenomega)]
+    SIGMA[1:(lenbeta+lenomega),1:(lenbeta+lenomega)] <- (1.65^2/((lenbeta+lenomega)^(1/3)))*SIGMA[1:(lenbeta+lenomega),1:(lenbeta+lenomega)]
     SIGMA[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)] <- 0.4*(2.38^2/leneta)* SIGMA[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)]
     SIGMA[(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma),(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma)] <- (1.65^2/(lengamma^(1/3)))*SIGMA[(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma),(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma)]   
     
@@ -256,8 +272,8 @@ survspat <- function(   formula,
                                 u=u,
                                 control=control)
 
-        revmeanpars <- newstuffpars +  (h/2)*SIGMApars%*%newlogpost$grad[1:(lenbeta+lenomega+leneta)]
-        revmeangamma <- newstuffgamma +  (h/2)*SIGMAgamma*newlogpost$grad[(lenbeta+lenomega+leneta+1):npars]       
+        revmeanpars <- newstuffpars + (h/2)*SIGMApars%*%newlogpost$grad[1:(lenbeta+lenomega+leneta)]
+        revmeangamma <- newstuffgamma + (h/2)*SIGMAgamma*newlogpost$grad[(lenbeta+lenomega+leneta+1):npars]       
 
         revdiffpars <- as.matrix(stuffpars-revmeanpars)
         forwdiffpars <- as.matrix(newstuffpars-propmeanpars)
@@ -307,22 +323,43 @@ survspat <- function(   formula,
     #matplot(exp(omegasamp),type="s")
 
     retlist <- list()
-    retlist$formula
-    retlist$data
-    retlist$mcmc.control
-    retlist$betapriormean
-    retlist$betapriorsd
-    retlist$omegapriormean
-    retlist$omegapriorsd
-
-    retlist$terms <- Terms
-    retlist$mlmod <- mlmod    
+    retlist$formula <- formula
+    retlist$data <- DATA
+    retlist$dist <- dist
+    retlist$cov.model <- cov.model
+    retlist$mcmc.control <- mcmc.control
+    retlist$priors <- priors
+    retlist$control <- control
     
+    retlist$terms <- Terms
+    retlist$mlmod <- mlmod
+    
+    ####
+    #   Back transform for output
+    ####
+    
+    omegasamp <- omegaitrans(omegasamp)
+    itrans <- get(paste("invtransformestimates.",dist,sep=""))
+    if(ncol(omegasamp)==1){    
+        omegasamp <- matrix(apply(omegasamp,1,itrans))
+    }
+    else{
+        omegasamp <- t(apply(omegasamp,1,itrans))
+    }    
+    omegasamp <- labelomegamatrix(m=omegasamp,dist=dist)
+    
+    etasamp <- sapply(1:length(cov.model$itrans),function(i){cov.model$itrans[[i]](etasamp[,i])})
+    colnames(etasamp) <- cov.model$parnames     
+    
+    ####    
+    
+    colnames(betasamp) <- attr(Terms,"term.labels")
     retlist$betasamp <- betasamp
     retlist$omegasamp <- omegasamp
     retlist$etasamp <- etasamp
     retlist$Ysamp <- Ysamp
     
+    retlist$gridded <- control$gridded
     if(control$gridded){
         retlist$M <- Mext/control$ext
         retlist$N <- Next/control$ext
@@ -332,6 +369,9 @@ survspat <- function(   formula,
     
     retlist$tarrec <- tarrec
     retlist$lasth <- h
+    
+    retlist$omegatrans <- omegatrans
+    retlist$omegaitrans <- omegaitrans
     
     retlist$time.taken <- Sys.time() - start
     

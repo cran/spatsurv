@@ -38,6 +38,7 @@
 ##' @importFrom RandomFields CovarianceFct 
 ##' @importFrom iterators nextElem
 ##' @importFrom fields image.plot
+##' @importFrom stats quantile
 
 
 

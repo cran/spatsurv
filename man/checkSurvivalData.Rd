@@ -1,0 +1,20 @@
+\name{checkSurvivalData}
+\alias{checkSurvivalData}
+\title{checkSurvivalData function}
+\usage{
+checkSurvivalData(s)
+}
+\arguments{
+  \item{s}{an object of class Surv, from the survival
+  package}
+}
+\value{
+if there are any issues with data format, these are
+returned with the data an error message explaining any
+issues with the data
+}
+\description{
+A function to check whether the survival data to be passed
+to survspat is in the correct format
+}
+
