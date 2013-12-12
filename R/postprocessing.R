@@ -458,9 +458,7 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
     if(type=="Et"){
         n <- nobs
         pb <- txtProgressBar(min = 0, max = nobs)
-    }
-    
-    
+    }    
     
     nits <- nrow(object$Ysamp)
     
@@ -474,7 +472,13 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
         inputs$X <- newdata[i,]
         inputs$dist <- object$dist
         for (j in 1:nits){
-            inputs$Y <- object$Ysamp[j,i]
+            if(object$gridded){
+                inputs$Y <- object$Ysamp[j,object$cellidx[i]]
+            }
+            else{
+                inputs$Y <- object$Ysamp[j,i]    
+            }
+            
             inputs$beta <- object$betasamp[j,]
             inputs$omega <- omegasamp[j,]
             fun <- get(paste(type,"_PP",sep=""))(inputs)

@@ -284,7 +284,7 @@ logPosterior <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,control,
                                     (if(Ctest){Reduce('+',d2J_domega1_domega2[censored])}else{0})                                             
             hess_omega <- diag((dP_domega/control$omegajacobian(omegaorig))*sapply(1:length(omega),function(i){control$omegahessian[[i]](omegaorig[i])}),length(omega)) + hess_omega * outer(control$omegajacobian(omegaorig),control$omegajacobian(omegaorig))
             # note, have dP_domega/control$omegajacobian(omegaorig) to get onto correct scale since further above in the computation of dP_domega we have control$omegajacobian(omegaorig)*dP_domega                                      
-            
+
             hess_omega_beta <- (if(Utest){-t(sapply(d2J_domega_dbeta,function(x){colSums(x[notcensored,,drop=FALSE])}))}else{0}) - 
                                     (if(Ctest){t(sapply(d2J_domega_dbeta,function(x){colSums(x[censored,,drop=FALSE])}))}else{0})
             hess_omega_beta <- control$omegajacobian(omegaorig)*hess_omega_beta                        

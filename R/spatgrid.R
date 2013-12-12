@@ -53,9 +53,7 @@ FFTgrid <- function(spatialdata,cellwidth,ext){
 ##' @export
 
 grid2spix <- function(xgrid,ygrid,proj4string=CRS(as.character(NA))){
-    m <- length(xgrid)
-    n <- length(ygrid)
-    return(SpatialPixels(SpatialPoints(cbind(rep(xgrid,n),rep(ygrid,each=m))),proj4string=proj4string))
+    return(SpatialPixels(SpatialPoints(expand.grid(xgrid,ygrid),proj4string=proj4string)))
 } 
 
 ##' grid2spts function
@@ -69,9 +67,7 @@ grid2spix <- function(xgrid,ygrid,proj4string=CRS(as.character(NA))){
 ##' @export
 
 grid2spts <- function(xgrid,ygrid,proj4string=CRS(as.character(NA))){
-    m <- length(xgrid)
-    n <- length(ygrid)
-    return(SpatialPoints(cbind(rep(xgrid,n),rep(ygrid,each=m)),proj4string=proj4string))
+    return(SpatialPoints(expand.grid(xgrid,ygrid),proj4string=proj4string))
 } 
 
 
@@ -88,7 +84,7 @@ grid2spts <- function(xgrid,ygrid,proj4string=CRS(as.character(NA))){
 grid2spdf <- function(xgrid,ygrid,proj4string=CRS(as.character(NA))){
   m <- length(xgrid)
   n <- length(ygrid)
-  spts <- SpatialPixels(SpatialPoints(cbind(rep(xgrid,n),rep(ygrid,each=m))),proj4string=proj4string)
+  spts <- SpatialPixels(SpatialPoints(expand.grid(xgrid,ygrid),proj4string=proj4string))
   sps <- as(spts,"SpatialPolygons")
   spdf <- SpatialPolygonsDataFrame(sps,data=data.frame(grid=1:(m*n)),match.ID=FALSE)
   return(spdf)

@@ -4,6 +4,7 @@
 ##'
 ##' @param cov.model a covariance model 
 ##' @return the length of eta
+##' @export
 
 getleneta <- function(cov.model){
     if(inherits(cov.model,"fromRandomFieldsCovarianceFct")){
@@ -159,11 +160,12 @@ gencens <- function(survtimes,censtimes,type="right"){
 ##' @param ylim optional y-limits of plot, default is to choose this automatically
 ##' @param xlab label for x-axis
 ##' @param ylab label for y-axis
+##' @param add logical, whether to add the survival plot on top of an existing plot, default is FALSE, which produces a plot in a new device
 ##' @param ... other arguments to pass to plot
 ##' @return Plots the survival data non-censored observations appear as dots and censored observations as crosses. The size of the dot is proportional to the observed time.
 ##' @export
 
-plotsurv <- function(spp,ss,maxcex=1,transform=identity,background=NULL,eventpt=19,eventcol="red",censpt="+",censcol="black",xlim=NULL,ylim=NULL,xlab=NULL,ylab=NULL,...){
+plotsurv <- function(spp,ss,maxcex=1,transform=identity,background=NULL,eventpt=19,eventcol="red",censpt="+",censcol="black",xlim=NULL,ylim=NULL,xlab=NULL,ylab=NULL,add=FALSE,...){
     crds <- coordinates(spp)
     if(is.null(xlim)){
         if(is.null(background)){
@@ -189,7 +191,9 @@ plotsurv <- function(spp,ss,maxcex=1,transform=identity,background=NULL,eventpt=
     event <- ss[,"status"] == 1 # event indicator
     cexx <- maxcex* stimes / max(stimes)    
     
-    plot(background,xlim=xlim,ylim=ylim,xlab=xlab,ylab=ylab,...)
+    if(!add){
+        plot(background,xlim=xlim,ylim=ylim,xlab=xlab,ylab=ylab,...)
+    }
     points(crds[event,],pch=eventpt,col=eventcol,cex=cexx[event])
     points(crds[!event,],pch=censpt,col=censcol,cex=cexx[!event])
     
@@ -208,17 +212,19 @@ plotsurv <- function(spp,ss,maxcex=1,transform=identity,background=NULL,eventpt=
 ##' equal to the number of parameters of the baseline hazard
 ##' @param plotcal logical, whether to produce plots of the MCMC calibration process, this is a technical option and should onyl be set 
 ##' to TRUE if poor mixing is evident (the printed h is low), then it is also useful to use a graphics device with multiple plotting windows. 
+##' @param timeonlyMCMC logical, whether to only time the MCMC part of the algorithm, or whether to include in the reported running time the time taken to calibrate the method (default)
 ##' @return returns parameters to be used in the function survspat
 ##' @seealso \link{survspat}
 ##' @export
 
-inference.control <- function(gridded=FALSE,cellwidth=NULL,ext=2,MLinits=NULL,plotcal=FALSE){
+inference.control <- function(gridded=FALSE,cellwidth=NULL,ext=2,MLinits=NULL,plotcal=FALSE,timeonlyMCMC=FALSE){
     ans <- list()
     ans$gridded <- gridded
     ans$cellwidth <- cellwidth 
     ans$ext <- ext 
     ans$MLinits <- MLinits
     ans$plotcal <- plotcal
+    ans$timeonlyMCMC <- timeonlyMCMC
     class(ans) <- c("inference.control","list")
     return(ans)
 }
