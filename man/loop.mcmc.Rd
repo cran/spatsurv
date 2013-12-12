@@ -1,0 +1,15 @@
+\name{loop.mcmc}
+\alias{loop.mcmc}
+\title{loop over an iterator}
+\usage{
+loop.mcmc(object, sleep = 1)
+}
+\arguments{
+  \item{object}{an mcmc iterator}
+
+  \item{sleep}{pause between iterations in seconds}
+}
+\description{
+useful for testing progress bars
+}
+

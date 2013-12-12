@@ -1,0 +1,31 @@
+\name{txtProgressBar2}
+\alias{txtProgressBar2}
+\title{A text progress bar with label}
+\usage{
+txtProgressBar2(min = 0, max = 1, initial = 0, char = "=", width = NA,
+  title = "", label = "", style = 1)
+}
+\arguments{
+  \item{min}{min value for bar}
+
+  \item{max}{max value for bar}
+
+  \item{initial}{initial value for bar}
+
+  \item{char}{the character (or character string) to form
+  the progress bar.}
+
+  \item{width}{progress bar width}
+
+  \item{label}{text to put at the end of the bar}
+
+  \item{title}{ignored}
+
+  \item{style}{bar style}
+}
+\description{
+This is the base txtProgressBar but with a little
+modification to implement the label parameter for style=3.
+For full info see txtProgressBar
+}
+
