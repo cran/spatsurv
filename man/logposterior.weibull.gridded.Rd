@@ -1,9 +1,9 @@
-\name{logposterior.exp}
-\alias{logposterior.exp}
-\title{logposterior.exp function}
+\name{logposterior.weibull.gridded}
+\alias{logposterior.weibull.gridded}
+\title{logposterior.weibull.gridded function}
 \usage{
-logposterior.exp(tm, delta, X, beta, omega, eta, gamma, priors, covmodel, u,
-  control)
+logposterior.weibull.gridded(tm, delta, X, beta, omega, eta, gamma, priors,
+  covmodel, u, control)
 }
 \arguments{
   \item{tm}{vector of observed times}
@@ -39,6 +39,6 @@ the log posterior
 ...
 }
 \description{
-A function to evaluate the log-posterior
+A function to evaluate the log-posterior for gridded data
 }
 

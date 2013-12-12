@@ -1,0 +1,11 @@
+
+	CHANGES IN spatsurv VERSION 0.9-1
+	
+	
+SIGNIFICANT USER-VISIBLE CHANGES
+   
+    o There is now a facility for modelling the frailties on a grid, this allows for the analysis of large quantities of spatially referenced survival data. Please note that this functionality is still in the testing phase in this version of the package.
+
+BUG FIXES   	
+
+    o There was an error in the acceptance probability in the function simsurv, this has now been corrected.

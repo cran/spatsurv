@@ -3,7 +3,7 @@
 \title{proposalvariance.weibull function}
 \usage{
 proposalvariance.weibull(X, delta, tm, betahat, omegahat, Yhat, priors,
-  covmodel, u)
+  covmodel, u, control)
 }
 \arguments{
   \item{X}{design matrix}
@@ -25,6 +25,9 @@ proposalvariance.weibull(X, delta, tm, betahat, omegahat, Yhat, priors,
   ?covmodel}
 
   \item{u}{vector of distances between points}
+
+  \item{control}{list of control parameters, see
+  ?inference.control}
 }
 \value{
 estimates of eta, gamma and a proposal variance matrixc for

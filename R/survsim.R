@@ -69,7 +69,7 @@ simsurv <- function(X=cbind(age=runif(100,5,50),sex=rbinom(100,1,0.5),cancer=rbi
         newt <- rexp(n,rate=1/t) 
         newltar <- do.call(paste(dist,"_ltar",sep=""),list(t=newt,XbetaplusY=XbetaplusY,expXbetaplusY=expXbetaplusY,theta=theta))
         
-        frac <- exp(newltar-oldltar+dexp(t,1/newt)-dexp(newt,1/t))        
+        frac <- exp(newltar-oldltar+dexp(t,1/newt,log=TRUE)-dexp(newt,1/t,log=TRUE))        
         
         ac <- pmin(1,frac)
         

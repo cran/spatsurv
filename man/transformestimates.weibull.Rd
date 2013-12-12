@@ -8,9 +8,9 @@ transformestimates.weibull(x)
   \item{x}{a vector of paramters}
 }
 \value{
-the transformed parameters. For the weibull mode, this
-transforms the output from the MALA algorithm so it can be
-interpreted as 'shape' 'scale', see ?dweibull
+the transformed parameters. For the weibull model, this
+transforms 'shape' 'scale' (see ?dweibull) to 'alpha' and
+'lambda' for the MCMC
 }
 \description{
 A function to transform estimates of the parameters of the

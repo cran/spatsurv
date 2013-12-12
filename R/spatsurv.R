@@ -37,6 +37,7 @@
 ##' @importFrom RandomFields CovarianceFct 
 ##' @importFrom iterators nextElem
 ##' @importFrom fields image.plot
+##' @importFrom FNN get.knnx
 
 
 

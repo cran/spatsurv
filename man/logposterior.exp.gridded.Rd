@@ -1,9 +1,9 @@
-\name{logposterior.exp}
-\alias{logposterior.exp}
-\title{logposterior.exp function}
+\name{logposterior.exp.gridded}
+\alias{logposterior.exp.gridded}
+\title{logposterior.exp.gridded function}
 \usage{
-logposterior.exp(tm, delta, X, beta, omega, eta, gamma, priors, covmodel, u,
-  control)
+logposterior.exp.gridded(tm, delta, X, beta, omega, eta, gamma, priors,
+  covmodel, u, control)
 }
 \arguments{
   \item{tm}{vector of observed times}
@@ -39,6 +39,7 @@ the log posterior
 ...
 }
 \description{
-A function to evaluate the log-posterior
+A function to evaluate the log-posterior for the gridded
+model
 }
 

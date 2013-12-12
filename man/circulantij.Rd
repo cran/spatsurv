@@ -1,0 +1,20 @@
+\name{circulantij}
+\alias{circulantij}
+\title{circulantij function}
+\usage{
+circulantij(idx, base)
+}
+\arguments{
+  \item{idx}{vector of length 2 th (i,j) (row,column) index
+  to return}
+
+  \item{base}{the base matrix of a circulant matrix}
+}
+\value{
+the ij element of the full circulant
+}
+\description{
+A function to return the "idx" i.e. c(i,j) element of a
+circulant matrix with base "base".
+}
+

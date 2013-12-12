@@ -1,0 +1,22 @@
+\name{YfromGamma}
+\alias{YfromGamma}
+\title{YfromGamma function}
+\usage{
+YfromGamma(Gamma, invrootQeigs, mu)
+}
+\arguments{
+  \item{Gamma}{Gamma matrix}
+
+  \item{invrootQeigs}{inverse square root of the
+  eigenvectors of the precision matrix}
+
+  \item{mu}{parameter of the latent Gaussian field}
+}
+\value{
+Y
+}
+\description{
+A function to change Gammas (white noise) into Ys
+(spatially correlated noise). Used in the MALA algorithm.
+}
+

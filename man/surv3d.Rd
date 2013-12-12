@@ -1,0 +1,68 @@
+\name{surv3d}
+\alias{surv3d}
+\title{Spatial Survival Plot in 3D}
+\usage{
+surv3d(spp, ss, lwd = 2, lcol = "black", lalpha = 1, pstyle = c("point",
+  "text"), psize = c(20, 10), pcol = c("red", "black"), ptext = c("X",
+  ""), palpha = 1, title = "Spatial Survival", basegrid = TRUE,
+  baseplane = TRUE)
+}
+\arguments{
+  \item{spp}{A spatial points data frame}
+
+  \item{ss}{A Surv object (with right-censoring)}
+
+  \item{lwd}{Line width for stems}
+
+  \item{lcol}{Line colour for stems}
+
+  \item{lalpha}{Opacity for stems}
+
+  \item{pstyle}{Point style "point" or "text"}
+
+  \item{psize}{Vector of length 2 for uncensored/censored
+  points size}
+
+  \item{pcol}{Vector of length 2 for uncensored/censored
+  points colours}
+
+  \item{ptext}{Vector of length 2 for uncensored/censored
+  text characters}
+
+  \item{palpha}{Opacity for points/text}
+
+  \item{title}{Main title for plot}
+
+  \item{basegrid}{add a grid at t=0}
+
+  \item{baseplane}{add a plane at t=0}
+}
+\value{
+nothing
+}
+\description{
+Do a 3d plot of spatial survival data
+}
+\details{
+Uses rgl graphics to make a spinny zoomy plot
+}
+\examples{
+\dontrun{
+require(sp)
+require(survival)
+d = data.frame(
+  x=runif(40)*1.5,
+  y = runif(40),
+  age=as.integer(20+30*runif(40)),
+  sex = sample(c("M","F"),40,TRUE)
+)
+coordinates(d)=~x+y
+d$surv = Surv(as.integer(5+20*runif(40)),runif(40)>.9)
+clear3d();surv3d(d,d$surv,baseplane=TRUE,basegrid=TRUE)
+clear3d();surv3d(d,d$surv,baseplane=TRUE,basegrid=TRUE,pstyle="t",lalpha=0.5,lwd=3,palpha=1)
+}
+}
+\author{
+Barry S Rowlingson
+}
+

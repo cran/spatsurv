@@ -1,9 +1,9 @@
-\name{proposalvariance.exp}
-\alias{proposalvariance.exp}
-\title{proposalvariance.exp function}
+\name{proposalvariance.weibull.gridded}
+\alias{proposalvariance.weibull.gridded}
+\title{proposalvariance.weibull.gridded function}
 \usage{
-proposalvariance.exp(X, delta, tm, betahat, omegahat, Yhat, priors, covmodel, u,
-  control)
+proposalvariance.weibull.gridded(X, delta, tm, betahat, omegahat, Yhat, priors,
+  covmodel, u, control)
 }
 \arguments{
   \item{X}{design matrix}
@@ -36,7 +36,7 @@ use in the MALA algorithm
 \description{
 A function to compute an approximate proposal variance for
 the MALA algorithm for a parametric proportional hazards
-model with baseline hazard derived from the exponential
+model with baseline hazard derived from the Weibull
 distribution.
 }
 

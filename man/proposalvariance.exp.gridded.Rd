@@ -1,9 +1,9 @@
-\name{proposalvariance.exp}
-\alias{proposalvariance.exp}
-\title{proposalvariance.exp function}
+\name{proposalvariance.exp.gridded}
+\alias{proposalvariance.exp.gridded}
+\title{proposalvariance.exp.gridded function}
 \usage{
-proposalvariance.exp(X, delta, tm, betahat, omegahat, Yhat, priors, covmodel, u,
-  control)
+proposalvariance.exp.gridded(X, delta, tm, betahat, omegahat, Yhat, priors,
+  covmodel, u, control)
 }
 \arguments{
   \item{X}{design matrix}

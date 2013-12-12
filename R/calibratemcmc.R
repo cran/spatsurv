@@ -103,12 +103,12 @@ quadapprox <- function(fun,xseq,yseq,...){
     
     sigmainv <- matrix(c(d2dxx,d2dydx,d2dydx,d2dyy),2,2) 
     
-    print(-solve(sigmainv))
+    #print(-solve(sigmainv))
     
     eta1est <- (-2*co[3]*co[4]+co[5]*co[6])/(4*co[2]*co[4]-co[6]^2)
     eta2est <- (-co[5]-co[6]*eta1est)/(2*co[4])
     
-    print(paste("Estimated exp(eta):",exp(eta1est),",",exp(eta2est)))
+    #print(paste("Estimated exp(eta):",exp(eta1est),",",exp(eta2est)))
     
     return(list(max=c(eta1est,eta2est),curvature=sigmainv,mod=mod)) 
 }

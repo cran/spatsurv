@@ -2,7 +2,8 @@
 \alias{logposterior.weibull}
 \title{logposterior.weibull function}
 \usage{
-logposterior.weibull(tm, delta, X, beta, omega, eta, gamma, priors, covmodel, u)
+logposterior.weibull(tm, delta, X, beta, omega, eta, gamma, priors, covmodel, u,
+  control)
 }
 \arguments{
   \item{tm}{vector of observed times}
@@ -28,6 +29,9 @@ logposterior.weibull(tm, delta, X, beta, omega, eta, gamma, priors, covmodel, u)
   ?covmodel}
 
   \item{u}{distance matrix}
+
+  \item{control}{list of control parameters, see
+  ?inference.control}
 }
 \value{
 the log posterior

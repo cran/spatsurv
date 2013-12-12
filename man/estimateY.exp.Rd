@@ -2,7 +2,7 @@
 \alias{estimateY.exp}
 \title{estimateY.exp function}
 \usage{
-estimateY.exp(X, betahat, omegahat, tm, delta, u, covmodel)
+estimateY.exp(X, betahat, omegahat, tm, delta)
 }
 \arguments{
   \item{X}{the design matrix}
@@ -14,11 +14,6 @@ estimateY.exp(X, betahat, omegahat, tm, delta, u, covmodel)
   \item{tm}{vector of observed times}
 
   \item{delta}{censoring indicator}
-
-  \item{u}{vecor of distances bettween points}
-
-  \item{covmodel}{an object of class 'covmodel', see
-  ?covmodel}
 }
 \value{
 an estimate of the latent Gaussian field
