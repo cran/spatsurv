@@ -33,11 +33,11 @@
 ##' @import survival
 ##' @import flexsurv
 ##' @import sp
-##' @importFrom Matrix Matrix 
+##' @importFrom Matrix Matrix
+##' @importFrom Matrix nearPD 
 ##' @importFrom RandomFields CovarianceFct 
 ##' @importFrom iterators nextElem
 ##' @importFrom fields image.plot
-##' @importFrom FNN get.knnx
 
 
 

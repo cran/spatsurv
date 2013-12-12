@@ -3,7 +3,7 @@
 \title{proposalvariance.weibull.gridded function}
 \usage{
 proposalvariance.weibull.gridded(X, delta, tm, betahat, omegahat, Yhat, priors,
-  covmodel, u, control)
+  cov.model, u, control)
 }
 \arguments{
   \item{X}{design matrix}
@@ -21,7 +21,7 @@ proposalvariance.weibull.gridded(X, delta, tm, betahat, omegahat, Yhat, priors,
   \item{priors}{the priors, an object of class
   'mcmcPriors', see ?mcmcPriors}
 
-  \item{covmodel}{an object of class 'covmodel', see
+  \item{cov.model}{an object of class 'covmodel', see
   ?covmodel}
 
   \item{u}{vector of distances between points}

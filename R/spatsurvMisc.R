@@ -33,36 +33,7 @@ gensens <- function(survtimes,censtimes){
 
 
 
-##' getcov function
-##' @param u distance
-##' @param sigma variance parameter
-##' @param phi scale parameter
-##' @param model correlation type, see ?CovarianceFct
-##' @param pars vector of additional parameters for certain classes of covariance function (eg Matern), these must be supplied in the order given in ?CovarianceFct and are not estimated
-##' @return this is just a wrapper for CovarianceFct
 
-getcov <- function(u,sigma,phi,model,pars){
-    return(suppressWarnings(CovarianceFct(x=u,param=c(mean=0,variance=sigma^2,nugget=0,scale=phi,pars),model=model)))
-}
-
-
-
-##' covmodel function
-##'
-##' A function to define the spatial covariance model, see also ?getcov and ?CovarianceFct
-##'
-##' @param model correlation type, see ?CovarianceFct 
-##' @param pars vector of additional parameters for certain classes of covariance function (eg Matern), these must be supplied in the order given in ?CovarianceFct and are not estimated 
-##' @return an object of class covmodel
-##' @export
-
-covmodel <- function(model,pars){
-    retlist <- list()
-    retlist$model <- model
-    retlist$pars <- pars
-    class(retlist) <- "covmodel"
-    return(retlist)
-}
 
 
 ##' plotsurv function

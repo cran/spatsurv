@@ -2,7 +2,7 @@
 \alias{logposterior.exp}
 \title{logposterior.exp function}
 \usage{
-logposterior.exp(tm, delta, X, beta, omega, eta, gamma, priors, covmodel, u,
+logposterior.exp(tm, delta, X, beta, omega, eta, gamma, priors, cov.model, u,
   control)
 }
 \arguments{
@@ -25,7 +25,7 @@ logposterior.exp(tm, delta, X, beta, omega, eta, gamma, priors, covmodel, u,
 
   \item{priors}{the priors, an object of class mcmcPriors}
 
-  \item{covmodel}{an object of class covmodel, see
+  \item{cov.model}{an object of class covmodel, see
   ?covmodel}
 
   \item{u}{distance matrix}

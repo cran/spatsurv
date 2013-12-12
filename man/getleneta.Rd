@@ -1,0 +1,16 @@
+\name{getleneta}
+\alias{getleneta}
+\title{getleneta function}
+\usage{
+getleneta(cov.model)
+}
+\arguments{
+  \item{cov.model}{a covariance model}
+}
+\value{
+the length of eta
+}
+\description{
+A function to compute the length of eta
+}
+

@@ -6,7 +6,7 @@
 ##' @param formula see ?flexsurvreg 
 ##' @param data a SpatialPointsDataFrame object
 ##' @param dist choice of distribution function for baseline hazard options are: "exp"
-##' @param covmodel an object of class covmodel, see ?covmodel
+##' @param cov.model an object of class covmodel, see ?covmodel
 ##' @param mcmc.control mcmc control parameters, see ?mcmcpars
 ##' @param priors an object of class Priors, see ?mcmcPriors
 ##' @param control additional control parameters, see ?inference.control
@@ -15,7 +15,13 @@
 ##' @export
 
 
-survspat <- function(formula,data,dist,covmodel,mcmc.control,priors,control=inference.control(gridded=FALSE)){
+survspat <- function(   formula,
+                        data,
+                        dist,
+                        cov.model,
+                        mcmc.control,
+                        priors,
+                        control=inference.control(gridded=FALSE)){
 
     start <- Sys.time()
 
@@ -142,7 +148,7 @@ survspat <- function(formula,data,dist,covmodel,mcmc.control,priors,control=infe
                                                                                 omegahat=omegahat,
                                                                                 Yhat=Yhat,
                                                                                 priors=priors,
-                                                                                covmodel=covmodel,
+                                                                                cov.model=cov.model,
                                                                                 u=u,
                                                                                 control=control)) 
     
@@ -168,33 +174,28 @@ survspat <- function(formula,data,dist,covmodel,mcmc.control,priors,control=infe
     
     npars <- lenbeta + lenomega + leneta + lengamma
     
-    SIGMA[1:(lenbeta+lenomega),1:(lenbeta+lenomega)] <- (1.65^2/((lenbeta+lenomega)^(1/3)))*SIGMA[1:(lenbeta+lenomega),1:(lenbeta+lenomega)]
+    SIGMA[1:(lenbeta+lenomega),1:(lenbeta+lenomega)] <- 0.0001*(1.65^2/((lenbeta+lenomega)^(1/3)))*SIGMA[1:(lenbeta+lenomega),1:(lenbeta+lenomega)]
     SIGMA[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)] <- 0.4*(2.38^2/leneta)* SIGMA[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)]
-    SIGMA[(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma),(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma)] <- (1.65^2/(lengamma^(1/3)))*SIGMA[(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma),(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma)]    
+    SIGMA[(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma),(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma)] <- (1.65^2/(lengamma^(1/3)))*SIGMA[(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma),(lenbeta+lenomega+leneta+1):(lenbeta+lenomega+leneta+lengamma)]   
     
     if(control$gridded){
-    
-        matidx <- (lenbeta+lenomega+leneta+1):npars
-        matidx <- matrix(matidx,nrow=length(matidx),ncol=2)
-               
-        SIGMAINV <- Matrix(0,npars,npars)
-        SIGMAINV[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)] <- solve(as.matrix(SIGMA[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)]))
-        SIGMAINV[matidx] <- 1/SIGMA[matidx]
-        
-        cholSIGMA <- Matrix(0,npars,npars)
-        cholSIGMA[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)] <- chol(as.matrix(SIGMA[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)]))
-        cholSIGMA[matidx] <- sqrt(SIGMA[matidx])
-        
         matidx <- matrix(0,control$Mext,control$Next)
         matidx[1:(control$Mext/control$ext),1:(control$Next/control$ext)] <- 1
-        matidx <- as.logical(matidx)
+        matidx <- as.logical(matidx) # used to select which Y's to save 
     }
-    else{
-        browser()
-        SIGMAINV <- solve(SIGMA) # SIGMA is sparse, so this is easy to compute    
-        cholSIGMA <- Matrix(t(chol(SIGMA)))
-    }
-    #print(SIGMA[1:(lenbeta+lenomega),1:(lenbeta+lenomega)])    
+  
+    
+    diagidx <- 1:npars
+    diagidx <- matrix(diagidx,nrow=npars,ncol=2)
+    SIGMApars <- as.matrix(SIGMA[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)])
+    SIGMAparsINV <- solve(SIGMApars)
+    cholSIGMApars <- t(chol(SIGMApars))  
+    #browser()  
+    SIGMAgamma <- SIGMA[diagidx][(lenbeta+lenomega+leneta+1):npars]
+    SIGMAgammaINV <- 1/SIGMAgamma
+    cholSIGMAgamma <- sqrt(SIGMAgamma)
+    
+     
     
     cat("Running MCMC ...\n")
     
@@ -211,7 +212,7 @@ survspat <- function(formula,data,dist,covmodel,mcmc.control,priors,control=infe
                             eta=eta,
                             gamma=gamma,
                             priors=priors,
-                            covmodel=covmodel,
+                            cov.model=cov.model,
                             u=u,
                             control=control)
                                                         
@@ -221,49 +222,63 @@ survspat <- function(formula,data,dist,covmodel,mcmc.control,priors,control=infe
     etasamp <- c()
     Ysamp <- c()
     
+    gamma <- c(gamma) # turn gamma into a vector 
+    
     tarrec <- oldlogpost$logpost
     
     print(SIGMA[1:8,1:8])
     
     
     while(nextStep(mcmcloop)){
-    
-        stuff <- c(beta,omega,eta,gamma)
-        propmean <- stuff + (h/2)*SIGMA%*%oldlogpost$grad
-        newstuff <- propmean + h*cholSIGMA%*%rnorm(npars)
+
+        stuffpars <- c(beta,omega,eta)
+        propmeanpars <- stuffpars + (h/2)*SIGMApars%*%oldlogpost$grad[1:(lenbeta+lenomega+leneta)]
+        newstuffpars <- propmeanpars + sqrt(h)*cholSIGMApars%*%rnorm(lenbeta+lenomega+leneta)
         
-        ngam <- newstuff[(lenbeta+lenomega+leneta+1):npars]
+ 
+        propmeangamma <- gamma + (h/2)*SIGMAgamma*oldlogpost$grad[(lenbeta+lenomega+leneta+1):npars]
+        newstuffgamma <- propmeangamma + sqrt(h)*cholSIGMAgamma*rnorm(lengamma)
+        ngam <- newstuffgamma
         if(control$gridded){
             ngam <- matrix(ngam,control$Mext,control$Next)
         }
         
+        
         newlogpost <- LOGPOST(  tm=tm,
                                 delta=delta,
                                 X=X,
-                                beta=newstuff[1:lenbeta],
-                                omega=newstuff[(lenbeta+1):(lenbeta+lenomega)],
-                                eta=newstuff[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)],
+                                beta=newstuffpars[1:lenbeta],
+                                omega=newstuffpars[(lenbeta+1):(lenbeta+lenomega)],
+                                eta=newstuffpars[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)],
                                 gamma=ngam,
                                 priors=priors,
-                                covmodel=covmodel,
+                                cov.model=cov.model,
                                 u=u,
                                 control=control)
-                                
-        revmean <- newstuff +  (h/2)*SIGMA%*%newlogpost$grad  
-         
-        
-        revdiff <- as.matrix(stuff-revmean)
-        forwdiff <- as.matrix(newstuff-propmean)
-                       
-        logfrac <- newlogpost$logpost - oldlogpost$logpost -0.5*t(revdiff)%*%SIGMAINV%*%revdiff + 0.5*t(forwdiff)%*%SIGMAINV%*%forwdiff
+
+        revmeanpars <- newstuffpars +  (h/2)*SIGMApars%*%newlogpost$grad[1:(lenbeta+lenomega+leneta)]
+        revmeangamma <- newstuffgamma +  (h/2)*SIGMAgamma*newlogpost$grad[(lenbeta+lenomega+leneta+1):npars]       
+
+        revdiffpars <- as.matrix(stuffpars-revmeanpars)
+        forwdiffpars <- as.matrix(newstuffpars-propmeanpars)
+        revdiffgamma <- as.matrix(gamma-revmeangamma)
+        forwdiffgamma <- as.matrix(newstuffgamma-propmeangamma)
+
+
+        logfrac <- newlogpost$logpost - oldlogpost$logpost - 
+                            (0.5/h)*t(revdiffpars)%*%SIGMAparsINV%*%revdiffpars + 
+                            (0.5/h)*t(forwdiffpars)%*%SIGMAparsINV%*%forwdiffpars -
+                            (0.5/h)*sum(revdiffgamma*SIGMAgammaINV*revdiffgamma) + 
+                            (0.5/h)*sum(forwdiffgamma*SIGMAgammaINV*forwdiffgamma)
         
         ac <- min(1,exp(as.numeric(logfrac)))
         
         if(ac>runif(1)){
-            beta <- newstuff[1:lenbeta]
-            omega <- newstuff[(lenbeta+1):(lenbeta+lenomega)]
-            eta <- newstuff[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)]
-            gamma <- newstuff[(lenbeta+lenomega+leneta+1):npars]
+            beta <- newstuffpars[1:lenbeta]
+            omega <- newstuffpars[(lenbeta+1):(lenbeta+lenomega)]
+            eta <- newstuffpars[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)]
+            gamma <- newstuffgamma
+
             oldlogpost <- newlogpost
         }
         

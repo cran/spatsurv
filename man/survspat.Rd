@@ -2,7 +2,7 @@
 \alias{survspat}
 \title{survspat function}
 \usage{
-survspat(formula, data, dist, covmodel, mcmc.control, priors,
+survspat(formula, data, dist, cov.model, mcmc.control, priors,
   control = inference.control(gridded = FALSE))
 }
 \arguments{
@@ -13,7 +13,7 @@ survspat(formula, data, dist, covmodel, mcmc.control, priors,
   \item{dist}{choice of distribution function for baseline
   hazard options are: "exp"}
 
-  \item{covmodel}{an object of class covmodel, see
+  \item{cov.model}{an object of class covmodel, see
   ?covmodel}
 
   \item{mcmc.control}{mcmc control parameters, see

@@ -9,3 +9,16 @@ SIGNIFICANT USER-VISIBLE CHANGES
 BUG FIXES   	
 
     o There was an error in the acceptance probability in the function simsurv, this has now been corrected.
+    
+    	
+    	
+    	
+    	CHANGES IN spatsurv VERSION 0.9-2
+    	
+SIGNIFICANT USER-VISIBLE CHANGES
+   
+    o There is now a facility for user-defined covariance functions, for example ExponentialCovFct(), and with more than 2 parameters for example, SpikedExponentialCovFct().
+
+BUG FIXES   	
+
+    o There was an error in the proposal kernel and acceptance ratio in the function survspat. This has been fixed.

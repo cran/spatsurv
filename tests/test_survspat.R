@@ -21,8 +21,8 @@ dat <- simsurv(X=cbind( age=runif(n,5,50),sex=rbinom(n,1,0.5),cancer=rbinom(n,1,
                         mcmc.control=mcmcpars(nits=100,burn=10,thin=10))  
 
 coords <- dat$coords
-SIGMA <- dat$sigmaphi[1]
-PHI <- dat$sigmaphi[2]                                          
+SIGMA <- dat$cov.parameters[1]
+PHI <- dat$cov.parameters[2]                                          
 
 par(mfrow=c(2,2))                                    
 plot(coords,col=grey(1-dat$survtimes/max(dat$survtimes)),pch=19)
@@ -55,7 +55,7 @@ if(TRUE){
     ss <- survspat( formula=ss~age+sex+cancer,
                     data=spatdat,
                     dist=DIST,
-                    covmodel=covmodel(model="exponential",pars=NULL),
+                    cov.model=covmodel(model="exponential",pars=NULL),
                     mcmc.control=mcmcpars(nits=100,burn=10,thin=9),
                     priors=priors)
 }

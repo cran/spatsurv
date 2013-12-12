@@ -2,8 +2,8 @@
 \alias{proposalvariance.exp}
 \title{proposalvariance.exp function}
 \usage{
-proposalvariance.exp(X, delta, tm, betahat, omegahat, Yhat, priors, covmodel, u,
-  control)
+proposalvariance.exp(X, delta, tm, betahat, omegahat, Yhat, priors, cov.model,
+  u, control)
 }
 \arguments{
   \item{X}{design matrix}
@@ -21,7 +21,7 @@ proposalvariance.exp(X, delta, tm, betahat, omegahat, Yhat, priors, covmodel, u,
   \item{priors}{the priors, an object of class
   'mcmcPriors', see ?mcmcPriors}
 
-  \item{covmodel}{an object of class 'covmodel', see
+  \item{cov.model}{an object of class 'covmodel', see
   ?covmodel}
 
   \item{u}{vector of distances between points}

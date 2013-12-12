@@ -50,25 +50,26 @@ invtransformestimates.weibull <- function(x){
 ##' @param omegahat estimate of model parameter omega
 ##' @param Yhat estimate of the latent field  
 ##' @param priors the priors, an object of class 'mcmcPriors', see ?mcmcPriors
-##' @param covmodel an object of class 'covmodel', see ?covmodel
+##' @param cov.model an object of class 'covmodel', see ?covmodel
 ##' @param u vector of distances between points
 ##' @param control list of control parameters, see ?inference.control
 ##' @return estimates of eta, gamma and a proposal variance matrixc for use in the MALA algorithm
 ##' @export
-proposalvariance.weibull <- function(X,delta,tm,betahat,omegahat,Yhat,priors,covmodel,u,control){
+proposalvariance.weibull <- function(X,delta,tm,betahat,omegahat,Yhat,priors,cov.model,u,control){
     
     n <- length(tm)
     lenbeta <- length(betahat)
     lenomega <- length(omegahat)
-    leneta <- 2
+    leneta <- getleneta(cov.model)
     lenY <- length(Yhat)
     npars <- lenbeta + lenomega + leneta + lenY
     
     sigma <- matrix(0,npars,npars)
     
     # eta
-    logpost <- function(eta,tm,delta,X,beta,omega,Y,priors,covmodel,u){
-        sigmainv <- solve(matrix(getcov(u=u,sigma=exp(eta[1]),phi=exp(eta[2]),model=covmodel$model,pars=covmodel$pars),n,n))
+    logpost <- function(eta,tm,delta,X,beta,omega,Y,priors,cov.model,u){
+        #sigmainv <- solve(matrix(getcov(u=u,sigma=exp(eta[1]),phi=exp(eta[2]),model=cov.model$model,pars=cov.model$pars),n,n))
+        sigmainv <- solve(matrix(EvalCov(cov.model=cov.model,u=u,parameters=eta),n,n))
         cholsigmainv <- t(chol(sigmainv))
         gamma <- cholsigmainv%*%(Y-exp(eta[1])^2/2)                    
         
@@ -77,7 +78,7 @@ proposalvariance.weibull <- function(X,delta,tm,betahat,omegahat,Yhat,priors,cov
     
         n <- nrow(X)
         Xbeta <- X%*%beta
-        #sigma <- matrix(getcov(u=u,sigma=exp(eta[1]),phi=exp(eta[2]),model=covmodel$model,pars=covmodel$pars),n,n)
+        #sigma <- matrix(getcov(u=u,sigma=exp(eta[1]),phi=exp(eta[2]),model=cov.model$model,pars=cov.model$pars),n,n)
         #cholsigma <- t(chol(sigma))
         priorcontrib <- -(1/2)*sum(gamma^2) + do.call(priors$call,args=list(beta=beta,omega=omega,eta=eta,priors=priors))
         #Y <- -eta[1]^2/2 + cholsigma%*%gamma
@@ -88,24 +89,23 @@ proposalvariance.weibull <- function(X,delta,tm,betahat,omegahat,Yhat,priors,cov
     
         return(logpost)
     }
-    ngrid <- 20
-    if(length(priors$etaprior$mean)==1){
-        xseq <- seq(priors$etaprior$mean-1.96*priors$etaprior$sd,priors$etaprior$mean+1.96*priors$etaprior$sd,length.out=ngrid)
-        yseq <- xseq
+    
+    npts <- 20
+    if(leneta>=3){
+        npts <- 10
     }
-    else{
-        xseq <- seq(priors$etaprior$mean[1]-1.96*priors$etaprior$sd[1],priors$etaprior$mean[1]+1.96*priors$etaprior$sd[1],length.out=ngrid)
-        yseq <- seq(priors$etaprior$mean[2]-1.96*priors$etaprior$sd[2],priors$etaprior$mean[2]+1.96*priors$etaprior$sd[2],length.out=ngrid)
-    }
-    qa <- quadapprox(logpost,xseq=xseq,yseq=yseq,tm=tm,delta=delta,X=X,beta=betahat,omega=omegahat,Y=Yhat,priors=priors,covmodel=covmodel,u=u)
-    matr <- 0.4*qa$curvature
+    rgs <- getparranges(priors=priors,leneta=leneta)   
+    qa <- QuadApprox(logpost,npts=npts,argRanges=rgs,tm=tm,delta=delta,X=X,beta=betahat,omega=omegahat,Y=Yhat,priors=priors,cov.model=cov.model,u=u)    
+    
+    matr <- qa$curvature
     etahat <- qa$max
     
     # entry for eta in proposal covariance
     sigma[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)] <- matr    
     
     #estimate of gamma
-    Sigma <- matrix(getcov(u=u,sigma=exp(etahat[1]),phi=exp(etahat[2]),model=covmodel$model,pars=covmodel$pars),n,n)
+    #Sigma <- matrix(getcov(u=u,sigma=exp(etahat[1]),phi=exp(etahat[2]),model=cov.model$model,pars=cov.model$pars),n,n)
+    Sigma <- matrix(EvalCov(cov.model=cov.model,u=u,parameters=etahat),n,n)
     covinv <- solve(Sigma)
     cholcovinv <- t(chol(covinv))
     gammahat <- cholcovinv%*%(Yhat-exp(etahat[1])^2/2)  
@@ -163,19 +163,19 @@ proposalvariance.weibull <- function(X,delta,tm,betahat,omegahat,Yhat,priors,cov
 ##' @param omegahat estimate of model parameter omega
 ##' @param Yhat estimate of the latent field  
 ##' @param priors the priors, an object of class 'mcmcPriors', see ?mcmcPriors
-##' @param covmodel an object of class 'covmodel', see ?covmodel
+##' @param cov.model an object of class 'covmodel', see ?covmodel
 ##' @param u vector of distances between points
 ##' @param control list of control parameters, see ?inference.control
 ##' @return estimates of eta, gamma and a proposal variance matrixc for use in the MALA algorithm
 ##' @export
-proposalvariance.weibull.gridded <- function(X,delta,tm,betahat,omegahat,Yhat,priors,covmodel,u,control){
+proposalvariance.weibull.gridded <- function(X,delta,tm,betahat,omegahat,Yhat,priors,cov.model,u,control){
     
     Ygrid <- gridY(Y=Yhat,control=control)    
     
     n <- length(tm)
     lenbeta <- length(betahat)
     lenomega <- length(omegahat)
-    leneta <- 2
+    leneta <- getleneta(cov.model)
     lenY <- length(Ygrid)
     npars <- lenbeta + lenomega + leneta + lenY
     
@@ -183,13 +183,17 @@ proposalvariance.weibull.gridded <- function(X,delta,tm,betahat,omegahat,Yhat,pr
     sigma <- Matrix(0,npars,npars)
     
     # eta
-    logpost <- function(eta,tm,delta,X,beta,omega,Ygrid,priors,covmodel,u,control){
+    logpost <- function(eta,tm,delta,X,beta,omega,Ygrid,priors,cov.model,u,control){
 
-        covbase <- matrix(getcov(u=u,sigma=exp(eta[1]),phi=exp(eta[2]),model=covmodel$model,pars=covmodel$pars),control$Mext,control$Next)
+        #covbase <- matrix(getcov(u=u,sigma=exp(eta[1]),phi=exp(eta[2]),model=cov.model$model,pars=cov.model$pars),control$Mext,control$Next)
+        covbase <- matrix(EvalCov(cov.model=cov.model,u=u,parameters=eta),control$Mext,control$Next)
         rootQeigs <- sqrt(1/Re(fft(covbase)))
         
         #browser()
-        gamma <- GammafromY(Ygrid,rootQeigs=rootQeigs,mu=-(exp(eta[1]))^2/2)                      
+        pars <- sapply(1:length(eta),function(i){cov.model$itrans[[i]](eta[i])})
+        ymean <- -pars[which(cov.model$parnames=="sigma")]^2/2
+        gamma <- GammafromY(Ygrid,rootQeigs=rootQeigs,mu=ymean)
+        #gamma <- GammafromY(Ygrid,rootQeigs=rootQeigs,mu=-(exp(eta[1]))^2/2)                      
         
         alpha <- exp(omega[1])
         lambda <- exp(omega[2])
@@ -204,27 +208,25 @@ proposalvariance.weibull.gridded <- function(X,delta,tm,betahat,omegahat,Yhat,pr
     
         return(logpost)
     }
-    ngrid <- 20
-    if(length(priors$etaprior$mean)==1){
-        xseq <- seq(priors$etaprior$mean-1.96*priors$etaprior$sd,priors$etaprior$mean+1.96*priors$etaprior$sd,length.out=ngrid)
-        yseq <- xseq
+    
+    npts <- 20
+    if(leneta>=3){
+        npts <- 10
     }
-    else{
-        xseq <- seq(priors$etaprior$mean[1]-1.96*priors$etaprior$sd[1],priors$etaprior$mean[1]+1.96*priors$etaprior$sd[1],length.out=ngrid)
-        yseq <- seq(priors$etaprior$mean[2]-1.96*priors$etaprior$sd[2],priors$etaprior$mean[2]+1.96*priors$etaprior$sd[2],length.out=ngrid)
-    }
-    qa <- quadapprox(logpost,xseq=xseq,yseq=yseq,tm=tm,delta=delta,X=X,beta=betahat,omega=omegahat,Ygrid=Ygrid,priors=priors,covmodel=covmodel,u=u,control=control)
-    matr <- 0.4*qa$curvature
+    rgs <- getparranges(priors=priors,leneta=leneta)   
+    qa <- QuadApprox(logpost,npts=npts,argRanges=rgs,tm=tm,delta=delta,X=X,beta=betahat,omega=omegahat,Ygrid=Ygrid,priors=priors,cov.model=cov.model,u=u,control=control)    
+    
+    matr <- qa$curvature
     etahat <- qa$max
     
     # entry for eta in proposal covariance
     sigma[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)] <- matr    
     
     #estimate of gamma
-    covbase <- matrix(getcov(u=u,sigma=exp(etahat[1]),phi=exp(etahat[2]),model=covmodel$model,pars=covmodel$pars),control$Mext,control$Next)
+    covbase <- matrix(EvalCov(cov.model=cov.model,u=u,parameters=etahat),control$Mext,control$Next)
     rootQeigs <- sqrt(1/Re(fft(covbase)))
     invrootQeigs <- 1/rootQeigs
-    gammahat <- GammafromY(Ygrid,rootQeigs=rootQeigs,mu=-(exp(etahat[1]))^2/2)    
+    #gammahat <- GammafromY(Ygrid,rootQeigs=rootQeigs,mu=-(exp(etahat[1]))^2/2)    
     
     deriv <- do.call(priors$derivative,args=list(beta=betahat,omega=omegahat,eta=etahat,priors=priors))
 
@@ -284,7 +286,7 @@ proposalvariance.weibull.gridded <- function(X,delta,tm,betahat,omegahat,Yhat,pr
     sigmaret[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)] <- solve(as.matrix(sigma[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)]))
     sigmaret[matidx] <- 1/sigma[matidx] 
     
-    return(list(etahat=etahat,gammahat=gammahat,sigma=sigmaret)) 
+    return(list(etahat=etahat,sigma=sigmaret)) 
 }
 
 

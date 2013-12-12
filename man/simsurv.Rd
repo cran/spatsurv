@@ -5,9 +5,9 @@
 simsurv(X = cbind(age = runif(100, 5, 50), sex = rbinom(100, 1, 0.5), cancer =
   rbinom(100, 1, 0.2)), beta = matrix(c(0.0296, 0.0261, 0.035), 3, 1),
   theta = 1, dist = "exp", coords = matrix(runif(2 * nrow(X)), nrow(X),
-  2), sigmaphi = c(1, 0.1), cov.model = covmodel(model = "exponential", pars
-  = NULL), mcmc.control = mcmcpars(nits = 1e+05, burn = 10000, thin = 90),
-  savechains = TRUE)
+  2), cov.parameters = c(1, 0.1), cov.model = covmodel(model =
+  "exponential", pars = NULL), mcmc.control = mcmcpars(nits = 1e+05, burn =
+  10000, thin = 90), savechains = TRUE)
 }
 \arguments{
   \item{X}{a matrix of covariate information}
@@ -24,8 +24,8 @@ simsurv(X = cbind(age = runif(100, 5, 50), sex = rbinom(100, 1, 0.5), cancer =
   \item{coords}{matrix with 2 columns giving the
   coordinates at which to simulate data}
 
-  \item{sigmaphi}{a vector of length 2: the parameters for
-  the covariance function, sigma and phi in that order}
+  \item{cov.parameters}{a vector: the parameters for the
+  covariance function}
 
   \item{cov.model}{an object of class covmodel, see
   ?covmodel}

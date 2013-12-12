@@ -3,7 +3,7 @@
 \title{logposterior.weibull.gridded function}
 \usage{
 logposterior.weibull.gridded(tm, delta, X, beta, omega, eta, gamma, priors,
-  covmodel, u, control)
+  cov.model, u, control)
 }
 \arguments{
   \item{tm}{vector of observed times}
@@ -25,7 +25,7 @@ logposterior.weibull.gridded(tm, delta, X, beta, omega, eta, gamma, priors,
 
   \item{priors}{the priors, an object of class mcmcPriors}
 
-  \item{covmodel}{an object of class covmodel, see
+  \item{cov.model}{an object of class covmodel, see
   ?covmodel}
 
   \item{u}{distance matrix}

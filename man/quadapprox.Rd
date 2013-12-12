@@ -1,17 +1,19 @@
-\name{quadapprox}
-\alias{quadapprox}
-\title{quadapprox function}
+\name{QuadApprox}
+\alias{QuadApprox}
+\title{QuadApprox function}
 \usage{
-quadapprox(fun, xseq, yseq, ...)
+QuadApprox(fun, npts, argRanges, plot = TRUE, ...)
 }
 \arguments{
   \item{fun}{a function}
 
-  \item{xseq}{sequence of x-values defining grid on which
-  to compute the approximation}
+  \item{npts}{integer number of points in each direction}
 
-  \item{yseq}{sequence of y-values defining grid on which
-  to compute the approximation}
+  \item{argRanges}{a list of ranges on which to construct
+  the grid for each parameter}
+
+  \item{plot}{whether to plot the quadratic approximation
+  of the posterior (for two-dimensional parameters only)}
 
   \item{...}{other arguments to be passed to fun}
 }
@@ -21,8 +23,8 @@ the (x,y) value at which the maximum occurs
 }
 \description{
 A function to compute the second derivative of a function
-using a quadratic approximation to the function on a grid
-of points defined by xseq and yseq. Also returns the local
-maximum.
+(of several real variables) using a quadratic approximation
+on a grid of points defined by the list argRanges. Also
+returns the local maximum.
 }
 
