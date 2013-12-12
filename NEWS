@@ -22,3 +22,11 @@ SIGNIFICANT USER-VISIBLE CHANGES
 BUG FIXES   	
 
     o There was an error in the proposal kernel and acceptance ratio in the function survspat. This has been fixed.
+    
+
+
+    	CHANGES IN spatsurv VERSION 0.9-4
+    	
+BUG FIXES   	
+
+    o There was an error in the transformation from gamma to Y in the non-gridded likelihood functions. This has been fixed.

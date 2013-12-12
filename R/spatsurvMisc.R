@@ -153,6 +153,13 @@ getomegatrans <- function(dist){
     if(dist=="exp" | dist=="weibull"){
         retlist$trans <- log
         retlist$itrans <- exp
+        retlist$jacobian <- exp
+        if(dist=="exp"){
+            retlist$hessian <- list(exp)
+        }
+        if(dist=="weibull"){
+            retlist$hessian <- list(exp,exp)  
+        }
     }
     else{
         stop("Unknown baseline hazard distribution.")    
@@ -179,9 +186,51 @@ checkSurvivalData <- function(s){
     if(attr(s,"type")=="right" | attr(s,"type")=="left" | attr(s,"type")=="interval"){
         if(any(as.matrix(s)<0,na.rm=TRUE)){
             stop("Survival data must not contain negative times, please change the offset of your data so that all times are non-negative")
-        }    
+        } 
+        
+        if(attr(s,"type")=="left" | attr(s,"type")=="interval"){
+            cat("\n ####################################################\n # WARNING LEFT AND INTERVAL CENSORED DATA IS UNDER #\n # DEVELOPMENT AND HAS NOT UNDERGONE TESTING AS YET #\n ####################################################\n\n")
+            warning("*** CODE UNDER DEVELOPMENT ***",immediate.=TRUE)
+        }
+           
     }
     else{
         stop("Survival data must be of type 'left', 'right', or 'interval', see ?Surv")
     }
+}
+
+
+
+
+##' setupHazard function
+##'
+##' A function to 
+##'
+##' @param dist X
+##' @param pars X
+##' @param grad X
+##' @param hess X 
+##' @return ...
+##' @export
+
+setupHazard <- function(dist,pars,grad=FALSE,hess=FALSE){
+    funlist <- list()
+    
+    funlist$h <- get(paste("basehazard.",dist,sep=""))(pars)
+    if(grad){
+        funlist$gradh <- get(paste("gradbasehazard.",dist,sep=""))(pars)
+    }
+    if(hess){
+        funlist$hessh <- get(paste("hessbasehazard.",dist,sep=""))(pars)
+    }
+    
+    funlist$H <- get(paste("cumbasehazard.",dist,sep=""))(pars)
+    if(grad){
+        funlist$gradH <- get(paste("gradcumbasehazard.",dist,sep=""))(pars)
+    }
+    if(hess){
+        funlist$hessH <- get(paste("hesscumbasehazard.",dist,sep=""))(pars)
+    }
+    
+    return(funlist) 
 }

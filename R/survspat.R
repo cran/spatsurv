@@ -28,7 +28,8 @@ survspat <- function(   formula,
         stop("'data' must be of class 'SpatialPointsDataFrame'.")
     }                    
     responsename <- as.character(formula[[2]])
-    checkSurvivalData(data@data[[responsename]])                        
+    survivaldata <- data@data[[responsename]]
+    checkSurvivalData(survivaldata)                        
 
     # okay, start the MCMC!
     start <- Sys.time()
@@ -39,9 +40,10 @@ survspat <- function(   formula,
     
     coords <- coordinates(data)
 
+    control$dist <- dist
     funtxt <- ""    
     if(control$gridded){
-        funtxt <- ".gridded"
+        funtxt <- "_gridded"
     }
     
     gridobj <- NULL
@@ -155,20 +157,35 @@ survspat <- function(   formula,
         stop("Unknown dist, must be one of 'exp' or 'weibull'")    
     }
     
-    Yhat <- do.call(paste("estimateY.",dist,sep=""),args=list(X=X,betahat=betahat,omegahat=omegahat,tm=tm,delta=delta))    
-       
-    other <- do.call(paste("proposalvariance.",dist,funtxt,sep=""),args=list(   X=X,
-                                                                                delta=delta,
-                                                                                tm=tm,
-                                                                                betahat=betahat,
-                                                                                omegahat=omegahat,
-                                                                                Yhat=Yhat,
-                                                                                priors=priors,
-                                                                                cov.model=cov.model,
-                                                                                u=u,
-                                                                                control=control)) 
+    control$omegatrans <- omegatrans
+    control$omegaitrans <- omegaitrans
+    control$omegajacobian <- trns$jacobian # used in computing the derivative of the log posterior with respect to the transformed omega (since it is easier to compute with respect to omega) 
+    control$omegahessian <- trns$hessian    
     
-    gammahat <- other$gammahat
+    control$sigmaidx <- match("sigma",cov.model$parnames)
+    if(is.na(control$sigmaidx)){
+        stop("At least one of the parameters must be the variance of Y, it should be named sigma")
+    }
+    
+    Yhat <- estimateY(  X=X,
+                        betahat=betahat,
+                        omegahat=omegahat,
+                        surv=survivaldata,
+                        control=control)
+                        
+    calibrate <- get(paste("proposalVariance",funtxt,sep=""))    
+       
+    other <- calibrate( X=X,
+                        surv=survivaldata,
+                        betahat=betahat,
+                        omegahat=omegahat,
+                        Yhat=Yhat,
+                        priors=priors,
+                        cov.model=cov.model,
+                        u=u,
+                        control=control) 
+    
+    #gammahat <- other$gammahat
     etahat <- other$etahat                                                                        
     SIGMA <- other$sigma 
 
@@ -176,7 +193,7 @@ survspat <- function(   formula,
     omega <- omegahat
     eta <- etahat 
  
-    gamma <- rep(0,length(gammahat))
+    gamma <- rep(0,nrow(X))
     if(control$gridded){
         gamma <- matrix(0,control$Mext,control$Next)
     }
@@ -219,18 +236,21 @@ survspat <- function(   formula,
     
     
     
-    LOGPOST <- get(paste("logposterior.",dist,funtxt,sep=""))
+    LOGPOST <- get(paste("logPosterior",funtxt,sep=""))
     
-    oldlogpost <- LOGPOST(  tm=tm,
-                            delta=delta,
-                            X=X,beta=beta,
+    oldlogpost <- LOGPOST(  surv=survivaldata,
+                            X=X,
+                            beta=beta,
                             omega=omega,
                             eta=eta,
                             gamma=gamma,
                             priors=priors,
                             cov.model=cov.model,
                             u=u,
-                            control=control)
+                            control=control,
+                            gradient=TRUE)
+                            
+                          
                                                         
     
     betasamp <- c()
@@ -258,10 +278,8 @@ survspat <- function(   formula,
         if(control$gridded){
             ngam <- matrix(ngam,control$Mext,control$Next)
         }
-        
-        
-        newlogpost <- LOGPOST(  tm=tm,
-                                delta=delta,
+                                       
+        newlogpost <- LOGPOST(  surv=survivaldata,
                                 X=X,
                                 beta=newstuffpars[1:lenbeta],
                                 omega=newstuffpars[(lenbeta+1):(lenbeta+lenomega)],
@@ -270,7 +288,8 @@ survspat <- function(   formula,
                                 priors=priors,
                                 cov.model=cov.model,
                                 u=u,
-                                control=control)
+                                control=control,
+                                gradient=TRUE)
 
         revmeanpars <- newstuffpars + (h/2)*SIGMApars%*%newlogpost$grad[1:(lenbeta+lenomega+leneta)]
         revmeangamma <- newstuffgamma + (h/2)*SIGMAgamma*newlogpost$grad[(lenbeta+lenomega+leneta+1):npars]       
@@ -358,6 +377,8 @@ survspat <- function(   formula,
     retlist$omegasamp <- omegasamp
     retlist$etasamp <- etasamp
     retlist$Ysamp <- Ysamp
+    
+    retlist$survivaldata <- survivaldata
     
     retlist$gridded <- control$gridded
     if(control$gridded){

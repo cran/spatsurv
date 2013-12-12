@@ -170,7 +170,7 @@ baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),plot=TRUE){
     }
     
     fun <- function(pars){
-        f <- get(paste("basehaz.",x$dist,sep=""))(pars)
+        f <- get(paste("basehazard.",x$dist,sep=""))(pars)
         return(f(t))
     } 
     
@@ -182,11 +182,11 @@ baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),plot=TRUE){
     
     if(plot){
         if(length(probs)==3){
-            matplot(toreturn,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="time",ylab="Baseline Hazard")
+            matplot(t,toreturn,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="time",ylab="Baseline Hazard")
             legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
         }
         else{
-            matplot(toreturn,type="l",xlab="time",ylab="Baseline Hazard")
+            matplot(t,toreturn,type="l",xlab="time",ylab="Baseline Hazard")
         }
     }    
     
@@ -194,51 +194,19 @@ baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),plot=TRUE){
 }
 
 
-##' basehaz.exp function
+
+
+
+
+##' hazard_PP function
 ##'
-##' A function to 
-##'
-##' @param pars X 
-##' @return ...
-##' @export
-
-basehaz.exp <- function(pars){
-    f <- function(t){
-        return(pars)
-    }
-    return(f)
-}
-
-
-
-##' basehaz.weibull function
-##'
-##' A function to 
-##'
-##' @param pars X 
-##' @return ...
-##' @export
-
-basehaz.weibull <- function(pars){
-    alpha <- pars[1]
-    lambda <- pars[2]
-    f <- function(t){
-        return(lambda*alpha*t^(alpha-1))
-    }
-    return(f)
-}
-
-
-
-##' hazard_exp function
-##'
-##' A function to compute the hazard function for an individual where the baseline hazard comes from an exponential survival model
+##' A function to compute the hazard function 
 ##'
 ##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
 ##' @return the hazard function for the individual
 ##' @export
 
-hazard_exp <- function(inputs){
+hazard_PP <- function(inputs){
     X <- inputs$X
     Y <- inputs$Y
     beta <- inputs$beta
@@ -247,10 +215,9 @@ hazard_exp <- function(inputs){
     expXbeta <- exp(Xbeta)
     expXbeta_plus_Y <- expXbeta*exp(Y)
     
-    rate <- inputs$omega
-    
     f <- function(t){
-        return(expXbeta_plus_Y*rate)
+        h <- get(paste("basehazard.",inputs$dist,sep=""))(inputs$omega)
+        return(expXbeta_plus_Y*h(t))
     }
     return(f)      
 }
@@ -258,14 +225,14 @@ hazard_exp <- function(inputs){
 
 
 
-##' survival_exp function
+##' survival_PP function
 ##'
-##' A function to compute the survival function for an individual where the baseline hazard comes from an exponential survival model
+##' A function to compute the survival function 
 ##'
 ##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
 ##' @return the survival function for the individual
 ##' @export
-survival_exp <- function(inputs){
+survival_PP <- function(inputs){
     X <- inputs$X
     Y <- inputs$Y
     beta <- inputs$beta
@@ -274,25 +241,24 @@ survival_exp <- function(inputs){
     expXbeta <- exp(Xbeta)
     expXbeta_plus_Y <- expXbeta*exp(Y)
     
-    rate <- inputs$omega
-    
     f <- function(t){
-        return(exp(-expXbeta_plus_Y*rate*t))
+        H <- get(paste("cumbasehazard.",inputs$dist,sep=""))(inputs$omega)
+        return(exp(-expXbeta_plus_Y*H(t)))
     }
     return(f)      
 }
 
 
 
-##' density_exp function
+##' density_PP function
 ##'
-##' A function to compute the density function for an individual where the baseline hazard comes from an exponential survival model
+##' A function to compute the density function 
 ##'
 ##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
 ##' @return the density function for the individual
 ##' @export
 
-density_exp <- function(inputs){
+density_PP <- function(inputs){
     X <- inputs$X
     Y <- inputs$Y
     beta <- inputs$beta
@@ -301,138 +267,25 @@ density_exp <- function(inputs){
     expXbeta <- exp(Xbeta)
     expXbeta_plus_Y <- expXbeta*exp(Y)
     
-    rate <- inputs$omega
-    
     f <- function(t){
-        return(expXbeta_plus_Y*rate*exp(-expXbeta_plus_Y*rate*t))
+        h <- get(paste("basehazard.",inputs$dist,sep=""))(inputs$omega)    
+        H <- get(paste("cumbasehazard.",inputs$dist,sep=""))(inputs$omega)
+        return(expXbeta_plus_Y*h(t)*exp(-expXbeta_plus_Y*H(t)))
     }
     return(f)      
 }
 
 
 
-##' densityquantile_exp function
+##' densityquantile_PP function
 ##'
-##' A function to compute quantiles of the density function for an individual where the baseline hazard comes from an exponential survival model
-##'
-##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
-##' @return quantiles of the density function for the individual
-##' @export
-
-densityquantile_exp <- function(inputs){
-    X <- inputs$X
-    Y <- inputs$Y
-    beta <- inputs$beta
-    
-    Xbeta <- sum(X*beta)
-    expXbeta <- exp(Xbeta)
-    expXbeta_plus_Y <- expXbeta*exp(Y)
-    
-    rate <- inputs$omega
-    
-    f <- function(probs){
-        a <- expXbeta_plus_Y*rate
-        return((-1/a)*log(1-probs))
-    }
-    return(f)    
-}
-
-
-
-
-##' hazard_weibull function
-##'
-##' A function to compute the hazard function for an individual where the baseline hazard comes from a Weibull survival model
-##'
-##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
-##' @return the hazard function for the individual
-##' @export
-
-hazard_weibull <- function(inputs){
-    X <- inputs$X
-    Y <- inputs$Y
-    beta <- inputs$beta
-    
-    Xbeta <- sum(X*beta)
-    expXbeta <- exp(Xbeta)
-    expXbeta_plus_Y <- expXbeta*exp(Y)
-    
-    alpha <- inputs$omega[1]
-    lambda <- inputs$omega[2] 
-    
-    f <- function(t){
-        return(expXbeta_plus_Y*lambda*alpha*t^(alpha-1))
-    }
-    return(f)    
-}
-
-
-
-##' survival_weibull function
-##'
-##' A function to compute the survival function for an individual where the baseline hazard comes from a Weibull survival model
-##'
-##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
-##' @return the survival function for the individual
-##' @export
-
-survival_weibull <- function(inputs){
-    X <- inputs$X
-    Y <- inputs$Y
-    beta <- inputs$beta
-    
-    Xbeta <- sum(X*beta)
-    expXbeta <- exp(Xbeta)
-    expXbeta_plus_Y <- expXbeta*exp(Y)
-    
-    alpha <- inputs$omega[1]
-    lambda <- inputs$omega[2]   
-    
-    f <- function(t){
-        return(exp(-expXbeta_plus_Y*lambda*t^alpha))
-    }
-    return(f)    
-}
-
-
-
-##' density_weibull function
-##'
-##' A function to compute the density function for an individual where the baseline hazard comes from a Weibull survival model
-##'
-##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
-##' @return the density function for the individual
-##' @export
-
-density_weibull <- function(inputs){
-    X <- inputs$X
-    Y <- inputs$Y
-    beta <- inputs$beta
-    
-    Xbeta <- sum(X*beta)
-    expXbeta <- exp(Xbeta)
-    expXbeta_plus_Y <- expXbeta*exp(Y)
-    
-    alpha <- inputs$omega[1]
-    lambda <- inputs$omega[2]
-    
-    f <- function(t){
-        return(expXbeta_plus_Y*lambda*alpha*t^(alpha-1)*exp(-expXbeta_plus_Y*lambda*t^alpha))
-    }
-    return(f)    
-}
-
-
-
-##' densityquantile_weibull function
-##'
-##' A function to compute quantiles of the density function for an individual where the baseline hazard comes from a Weibull survival model
+##' A function to compute quantiles of the density function 
 ##'
 ##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
 ##' @return quantiles of the density function for the individual
 ##' @export
 
-densityquantile_weibull <- function(inputs){
+densityquantile_PP <- function(inputs){
     X <- inputs$X
     Y <- inputs$Y
     beta <- inputs$beta
@@ -441,15 +294,13 @@ densityquantile_weibull <- function(inputs){
     expXbeta <- exp(Xbeta)
     expXbeta_plus_Y <- expXbeta*exp(Y)
     
-    alpha <- inputs$omega[1]
-    lambda <- inputs$omega[2]
+    dq <- get(paste("densityquantile.",inputs$dist,sep=""))(inputs$omega,other=list(expXbetaplusY=expXbeta_plus_Y)) 
     
-    f <- function(probs){
-        a <- expXbeta_plus_Y*lambda
-        return(((-1/a)*log(1-probs))^(1/alpha))
-    }
-    return(f)    
+    return(dq)    
 }
+
+
+
 
 
 ##' predict.mcmcspatsurv function
@@ -476,7 +327,7 @@ predict.mcmcspatsurv <- function(object,type="densityquantile",newdata=NULL,t=NU
     nobs <- nrow(newdata)
     
     if(is.null(t)){
-        t <- seq(0,max(object$mlmod$data$Y[,"time"]),length.out=n)
+        t <- seq(0,max(object$survivaldata[,"time"]),length.out=n)
     }
 
     predictmat <- NULL    
@@ -493,17 +344,26 @@ predict.mcmcspatsurv <- function(object,type="densityquantile",newdata=NULL,t=NU
     if(type!="densityquantile"){
         par(ask=ask)
     }
+    
+    transfun <- get(paste("transformestimates.",object$dist,sep=""))
+    if(ncol(object$omegasamp)==1){    
+        omegasamp <- matrix(apply(object$omegasamp,1,transfun))
+    }
+    else{
+        omegasamp <- t(apply(object$omegasamp,1,transfun))
+    }
         
     
     for(i in 1:nobs){
         dat <- matrix(NA,nits,n)
         inputs <- list()
         inputs$X <- newdata[i,]
+        inputs$dist <- object$dist
         for (j in 1:nits){
             inputs$Y <- object$Ysamp[j,i]
             inputs$beta <- object$betasamp[j,]
-            inputs$omega <- object$omegasamp[j,]
-            fun <- get(paste(type,"_",object$dist,sep=""))(inputs)
+            inputs$omega <- omegasamp[j,]
+            fun <- get(paste(type,"_PP",sep=""))(inputs)
             dat[j,] <- fun(t)      
         }
 
@@ -542,7 +402,7 @@ predict.mcmcspatsurv <- function(object,type="densityquantile",newdata=NULL,t=NU
 ## @param ... other arguments  
 ## @return produces some diagnostic plots (currently only one diagnostic plot...)
 ## @export
-#
+
 #plot.mcmcspatsurv <- function(x,n=1000,pr=NULL,alpha=0.05,...){
 #    survdat <- getsurvdata(x)
 #    times <- survdat[,1]
@@ -611,9 +471,15 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",ask=TRUE,...){
     }
     
     
+    
     transfun <- get(paste("transformestimates.",x$dist,sep=""))
-    samp <- t(apply(x$omegasamp,1,transfun))
-    samp <- t(apply(samp,1,x$omegatrans))
+    if(ncol(x$omegasamp)==1){    
+        samp <- matrix(apply(x$omegasamp,1,transfun))
+    }
+    else{
+        samp <- t(apply(x$omegasamp,1,transfun))
+    }
+    samp <- x$omegatrans(samp)
     for(i in 1:nomega){        
         h <- hist(samp[,i],ylab=ylab,xlab=paste("Transformed",colnames(x$omegasamp)[i]),breaks=breaks,freq=FALSE,main=main,...)
         xrg <- range(h$breaks)
@@ -625,6 +491,8 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",ask=TRUE,...){
             lines(r,dnorm(r,mean=x$priors$omegaprior$mean[i],sd=x$priors$omegaprior$sd[i]),col="red",lwd=2)
         }
     }
+    
+    
     
     for(i in 1:neta){
         samp <- x$cov.model$trans[[i]](x$etasamp[,i])
@@ -667,7 +535,7 @@ posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,...){
     }
     
     r <- seq(0,rmaxx,length.out=n)
-    covs <- t(apply(pars,1,function(x){x$cov.model$eval(r,pars=x)}))
+    covs <- t(apply(pars,1,function(pp){x$cov.model$eval(r,pars=pp)}))
     qts <- t(apply(covs,2,quantile,probs=probs))
     
     matplot(r,qts,type="l",xlab="Distance",ylab="Covariance",...)

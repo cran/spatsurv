@@ -65,60 +65,6 @@ derivlogindepGaussianprior <- function(beta=NULL,omega=NULL,eta=NULL,priors){
 
 
 
-##
-## NOTE THIS FUNCTION HAS BEEN REPLACED WITH QuadApprox
-##
-## quadapprox function
-##
-## NOTE THIS FUNCTION HAS NOW BEEN SUPERCEDED BY THE FUNCTION QuadApprox
-##
-##
-## A function to compute the second derivative of a function using a quadratic approximation to the function on a 
-## grid of points defined by xseq and yseq. Also returns the local maximum. 
-##
-## @param fun a function 
-## @param xseq sequence of x-values defining grid on which to compute the approximation 
-## @param yseq sequence of y-values defining grid on which to compute the approximation 
-## @param ... other arguments to be passed to fun
-## @return a 2 by 2 matrix containing the curvature at the maximum and the (x,y) value at which the maximum occurs 
-## @export
-
-
-#quadapprox <- function(fun,xseq,yseq,...){
-#    nx <- length(xseq)
-#    ny <- length(yseq)
-#    funvals <- matrix(NA,nx,ny)
-#    #pb <- txtProgressBar(min=0,max=nx*ny,style=3)
-#    count <- 0
-#    gr <- expand.grid(xseq,yseq)
-#    funvals <- apply(gr,1,function(xy){fun(c(xy[1],xy[2]),...)})
-#    image.plot(xseq,yseq,matrix(funvals,nx,ny),main="Approx Posterior")
-#    funvals <- as.vector(funvals)
-#    x <- gr[,1]
-#    x2 <- gr[,1]^2
-#    y <- gr[,2]    
-#    y2 <- gr[,2]^2
-#    xy <- gr[,1]*gr[,2]
-#    mod <- lm(funvals~x2+x+y2+y+xy)
-#    image.plot(xseq,yseq,matrix(fitted(mod),nx,ny),main="Quadratic Approximation")
-#    co <- coefficients(mod)
-#    d2dxx <- 2*co[2]
-#    d2dyy <- 2*co[4]
-#    d2dydx <- co[6]   
-#    
-#    sigmainv <- matrix(c(d2dxx,d2dydx,d2dydx,d2dyy),2,2) 
-#    
-#    #print(-solve(sigmainv))
-#    
-#    eta1est <- (-2*co[3]*co[4]+co[5]*co[6])/(4*co[2]*co[4]-co[6]^2)
-#    eta2est <- (-co[5]-co[6]*eta1est)/(2*co[4])
-#    
-#    #print(paste("Estimated exp(eta):",exp(eta1est),",",exp(eta2est)))
-#    
-#    return(list(max=c(eta1est,eta2est),curvature=sigmainv,mod=mod)) 
-#}
-
-
 
 ##' QuadApprox function
 ##'
@@ -237,6 +183,7 @@ fixmatrix <- function(mat){
         stop("Estimated covariance matrix for eta has all negative eigenvalues")
     }
     else{
+        warning("Something is wrong with the estimated covariance matrix, fixing this using a totally ad-hoc method. This will not affect ergodicity, merely the efficiency of the chain.",immediate.=TRUE)
         cat("Fixing non positive definite covariance matrix for eta ...\n") 
     
         diag(mat) <- abs(diag(mat)) # hmmmm ....        
@@ -308,4 +255,253 @@ fixmatrix <- function(mat){
         
         return(ans)    
     } 
+}
+
+
+
+##' proposalVariance function
+##'
+##' A function to 
+##'
+##' @param X X 
+##' @param surv X 
+##' @param betahat X 
+##' @param omegahat X 
+##' @param Yhat X 
+##' @param priors X 
+##' @param cov.model X 
+##' @param u X 
+##' @param control X 
+##' @return ...
+##' @export
+
+proposalVariance <- function(X,surv,betahat,omegahat,Yhat,priors,cov.model,u,control){
+     
+    n <- nrow(X)
+    lenbeta <- length(betahat)
+    lenomega <- length(omegahat)
+    leneta <- getleneta(cov.model)
+    lenY <- length(Yhat)
+    npars <- lenbeta + lenomega + leneta + lenY
+    
+    sigma <- matrix(0,npars,npars)
+    
+    # eta
+    logpost <- function(eta,surv,X,beta,omega,Y,priors,cov.model,u,control){
+
+        sigma <- matrix(EvalCov(cov.model=cov.model,u=u,parameters=eta),n,n)
+        cholsigma <- t(chol(sigma))
+        cholsigmainv <- solve(cholsigma)
+        MU <- -cov.model$itrans[[control$sigmaidx]](eta[control$sigmaidx])^2/2
+        gamma <- cholsigmainv%*%(Y-MU)  
+        
+        logpost <- logPosterior(surv=surv,X=X,beta=beta,omega=omega,eta=eta,gamma=gamma,priors=priors,cov.model=cov.model,u=u,control=control)        
+                          
+        return(logpost)
+    }
+
+    npts <- 20
+    if(leneta>=3){
+        npts <- 10
+    }
+    rgs <- getparranges(priors=priors,leneta=leneta)   
+    qa <- QuadApprox(logpost,npts=npts,argRanges=rgs,surv=surv,X=X,beta=betahat,omega=omegahat,Y=Yhat,priors=priors,cov.model=cov.model,u=u,control=control)
+    
+    matr <- qa$curvature
+    etahat <- qa$max
+    
+    # entry for eta in propossal covariance
+    sigma[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)] <- matr    
+        
+    #estimate of gamma  
+    ssigma <- matrix(EvalCov(cov.model=cov.model,u=u,parameters=etahat),n,n)
+    cholssigma <- t(chol(ssigma))
+    MU <- -cov.model$itrans[[control$sigmaidx]](etahat[control$sigmaidx])^2/2
+    gammahat <- solve(cholssigma)%*%(Yhat-MU)
+    
+    hessian <- logPosterior(surv=surv,X=X,beta=betahat,omega=omegahat,eta=etahat,gamma=gammahat,priors=priors,cov.model=cov.model,u=u,control=control,hessian=TRUE)
+    
+    # beta and omega
+    sigma[1:lenbeta,1:lenbeta] <- hessian$hess_beta
+    sigma[(lenbeta+1):(lenbeta+lenomega),(lenbeta+1):(lenbeta+lenomega)] <- hessian$hess_omega
+    sigma[(lenbeta+1):(lenbeta+lenomega),(1:lenbeta)] <- hessian$hess_omega_beta
+    sigma[(1:lenbeta),(lenbeta+1):(lenbeta+lenomega)] <- t(hessian$hess_omega_beta)       
+    # gamma
+    diag(sigma)[(lenbeta+lenomega+leneta+1):npars] <- hessian$hess_gamma   
+    
+    return(list(etahat=etahat,sigma=solve(-sigma))) 
+}
+
+
+
+
+##' proposalVariance_gridded function
+##'
+##' A function to 
+##'
+##' @param X X 
+##' @param surv X 
+##' @param betahat X 
+##' @param omegahat X 
+##' @param Yhat X 
+##' @param priors X 
+##' @param cov.model X 
+##' @param u X 
+##' @param control X 
+##' @return ...
+##' @export
+
+proposalVariance_gridded <- function(X,surv,betahat,omegahat,Yhat,priors,cov.model,u,control){
+
+    Ygrid <- gridY(Y=Yhat,control=control)    
+     
+    n <- nrow(X)
+    lenbeta <- length(betahat)
+    lenomega <- length(omegahat)
+    leneta <- getleneta(cov.model)
+    lenY <- length(Ygrid)
+    npars <- lenbeta + lenomega + leneta + lenY
+    
+    # eta
+    logpost <- function(eta,surv,X,beta,omega,Ygrid,priors,cov.model,u,control){
+        
+        covbase <- matrix(EvalCov(cov.model=cov.model,u=u,parameters=eta),control$Mext,control$Next)
+        
+        rootQeigs <- sqrt(1/Re(fft(covbase)))   
+       
+        pars <- sapply(1:length(eta),function(i){cov.model$itrans[[i]](eta[i])})
+        ymean <- -pars[which(cov.model$parnames=="sigma")]^2/2
+        gamma <- GammafromY(Ygrid,rootQeigs=rootQeigs,mu=ymean)  
+        
+        logpost <- logPosterior_gridded(surv=surv,X=X,beta=beta,omega=omega,eta=eta,gamma=gamma,priors=priors,cov.model=cov.model,u=u,control=control)        
+                          
+        return(logpost)
+    }
+
+    npts <- 20
+    if(leneta>=3){
+        npts <- 10
+    }
+    rgs <- getparranges(priors=priors,leneta=leneta)   
+    qa <- QuadApprox(logpost,npts=npts,argRanges=rgs,surv=surv,X=X,beta=betahat,omega=omegahat,Ygrid=Ygrid,priors=priors,cov.model=cov.model,u=u,control=control)
+    
+    matr <- qa$curvature
+    etahat <- qa$max
+    
+    sigma <- matrix(0,lenbeta + lenomega + leneta,lenbeta + lenomega + leneta)
+    
+    # entry for eta in propossal covariance
+    sigma[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)] <- matr    
+        
+    #estimate of gamma  
+    covbase <- matrix(EvalCov(cov.model=cov.model,u=u,parameters=etahat),control$Mext,control$Next)        
+    rootQeigs <- sqrt(1/Re(fft(covbase)))   
+    pars <- sapply(1:length(etahat),function(i){cov.model$itrans[[i]](etahat[i])})
+    ymean <- -pars[which(cov.model$parnames=="sigma")]^2/2
+    gammahat <- GammafromY(Ygrid,rootQeigs=rootQeigs,mu=ymean)
+    
+    hessian <- logPosterior_gridded(surv=surv,X=X,beta=betahat,omega=omegahat,eta=etahat,gamma=gammahat,priors=priors,cov.model=cov.model,u=u,control=control,hessian=TRUE)
+    
+    # beta and omega
+    sigma[1:lenbeta,1:lenbeta] <- hessian$hess_beta
+    sigma[(lenbeta+1):(lenbeta+lenomega),(lenbeta+1):(lenbeta+lenomega)] <- hessian$hess_omega
+    sigma[(lenbeta+1):(lenbeta+lenomega),(1:lenbeta)] <- hessian$hess_omega_beta
+    sigma[(1:lenbeta),(lenbeta+1):(lenbeta+lenomega)] <- t(hessian$hess_omega_beta)       
+    # gamma
+    hess_gam <- hessian$hess_gamma 
+    
+    sigma <- (-1) * sigma # variance is inverse of observed information    
+    
+    matidx <- (lenbeta+lenomega+leneta+1):npars
+    matidx <- matrix(matidx,nrow=length(matidx),ncol=2) 
+
+    sigmaret <- Matrix(0,npars,npars)
+    sigmaret[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)] <- solve(sigma)
+    sigmaret[matidx] <- -1/hess_gam   
+    
+    return(list(etahat=etahat,sigma=sigmaret)) 
+}
+
+
+
+##' estimateY function
+##'
+##' A function to 
+##'
+##' @param X X 
+##' @param betahat X 
+##' @param omegahat X 
+##' @param surv X
+##' @param control X 
+##' @return ...
+##' @export
+
+estimateY <- function(X,betahat,omegahat,surv,control){
+
+    censoringtype <- attr(surv,"type")
+   
+    omega <- control$omegaitrans(omegahat) # this is omega on the correct scale
+    
+    haz <- setupHazard(dist=control$dist,pars=omega,grad=FALSE,hess=FALSE)
+
+    n <- nrow(X)
+    
+    if(censoringtype=="left" | censoringtype=="right"){
+        notcensored <- surv[,"status"]==1
+    }
+    else{
+        rightcensored <- surv[,"status"] == 0
+        notcensored <- surv[,"status"] == 1
+        lefttruncated <- surv[,"status"] == 2
+        intervalcensored <- surv[,"status"] == 3
+    }   
+
+    # setup function J=exp(X%*%beta + Y)*H_0(t)
+    if(censoringtype=="left" | censoringtype=="right"){
+        tsubs <- surv[,"time"]
+    }
+    else{ # else interval censored
+        tsubs <- surv[,"time1"]        
+    } 
+    
+    for(i in 1:n){
+    
+        if(notcensored[i]){
+            next
+        }
+
+        if(censoringtype=="left" | censoringtype=="right"){            
+            if(censoringtype=="right"){
+                tpot <- tsubs[notcensored][tsubs[notcensored]>tsubs[i]] # potential t                    
+            }
+            else{ # censoringtype=="left"
+                tpot <- tsubs[notcensored][tsubs[notcensored]<tsubs[i]] # potential t
+            }
+        }
+        else{
+            if(rightcensored[i]){
+                tpot <- tsubs[notcensored][tsubs[notcensored]>tsubs[i]] # potential t
+            }
+            if(lefttruncated[i]){
+                tpot <- tsubs[notcensored][tsubs[notcensored]<tsubs[i]] # potential t
+            }
+            if(intervalcensored[i]){
+                tpot <- surv[,"time1"][i] + 0.5*(surv[,"time2"][i]-surv[,"time1"][i]) # mid point of interval
+            }
+        }
+            
+        if(length(tpot)==0){
+            next # leave tsubs[i] alone 
+        }
+        else{
+            tsubs[i] <- sample(tpot,1) # ignoring covariates, sample from empirical distribution of times exceeding (right censored), or less than (left censored) the observed time 
+        }
+
+    }
+    
+    
+    
+    Y <- -X%*%betahat - log(haz$H(tsubs)) # greedy estimate of Y (maximise individual contributions to log-likelihood) ... note log(delta) is now omitted  
+
+    return(Y)    
 }
