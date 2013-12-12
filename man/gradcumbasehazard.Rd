@@ -1,0 +1,25 @@
+\name{gradcumbasehazard}
+\alias{gradcumbasehazard}
+\title{gradcumbasehazard function}
+\usage{
+gradcumbasehazard(obj, ...)
+}
+\arguments{
+  \item{obj}{an object}
+
+  \item{...}{additional arguments -- currently there are
+  none, but this is for extensibility}
+}
+\value{
+method gradcumbasehazard
+}
+\description{
+Generic function for computing the gradient of the
+cumulative baseline hazard
+}
+\seealso{
+\link{gradcumbasehazard.basehazardspec},
+\link{exponentialHaz}, \link{weibullHaz},
+\link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
+}
+

@@ -1,0 +1,24 @@
+\name{gradbasehazard.basehazardspec}
+\alias{gradbasehazard.basehazardspec}
+\title{gradbasehazard.basehazardspec function}
+\usage{
+\method{gradbasehazard}{basehazardspec}(obj, ...)
+}
+\arguments{
+  \item{obj}{an object of class basehazardspec}
+
+  \item{...}{additional arguments -- currently there are
+  none, but this is for extensibility}
+}
+\value{
+a function returning the gradient of the baseline hazard
+}
+\description{
+A function to retrieve the gradient of the baseline hazard
+function
+}
+\seealso{
+\link{exponentialHaz}, \link{weibullHaz},
+\link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
+}
+

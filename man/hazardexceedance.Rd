@@ -1,0 +1,30 @@
+\name{hazardexceedance}
+\alias{hazardexceedance}
+\title{hazardexceedance function}
+\usage{
+hazardexceedance(threshold, direction = "upper")
+}
+\arguments{
+  \item{threshold}{vector of thresholds}
+
+  \item{direction}{default is "upper" which will calculate
+  P(Y>threshold), alternative is "lower", which will
+  calculate P(Y<threshold)}
+}
+\value{
+a function that can be passed to the function MCE in order
+to compute the exceedance probabilities
+}
+\description{
+A function to compute exceedance probabilities for the
+spatially correlated frailties.
+}
+\seealso{
+\link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv},
+\link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
+\link{frailtylag1}, \link{spatialpars}, \link{hazardpars},
+\link{fixedpars}, \link{randompars}, \link{baselinehazard},
+\link{predict.mcmcspatsurv}, \link{priorposterior},
+\link{posteriorcov}, \link{MCE},
+}
+

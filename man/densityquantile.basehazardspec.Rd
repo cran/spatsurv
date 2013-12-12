@@ -1,0 +1,24 @@
+\name{densityquantile.basehazardspec}
+\alias{densityquantile.basehazardspec}
+\title{densityquantile.basehazardspec function}
+\usage{
+\method{densityquantile}{basehazardspec}(obj, ...)
+}
+\arguments{
+  \item{obj}{an object of class basehazardspec}
+
+  \item{...}{additional arguments -- currently there are
+  none, but this is for extensibility}
+}
+\value{
+a function returning the density quantiles
+}
+\description{
+A function to retrieve the quantiles of the density
+function
+}
+\seealso{
+\link{exponentialHaz}, \link{weibullHaz},
+\link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
+}
+

@@ -1,0 +1,20 @@
+citHeader("To cite lgcp in publications use:")
+
+
+citEntry(entry = "Article",
+  title        = "spatsurv: an {R} Package for {B}ayesian Inference with Spatial Survival Models",
+  author       = personList(as.person("Benjamin M. Taylor"),
+                   as.person("Barry S. Rowlingson")),
+  journal      = "Submitted",
+  year         = "X",
+  volume       = "X",
+  number       = "X",
+  pages        = "X",
+  url          = "X",
+
+  textVersion  =
+  paste("Benjamin M. Taylor and Barry S. Rowlingson (2014).",
+        "spatsurv: an R Package for Bayesian Inference with Spatial Survival Models",
+        "Submitted")
+)
+

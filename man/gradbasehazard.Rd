@@ -1,0 +1,25 @@
+\name{gradbasehazard}
+\alias{gradbasehazard}
+\title{gradbasehazard function}
+\usage{
+gradbasehazard(obj, ...)
+}
+\arguments{
+  \item{obj}{an object}
+
+  \item{...}{additional arguments -- currently there are
+  none, but this is for extensibility}
+}
+\value{
+method gradbasehazard
+}
+\description{
+Generic function for computing the gradient of the baseline
+hazard
+}
+\seealso{
+\link{gradbasehazard.basehazardspec},
+\link{exponentialHaz}, \link{weibullHaz},
+\link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
+}
+

@@ -1,0 +1,25 @@
+\name{distinfo.basehazardspec}
+\alias{distinfo.basehazardspec}
+\title{distinfo.basehazardspec function}
+\usage{
+\method{distinfo}{basehazardspec}(obj, ...)
+}
+\arguments{
+  \item{obj}{an object of class basehazardspec}
+
+  \item{...}{additional arguments -- currently there are
+  none, but this is for extensibility}
+}
+\value{
+a function returning information on the baseline hazard
+distribution of choice
+}
+\description{
+A function to retrive information on the baseline hazard
+distribution of choice
+}
+\seealso{
+\link{exponentialHaz}, \link{weibullHaz},
+\link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
+}
+

@@ -1,0 +1,17 @@
+\name{guess_t}
+\alias{guess_t}
+\title{guess_t function}
+\usage{
+guess_t(surv)
+}
+\arguments{
+  \item{surv}{an object of class Surv}
+}
+\value{
+a guess at the failure times
+}
+\description{
+A function to get an initial guess of the failure time t,
+to be used in calibrating the MCMC. Not for general use
+}
+

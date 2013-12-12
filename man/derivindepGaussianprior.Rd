@@ -1,0 +1,29 @@
+\name{derivindepGaussianprior}
+\alias{derivindepGaussianprior}
+\title{derivindepGaussianprior function}
+\usage{
+derivindepGaussianprior(beta = NULL, omega = NULL, eta = NULL, priors)
+}
+\arguments{
+  \item{beta}{a vector, the parameter beta}
+
+  \item{omega}{a vector, the parameter omega}
+
+  \item{eta}{a vector, the parameter eta}
+
+  \item{priors}{an object of class 'mcmcPrior', see
+  ?mcmcPrior}
+}
+\value{
+returns the first and second derivatives of the prior
+}
+\description{
+A function for evaluating the first and second derivatives
+of the log of an independent Gaussian prior
+}
+\seealso{
+\link{survspat}, \link{betapriorGauss},
+\link{omegapriorGauss}, \link{etapriorGauss},
+\link{indepGaussianprior}, \link{derivindepGaussianprior}
+}
+

@@ -1,17 +1,19 @@
 ##' survspat function
 ##'
-##' A function to run a Bayesian analysis on right censored survial data assuming a proportional hazards model with
-##' baseline hazard derived from the exponential model.
+##' A function to run a Bayesian analysis on censored spatial survial data assuming a proportional hazards model using an adaptive Metropolis-adjusted
+##' Langevin algorithm.
 ##'
-##' @param formula see ?flexsurvreg 
-##' @param data a SpatialPointsDataFrame object
-##' @param dist choice of distribution function for baseline hazard options are: "exp"
-##' @param cov.model an object of class covmodel, see ?covmodel
+##' @param formula the model formula in a format compatible with the function flexsurvreg from the flexsurv package 
+##' @param data a SpatialPointsDataFrame object containing the survival data as one of the columns
+##' @param dist choice of distribution function for baseline hazard. Current options are: exponentialHaz, weibullHaz, gompertzHaz, makehamHaz, tpowHaz
+##' @param cov.model an object of class covmodel, see ?covmodel ?ExponentialCovFct or ?SpikedExponentialCovFct
 ##' @param mcmc.control mcmc control parameters, see ?mcmcpars
 ##' @param priors an object of class Priors, see ?mcmcPriors
 ##' @param control additional control parameters, see ?inference.control
-##' @return the mcmc output
-##' @seealso \link{inference.control}
+##' @return an object inheriting class 'mcmcspatsurv' for which there exist methods for printing, summarising and making inference from.
+##' @seealso \link{tpowHaz}, \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{weibullHaz}, 
+##' \link{covmodel}, link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
+##' \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control} 
 ##' @export
 
 
@@ -22,6 +24,8 @@ survspat <- function(   formula,
                         mcmc.control,
                         priors,
                         control=inference.control(gridded=FALSE)){
+                        
+                            
     
     # initial checks
     if(!inherits(data,"SpatialPointsDataFrame")){
@@ -29,18 +33,19 @@ survspat <- function(   formula,
     }                    
     responsename <- as.character(formula[[2]])
     survivaldata <- data@data[[responsename]]
-    checkSurvivalData(survivaldata)                        
+    checkSurvivalData(survivaldata) 
+    
+    if(!inherits(data,"SpatialPointsDataFrame")){
+        stop("data must be an object of class SpatialPointsDataFrame")
+    }                     
 
     # okay, start the MCMC!
     start <- Sys.time()
 
-    if(!inherits(data,"SpatialPointsDataFrame")){
-        stop("data must be an object of class SpatialPointsDataFrame")
-    }
-    
     coords <- coordinates(data)
 
     control$dist <- dist
+    
     funtxt <- ""    
     if(control$gridded){
         funtxt <- "_gridded"
@@ -95,73 +100,37 @@ survspat <- function(   formula,
     temp <- call[c(1, indx)]
     temp[[1]] <- as.name("model.frame")
     m <- eval(temp, parent.frame())
-    Y <- model.extract(m, "response")
-    if (!inherits(Y, "Surv")){ 
-        stop("Response must be a survival object")
-    }
-    if (!(attr(Y, "type") %in% c("right", "counting"))){ 
-        stop("Survival object type \"", attr(Y, "type"), "\"", 
-            " not supported")
-    }
-    if (attr(Y, "type") == "counting"){ 
-        Y <- cbind(Y, time = Y[, "stop"] - Y[, "start"])
-    }
-    else{ 
-        Y <- cbind(Y, start = 0, stop = Y[, "time"])
-    }
+
     Terms <- attr(m, "terms")
     X <- model.matrix(Terms, m)
-    dat <- list(Y = Y, X = X[, -1, drop = FALSE], Xraw = m[, 
-        -1, drop = FALSE])
-    X <- dat$X
     
     ##########
     # End of borrowed code    
-    ##########                                       
+    ##########
+ 
+    X <- X[, -1, drop = FALSE]                                   
                         
     mcmcloop <- mcmcLoop(N=mcmc.control$nits,burnin=mcmc.control$burn,thin=mcmc.control$thin,progressor=mcmcProgressTextBar)                            
               
-                  
-                        
-    tm <- Y[,1]
-    delta <- Y[,2]
+    info <- distinfo(dist)()
     
-    cat("\n","Getting initial estimates of model parameters using flexsurvreg","\n")
-    mlmod <- suppressWarnings(flexsurvreg(formula,data=data,dist=dist))
-    cat("Done.\n")
-    estim <- mlmod$opt$par
+    control$omegatrans <- info$trans
+    control$omegaitrans <- info$itrans
+    control$omegajacobian <- info$jacobian # used in computing the derivative of the log posterior with respect to the transformed omega (since it is easier to compute with respect to omega) 
+    control$omegahessian <- info$hessian
+    
+    cat("\n","Getting initial estimates of model parameters using maximum likelihood on non-spatial version of the model","\n")
+    mlmod <- maxlikparamPHsurv(surv=survivaldata,X=X,control=control)
+    estim <- mlmod$par
     print(mlmod)
+    cat("Done.\n")
     #browser() 
     
     cat("Calibrating MCMC algorithm and finding initial values ...\n")
     
-    
-    
-    trns <- getomegatrans(dist)  
-    
-    if(dist=="exp"){    
-        betahat <- estim[2:length(estim)]
-        omegahat <- do.call(paste("transformestimates.",dist,sep=""),args=list(x=exp(estim[1]))) 
-        omegahat <- log(omegahat)
-        omegatrans <- trns$trans
-        omegaitrans <- trns$itrans
-    }
-    else if(dist=="weibull"){    
-        betahat <- estim[3:length(estim)]
-        omegahat <- do.call(paste("transformestimates.",dist,sep=""),args=list(x=exp(estim[1:2])))
-        omegahat <- log(omegahat)
-        omegatrans <- trns$trans
-        omegaitrans <- trns$itrans
-    }
-    else{
-        stop("Unknown dist, must be one of 'exp' or 'weibull'")    
-    }
-    
-    control$omegatrans <- omegatrans
-    control$omegaitrans <- omegaitrans
-    control$omegajacobian <- trns$jacobian # used in computing the derivative of the log posterior with respect to the transformed omega (since it is easier to compute with respect to omega) 
-    control$omegahessian <- trns$hessian    
-    
+    betahat <- estim[1:ncol(X)]
+    omegahat <- estim[(ncol(X)+1):length(estim)]
+      
     control$sigmaidx <- match("sigma",cov.model$parnames)
     if(is.na(control$sigmaidx)){
         stop("At least one of the parameters must be the variance of Y, it should be named sigma")
@@ -223,7 +192,7 @@ survspat <- function(   formula,
     SIGMApars <- as.matrix(SIGMA[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)])
     SIGMAparsINV <- solve(SIGMApars)
     cholSIGMApars <- t(chol(SIGMApars))  
-    #browser()  
+  
     SIGMAgamma <- SIGMA[diagidx][(lenbeta+lenomega+leneta+1):npars]
     SIGMAgammaINV <- 1/SIGMAgamma
     cholSIGMAgamma <- sqrt(SIGMAgamma)
@@ -263,6 +232,11 @@ survspat <- function(   formula,
     tarrec <- oldlogpost$logpost
     
     print(SIGMA[1:8,1:8])
+    
+    loglik <- c()
+    
+    gammamean <- 0
+    count <- 1
     
     
     while(nextStep(mcmcloop)){
@@ -334,12 +308,28 @@ survspat <- function(   formula,
                 Ysamp <- rbind(Ysamp,as.vector(oldlogpost$Y))
             }
             tarrec <- c(tarrec,oldlogpost$logpost)
+            loglik <- c(loglik,oldlogpost$loglik)
+            gammamean <- ((count-1)/count)*gammamean + (1/count)*gamma
+            count <- count + 1
         }
     }
     
-    #par(mfrow=c(2,1))
-    #matplot(betasamp,type="s")
-    #matplot(exp(omegasamp),type="s")
+    colnames(Ysamp) <- paste("Y",1:ncol(Ysamp),sep="")
+    
+    # Compute DIC
+    Dhat <- -2*LOGPOST(  surv=survivaldata,
+                                X=X,
+                                beta=colMeans(betasamp),
+                                omega=colMeans(omegasamp),
+                                eta=colMeans(etasamp),
+                                gamma=gammamean,
+                                priors=priors,
+                                cov.model=cov.model,
+                                u=u,
+                                control=control,
+                                gradient=TRUE)$loglik
+    pD <- -2*mean(loglik) - Dhat
+    DIC <- Dhat + 2*pD
 
     retlist <- list()
     retlist$formula <- formula
@@ -357,17 +347,20 @@ survspat <- function(   formula,
     #   Back transform for output
     ####
     
-    omegasamp <- omegaitrans(omegasamp)
-    itrans <- get(paste("invtransformestimates.",dist,sep=""))
-    if(ncol(omegasamp)==1){    
-        omegasamp <- matrix(apply(omegasamp,1,itrans))
+    if(length(omega)>1){
+        omegasamp <- t(apply(omegasamp,1,control$omegaitrans))
     }
     else{
-        omegasamp <- t(apply(omegasamp,1,itrans))
-    }    
-    omegasamp <- labelomegamatrix(m=omegasamp,dist=dist)
+        omegasamp <- t(t(apply(omegasamp,1,control$omegaitrans)))
+    }
+    colnames(omegasamp) <- info$parnames
     
-    etasamp <- sapply(1:length(cov.model$itrans),function(i){cov.model$itrans[[i]](etasamp[,i])})
+    if(length(eta)>1){
+        etasamp <- t(apply(etasamp,1,cov.model$itrans))
+    }
+    else{
+        etasamp <- t(t(apply(etasamp,1,cov.model$itrans)))
+    }
     colnames(etasamp) <- cov.model$parnames     
     
     ####    
@@ -378,6 +371,12 @@ survspat <- function(   formula,
     retlist$etasamp <- etasamp
     retlist$Ysamp <- Ysamp
     
+    retlist$loglik <- loglik
+    retlist$Dhat <- Dhat
+    retlist$pD <- pD
+    retlist$DIC <- DIC
+    
+    retlist$X <- X
     retlist$survivaldata <- survivaldata
     
     retlist$gridded <- control$gridded
@@ -391,8 +390,11 @@ survspat <- function(   formula,
     retlist$tarrec <- tarrec
     retlist$lasth <- h
     
-    retlist$omegatrans <- omegatrans
-    retlist$omegaitrans <- omegaitrans
+    retlist$omegatrans <- control$omegatrans
+    retlist$omegaitrans <- control$omegaitrans
+    
+    retlist$control <- control
+    retlist$censoringtype <- attr(survivaldata,"type")
     
     retlist$time.taken <- Sys.time() - start
     

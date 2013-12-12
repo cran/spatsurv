@@ -1,0 +1,25 @@
+\name{hesscumbasehazard}
+\alias{hesscumbasehazard}
+\title{hesscumbasehazard function}
+\usage{
+hesscumbasehazard(obj, ...)
+}
+\arguments{
+  \item{obj}{an object}
+
+  \item{...}{additional arguments -- currently there are
+  none, but this is for extensibility}
+}
+\value{
+method hesscumbasehazard
+}
+\description{
+Generic function for computing the Hessian of the
+cumulative baseline hazard
+}
+\seealso{
+\link{hesscumbasehazard.basehazardspec},
+\link{exponentialHaz}, \link{weibullHaz},
+\link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
+}
+

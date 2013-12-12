@@ -1,0 +1,21 @@
+\name{invtransformweibull}
+\alias{invtransformweibull}
+\title{invtransformweibull function}
+\usage{
+invtransformweibull(x)
+}
+\arguments{
+  \item{x}{a vector of paramters}
+}
+\value{
+the transformed parameters. For the weibull model, this
+transforms 'shape' 'scale' (see ?dweibull) to 'alpha' and
+'lambda' for the MCMC
+}
+\description{
+A function to transform estimates of the (alpha, lambda)
+parameters of the weibull baseline hazard function, so they
+are commensurate with R's inbuilt density functions,
+(shape, scale).
+}
+

@@ -1,0 +1,25 @@
+\name{cumbasehazard}
+\alias{cumbasehazard}
+\title{cumbasehazard function}
+\usage{
+cumbasehazard(obj, ...)
+}
+\arguments{
+  \item{obj}{an object}
+
+  \item{...}{additional arguments -- currently there are
+  none, but this is for extensibility}
+}
+\value{
+method cumbasehazard
+}
+\description{
+Generic function for computing the cumulative baseline
+hazard
+}
+\seealso{
+\link{cumbasehazard.basehazardspec}, \link{exponentialHaz},
+\link{weibullHaz}, \link{gompertzHaz}, \link{makehamHaz},
+\link{tpowHaz}
+}
+

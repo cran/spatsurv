@@ -5,8 +5,8 @@
 ##' @param nits numer of iterations,
 ##' @param burn length of burnin
 ##' @param thin thinning parameter eg operated on chain every 'thin' iteration (eg store output or compute some posterior functional)
-##' @param inits optional initial values for MCMC
-##' @param adaptivescheme optional type of adaptive mcmc to use, see ?constanth (constant h) or ?andrieuthomsh (adaptive MCMC of Andrieu and Thoms (2008))
+##' @param inits NOT CURRENTLY IN USE
+##' @param adaptivescheme NOT CURRENTLY IN USE
 ##' @return mcmc parameters
 ##' @export
 

@@ -1,34 +1,140 @@
-##' gensens function
+##' getleneta function
+##'
+##' A function to compute the length of eta
+##'
+##' @param cov.model a covariance model 
+##' @return the length of eta
+
+getleneta <- function(cov.model){
+    if(inherits(cov.model,"fromRandomFieldsCovarianceFct")){
+        leneta <- 2
+    }
+    else if(inherits(cov.model,"fromUserFunction")){
+        leneta <- cov.model$npar
+    }
+    else{
+        stop("Unknkown covariance type")
+    }
+    return(leneta)
+} 
+
+
+##' getparranges function
+##'
+##' A function to extract parameter ranges for creating a grid on which to evaluate the log-posterior, used in calibrating the MCMC. This function
+##' is not intended for general use.
+##'
+##' @param priors an object of class mcmcPriors
+##' @param leneta the length of eta passed to the function 
+##' @param mult defaults to 1.96 so the grid formed will be mean plus/minus 1.96 times the standard deviation
+##' @return an appropriate range used to calibrate the MCMC: the mean of the prior for eta plus/minus 1.96 times the standard deviation
+##' @export
+
+getparranges <- function(priors,leneta,mult=1.96){
+    rgs <- list()
+    if(length(priors$etaprior$mean)==1 & length(priors$etaprior$sd)==1){
+        for(i in 1:leneta){
+            rgs[[i]] <- c(priors$etaprior$mean-mult*priors$etaprior$sd,priors$etaprior$mean+mult*priors$etaprior$sd)
+        }
+    }
+    else if(length(priors$etaprior$mean)==1 & length(priors$etaprior$sd)>1){
+        for(i in 1:leneta){
+            rgs[[i]] <- c(priors$etaprior$mean-mult*priors$etaprior$sd[i],priors$etaprior$mean+mult*priors$etaprior$sd[i])
+        }
+    }
+    else if(length(priors$etaprior$mean)>1 & length(priors$etaprior$sd)==1){
+        for(i in 1:leneta){
+            rgs[[i]] <- c(priors$etaprior$mean[i]-mult*priors$etaprior$sd,priors$etaprior$mean[i]+mult*priors$etaprior$sd)
+        }
+    }
+    else{
+        for(i in 1:leneta){
+            rgs[[i]] <- c(priors$etaprior$mean[i]-mult*priors$etaprior$sd[i],priors$etaprior$mean[i]+mult*priors$etaprior$sd[i])
+        }
+    } 
+    return(rgs)
+}    
+
+##' gencens function
 ##'
 ##' A function to generate observed times given a vector of true survival times and a vector of censoring times. Used in the simulation of
-##' survival data
+##' survival data. 
 ##'
 ##' @param survtimes a vector of survival times 
-##' @param censtimes a vector of censoring times 
-##' @return a named list containing 'obstimes', the observed time of the event; and 'censored', the censoring indicator which is equal to 1 if the
-##' event is observed and 0 otherwise.
+##' @param censtimes a vector of censoring times for left or right censored data, 2-column matrix of censoring times for interval censoring (number of rows equal to the number of observations). 
+##' @param type the type of censoring to generate can be 'right' (default), 'left' or 'interval' 
+##' @return an object of class 'Surv', the censoring indicator is equal to 1 if the
+##' event is uncensored and 0 otherwise for right/left censored data, or for interval censored data, the indicator is 0 uncensored, 1 right censored, 
+##' 2 left censored, or 3 interval censored.
 ##' @export
 
 
-gensens <- function(survtimes,censtimes){
-    
-    n <- length(survtimes)
-    
-    if(length(survtimes)!=length(censtimes)){
-        stop("survtimes and censtimes should have the same length")
-    } 
+gencens <- function(survtimes,censtimes,type="right"){
 
-    obstimes <- survtimes
-    cens <- rep(1,n)
-   
-    for(i in 1:n){
-        if(censtimes[i]<survtimes[i]){
-            obstimes[i] <- censtimes[i]
-            cens[i] <- 0
-        }
+    if(!(type=="right" | type=="left" | type=="interval")){
+        stop("type must be one of 'right', 'left' or 'interval'")    
     }
     
-    return(Surv(time=obstimes,event=cens))
+    n <- length(survtimes)
+    if(type=="right" | type=="left"){
+        if(length(survtimes)!=length(censtimes)){
+            stop("survtimes and censtimes should have the same length")
+        }
+    }
+    else{        
+        if(ncol(censtimes)!=2 | nrow(censtimes)!=n){
+            stop("censtimes should be a 2-column matrix with number of rows equal to length(survtimes)")
+        }
+    } 
+    
+    if(type=="right"){
+        obstimes <- survtimes
+        cens <- rep(1,n)   
+        for(i in 1:n){
+            if(censtimes[i]<survtimes[i]){
+                obstimes[i] <- censtimes[i]
+                cens[i] <- 0
+            }
+        }
+        return(Surv(time=obstimes,event=cens,type="right"))
+    }
+    if(type=="left"){
+        obstimes <- survtimes
+        cens <- rep(1,n)   
+        for(i in 1:n){
+            if(censtimes[i]>survtimes[i]){
+                obstimes[i] <- censtimes[i]
+                cens[i] <- 0
+            }
+        }
+        return(Surv(time=obstimes,event=cens,type="left"))
+    }
+    if(type=="interval"){
+        obstimes <- cbind(survtimes,NA)
+        cens <- rep(1,n)
+        uncensidx <- sample(1:n,floor(n/2))
+        alter <- rep(TRUE,n)
+        alter[uncensidx] <- FALSE #
+        censtimes <- t(apply(censtimes,1,sort))   
+        for(i in 1:n){
+            if(censtimes[i,1]<survtimes[i] & censtimes[i,2]>survtimes[i] & alter[i]){
+                obstimes[i,1] <- censtimes[i,1]
+                obstimes[i,2] <- censtimes[i,2]
+                cens[i] <- 3 # interval censored
+            }
+            else if(censtimes[i,2]<survtimes[i] & alter[i]){
+                obstimes[i,1] <- censtimes[i,2]
+                cens[i] <- 0 # right censored
+            }
+            else if(censtimes[i,1]>survtimes[i] & alter[i]){
+                obstimes[i,1] <- censtimes[i,1]
+                cens[i] <- 2 # left censored
+            }
+        }
+        return(Surv(time=obstimes[,1],time2=obstimes[,2],event=cens,type="interval"))
+    }
+    
+  
 }
 
 
@@ -43,6 +149,7 @@ gensens <- function(survtimes,censtimes){
 ##' @param spp A spatial points data frame
 ##' @param ss A Surv object (with right-censoring) 
 ##' @param maxcex maximum size of dots default is equavalent to setting cex equal to 1
+##' @param transform optional transformation to apply to the data, a function, for example 'sqrt'
 ##' @param background a background object to plot default is null, which gives a blamk background note that if non-null, the parameters xlim and ylim will be derived from this object.
 ##' @param eventpt The type of point to illustrate events, default is 19 (see ?pch) 
 ##' @param eventcol the colour of events, default is black
@@ -50,12 +157,13 @@ gensens <- function(survtimes,censtimes){
 ##' @param censcol the colour of censored observations, default is red
 ##' @param xlim optional x-limits of plot, default is to choose this automatically 
 ##' @param ylim optional y-limits of plot, default is to choose this automatically
-
+##' @param xlab label for x-axis
+##' @param ylab label for y-axis
 ##' @param ... other arguments to pass to plot
 ##' @return Plots the survival data non-censored observations appear as dots and censored observations as crosses. The size of the dot is proportional to the observed time.
 ##' @export
 
-plotsurv <- function(spp,ss,maxcex=1,background=NULL,eventpt=19,eventcol="red",censpt="+",censcol="black",xlim=NULL,ylim=NULL,...){
+plotsurv <- function(spp,ss,maxcex=1,transform=identity,background=NULL,eventpt=19,eventcol="red",censpt="+",censcol="black",xlim=NULL,ylim=NULL,xlab=NULL,ylab=NULL,...){
     crds <- coordinates(spp)
     if(is.null(xlim)){
         if(is.null(background)){
@@ -67,11 +175,21 @@ plotsurv <- function(spp,ss,maxcex=1,background=NULL,eventpt=19,eventcol="red",c
             ylim <- range(crds[,2])
         }
     }
+    
+    if(is.null(xlab)){
+        xlab <- "x-coordinates"
+    }
+    if(is.null(ylab)){
+        ylab <- "y-coordinates"
+    }
+    
+    stimes <- ss[,"time"]
+    stimes <- transform(stimes)
 
     event <- ss[,"status"] == 1 # event indicator
-    cexx <- maxcex* ss[,"time"] / max(ss[,"time"])    
+    cexx <- maxcex* stimes / max(stimes)    
     
-    plot(background,xlim=xlim,ylim=ylim,...)
+    plot(background,xlim=xlim,ylim=ylim,xlab=xlab,ylab=ylab,...)
     points(crds[event,],pch=eventpt,col=eventcol,cex=cexx[event])
     points(crds[!event,],pch=censpt,col=censcol,cex=cexx[!event])
     
@@ -81,54 +199,37 @@ plotsurv <- function(spp,ss,maxcex=1,background=NULL,eventpt=19,eventcol="red",c
 
 ##' inference.control function
 ##'
-##' A function to control inferential settings. 
+##' A function to control inferential settings. This function is used to set parameters for more advanced use of spatsurv. 
 ##'
-##' @param gridded logical. Whether to perform compuation on a grid. Default is FALSE. Note in version 0.9-1, this is still in the testing phase.
+##' @param gridded logical. Whether to perform compuation on a grid. Default is FALSE.
 ##' @param cellwidth the width of computational cells to use 
-##' @param ext integer the number of times to extend the computational grid by in order to perform compuitation. The default is 2. 
+##' @param ext integer the number of times to extend the computational grid by in order to perform compuitation. The default is 2.
+##' @param MLinits optional initial values for the non-spatial maximum likelihood routine used to initialise the MCMC, a vector of length 
+##' equal to the number of parameters of the baseline hazard
+##' @param plotcal logical, whether to produce plots of the MCMC calibration process, this is a technical option and should onyl be set 
+##' to TRUE if poor mixing is evident (the printed h is low), then it is also useful to use a graphics device with multiple plotting windows. 
 ##' @return returns parameters to be used in the function survspat
 ##' @seealso \link{survspat}
 ##' @export
 
-inference.control <- function(gridded=FALSE,cellwidth=NULL,ext=2){
+inference.control <- function(gridded=FALSE,cellwidth=NULL,ext=2,MLinits=NULL,plotcal=FALSE){
     ans <- list()
     ans$gridded <- gridded
     ans$cellwidth <- cellwidth 
     ans$ext <- ext 
+    ans$MLinits <- MLinits
+    ans$plotcal <- plotcal
     class(ans) <- c("inference.control","list")
     return(ans)
 }
 
 
 
-##' labelomegamatrix function
-##'
-##' A function to label output matrices for the omegavariable
-##'
-##' @param m a matrix 
-##' @param dist distribution function of the baseline hazard
-##' @return a lebelled matrix
-##' @export
-
-labelomegamatrix <- function(m,dist){
-    if(dist=="exp"){
-        pn <- "rate"
-    }
-    else if(dist=="weibull"){
-        pn <- c("shape","scale")
-    }
-    else{
-        stop("Unknown baseline hazard in function labelomegamatrix")    
-    }
-    colnames(m) <- pn
-    return(m)
-}
-
 
 
 ##' getsurvdata function
 ##'
-##' A function to return the survival data from an object of class mcmcspatsurv
+##' A function to return the survival data from an object of class mcmcspatsurv. This function is not intended for general use.
 ##'
 ##' @param x an object of class mcmcspatsurv 
 ##' @return the survival data from an object of class mcmcspatsurv
@@ -140,32 +241,7 @@ getsurvdata <- function(x){
 }
 
 
-##' getomegatrans function
-##'
-##' A function to return the internal transformation function (and its inverse) for each baseline hazard type. E.g. for an Exponential baseline hazard, we work with the log rate, so log is the transformation function. 
-##'
-##' @param dist the distribution from which the baseline hazard is derived  
-##' @return the transformation and inverse transformation
-##' @export
 
-getomegatrans <- function(dist){
-    retlist <- list()
-    if(dist=="exp" | dist=="weibull"){
-        retlist$trans <- log
-        retlist$itrans <- exp
-        retlist$jacobian <- exp
-        if(dist=="exp"){
-            retlist$hessian <- list(exp)
-        }
-        if(dist=="weibull"){
-            retlist$hessian <- list(exp,exp)  
-        }
-    }
-    else{
-        stop("Unknown baseline hazard distribution.")    
-    }
-    return(retlist)
-}
 
 
 
@@ -189,7 +265,7 @@ checkSurvivalData <- function(s){
         } 
         
         if(attr(s,"type")=="left" | attr(s,"type")=="interval"){
-            cat("\n ####################################################\n # WARNING LEFT AND INTERVAL CENSORED DATA IS UNDER #\n # DEVELOPMENT AND HAS NOT UNDERGONE TESTING AS YET #\n ####################################################\n\n")
+            cat("\n #####################################################\n # WARNING: CODE FOR LEFT AND INTERVAL CENSORED DATA #\n #          IS UNDER DEVELOPMENT                     #\n #####################################################\n\n")
             warning("*** CODE UNDER DEVELOPMENT ***",immediate.=TRUE)
         }
            
@@ -204,33 +280,92 @@ checkSurvivalData <- function(s){
 
 ##' setupHazard function
 ##'
-##' A function to 
+##' A function to set up the baseline hazard, cumulative hazard and derivative functions for use in evaluating the log posterior. 
+##' This fucntion is not intended for general use.
 ##'
-##' @param dist X
-##' @param pars X
-##' @param grad X
-##' @param hess X 
-##' @return ...
+##' @param dist an object of class 'basehazardspec'
+##' @param pars parameters with which to create the functions necessary to evaluate the log posterior
+##' @param grad logical, whetether to create gradient functions for the baseline hazard and cumulative hazard
+##' @param hess logical, whetether to create hessian functions for the baseline hazard and cumulative hazard
+##' @return a list of functions used in evaluating the log posterior
 ##' @export
 
 setupHazard <- function(dist,pars,grad=FALSE,hess=FALSE){
     funlist <- list()
     
-    funlist$h <- get(paste("basehazard.",dist,sep=""))(pars)
+    funlist$h <- basehazard(dist)(pars)
     if(grad){
-        funlist$gradh <- get(paste("gradbasehazard.",dist,sep=""))(pars)
+        funlist$gradh <- gradbasehazard(dist)(pars)
     }
     if(hess){
-        funlist$hessh <- get(paste("hessbasehazard.",dist,sep=""))(pars)
+        funlist$hessh <- hessbasehazard(dist)(pars)
     }
     
-    funlist$H <- get(paste("cumbasehazard.",dist,sep=""))(pars)
+    funlist$H <- cumbasehazard(dist)(pars)
     if(grad){
-        funlist$gradH <- get(paste("gradcumbasehazard.",dist,sep=""))(pars)
+        funlist$gradH <- gradcumbasehazard(dist)(pars)
     }
     if(hess){
-        funlist$hessH <- get(paste("hesscumbasehazard.",dist,sep=""))(pars)
+        funlist$hessH <- hesscumbasehazard(dist)(pars)
     }
     
     return(funlist) 
+}
+
+
+##' invtransformweibull function
+##'
+##' A function to transform estimates of the (alpha, lambda) parameters of the weibull baseline hazard function, so they are commensurate 
+##' with R's inbuilt density functions, (shape, scale).
+##'
+##' @param x a vector of paramters
+##' @return the transformed parameters. For the weibull model, this transforms 'shape' 'scale' (see ?dweibull) to 'alpha' and 'lambda' for the MCMC
+##' @export
+
+invtransformweibull <- function(x){
+    a <- x[1] # shape
+    b <- x[2] # scale
+    alpha <- a
+    lambda <- (1/b)^a
+
+    ans <- c(alpha=alpha,lambda=lambda) # note this is logged later for use in the MCMC
+    
+    return(ans)
+}
+
+
+
+##' transformweibull function
+##'
+##' A function to back-transform estimates of the parameters of the weibull baseline hazard function, so they are commensurate with R's inbuilt density functions. 
+##' Transforms from (shape, scale) to (alpha, lambda)
+##'
+##' @param x a vector of paramters
+##' @return the transformed parameters. For the weibull model, this is the back-transform from 'alpha' and 'lambda' to 'shape' 'scale' (see ?dweibull).
+##' @export
+
+transformweibull <- function(x){
+
+    alpha <- x[1]
+    lambda <- x[2]
+    
+    shape <- alpha
+    scale <- exp((-1/alpha)*log(lambda))
+
+    ans <- c(shape=shape,scale=scale)    
+    
+    return(ans)
+}
+
+
+
+##' spatsurvVignette function
+##'
+##' Display the introductory vignette for the spatsurv package. 
+##'
+##' @return displays the vignette by calling browseURL
+##' @export
+
+spatsurvVignette <- function(){
+    browseURL("www.lancaster.ac.uk/staff/taylorb1/preprints/spatsurv.pdf") 
 }

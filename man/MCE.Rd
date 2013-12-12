@@ -1,0 +1,28 @@
+\name{MCE}
+\alias{MCE}
+\title{MCE function}
+\usage{
+MCE(object, fun)
+}
+\arguments{
+  \item{object}{an object inheriting class mcmcspatsurv}
+
+  \item{fun}{a function with arguments beta, omega, eta and
+  Y}
+}
+\value{
+the Monte Carlo mean of the function over the posterior.
+}
+\description{
+A function to compute Monte Carlo expectations from an
+object inheriting class mcmcspatsurv
+}
+\seealso{
+\link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv},
+\link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
+\link{frailtylag1}, \link{spatialpars}, \link{hazardpars},
+\link{fixedpars}, \link{randompars}, \link{baselinehazard},
+\link{predict.mcmcspatsurv}, \link{priorposterior},
+\link{posteriorcov}, \link{hazardexceedance}
+}
+

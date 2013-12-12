@@ -1,0 +1,25 @@
+\name{distinfo}
+\alias{distinfo}
+\title{distinfo function}
+\usage{
+distinfo(obj, ...)
+}
+\arguments{
+  \item{obj}{an object}
+
+  \item{...}{additional argument -- currently there are
+  none, but this is for extensibility}
+}
+\value{
+method distinfo
+}
+\description{
+Generic function for returning information about the class
+of baseline hazard functions employed.
+}
+\seealso{
+\link{distinfo.basehazardspec}, \link{exponentialHaz},
+\link{weibullHaz}, \link{gompertzHaz}, \link{makehamHaz},
+\link{tpowHaz}
+}
+

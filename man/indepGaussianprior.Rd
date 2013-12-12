@@ -1,0 +1,33 @@
+\name{indepGaussianprior}
+\alias{indepGaussianprior}
+\title{indepGaussianprior function}
+\usage{
+indepGaussianprior(beta = NULL, omega = NULL, eta = NULL, priors)
+}
+\arguments{
+  \item{beta}{parameter beta at which prior is to be
+  evaluated}
+
+  \item{omega}{parameter omega at which prior is to be
+  evaluated}
+
+  \item{eta}{parameter eta at which prior is to be
+  evaluated}
+
+  \item{priors}{an object of class mcmcPriors, see
+  ?mcmcPriors}
+}
+\value{
+the log of the prior evaluated at the given parameter
+values
+}
+\description{
+A function for evaluating the log of an independent
+Gaussian prior for a given set of parameter values.
+}
+\seealso{
+\link{survspat}, \link{betapriorGauss},
+\link{omegapriorGauss}, \link{etapriorGauss},
+\link{indepGaussianprior}, \link{derivindepGaussianprior}
+}
+
