@@ -208,7 +208,8 @@ plotsurv <- function(spp,ss,maxcex=1,transform=identity,background=NULL,eventpt=
 ##' @param gridded logical. Whether to perform compuation on a grid. Default is FALSE.
 ##' @param cellwidth the width of computational cells to use 
 ##' @param ext integer the number of times to extend the computational grid by in order to perform compuitation. The default is 2.
-##' @param MLinits optional initial values for the non-spatial maximum likelihood routine used to initialise the MCMC, a vector of length 
+##' @param optimcontrol a list of optional arguments to be passed to optim for non-spatial models
+##' @param hessian whether to return a numerical hessian. Set this to TRUE for non-spatial models.
 ##' equal to the number of parameters of the baseline hazard
 ##' @param plotcal logical, whether to produce plots of the MCMC calibration process, this is a technical option and should onyl be set 
 ##' to TRUE if poor mixing is evident (the printed h is low), then it is also useful to use a graphics device with multiple plotting windows. 
@@ -217,12 +218,13 @@ plotsurv <- function(spp,ss,maxcex=1,transform=identity,background=NULL,eventpt=
 ##' @seealso \link{survspat}
 ##' @export
 
-inference.control <- function(gridded=FALSE,cellwidth=NULL,ext=2,MLinits=NULL,plotcal=FALSE,timeonlyMCMC=FALSE){
+inference.control <- function(gridded=FALSE,cellwidth=NULL,ext=2,optimcontrol=NULL,hessian=FALSE,plotcal=FALSE,timeonlyMCMC=FALSE){
     ans <- list()
     ans$gridded <- gridded
     ans$cellwidth <- cellwidth 
     ans$ext <- ext 
-    ans$MLinits <- MLinits
+    ans$optimcontrol <- optimcontrol
+    ans$hessian <- hessian
     ans$plotcal <- plotcal
     ans$timeonlyMCMC <- timeonlyMCMC
     class(ans) <- c("inference.control","list")

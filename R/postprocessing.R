@@ -46,6 +46,46 @@ print.mcmcspatsurv <- function(x,probs=c(0.5,0.025,0.975),digits = 3, scientific
     print(x$time.taken)
 } 
 
+
+##' print.mlspatsurv function
+##'
+##' A function to print summary tables from an MCMC run 
+##'
+##' @method print mlspatsurv
+##' @param x an object inheriting class mcmcspatsurv 
+##' @param probs vector of quantiles to return
+##' @param digits see help file ?format
+##' @param scientific see help file ?format
+##' @param ... additional arguments, not used here 
+##' @return prints summary tables to the console
+##' @seealso \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
+##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
+##' \link{hazardexceedance}
+##' @export
+
+print.mlspatsurv <- function(x,probs=c(0.5,0.025,0.975),digits = 3, scientific = -3,...){
+
+    cat("Summaries produced using Gaussian samples drawn from a quadratic approximation at the MLE\n")
+
+    quant <- quantile(x,probs)
+
+    cat("\n")
+    cat("Fixed Effects:\n")    
+    print(quant$betaquant,digits=digits,scientific=scientific)
+    cat("\n")
+    
+    cat("Baseline Hazard Parameters:\n")
+    print(quant$omegaquant,digits=digits,scientific=scientific)
+    cat("\n")
+
+    cat("Likelihood: ",-x$mlmod$value,"\n")
+    cat("\n")
+    
+    cat("Running Time:\n")
+    print(x$time.taken)
+} 
+
 ##' quantile.mcmcspatsurv function
 ##'
 ##' A function to extract quantiles of the parameters from an mcmc run
@@ -68,6 +108,27 @@ quantile.mcmcspatsurv <- function(x,probs=c(0.025,0.5,0.975),...){
     return(list(betaquant=m1,omegaquant=m2,etaquant=m3))
 }
 
+
+##' quantile.mlspatsurv function
+##'
+##' A function to extract quantiles of the parameters from an mcmc run
+##'
+##' @method quantile mlspatsurv
+##' @param x an object inheriting class mcmcspatsurv 
+##' @param probs vector of probabilities
+##' @param ... other arguments to be passed to the function, not used here
+##' @return quantiles of model parameters
+##' @seealso \link{print.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
+##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
+##' \link{hazardexceedance}
+##' @export
+
+quantile.mlspatsurv <- function(x,probs=c(0.025,0.5,0.975),...){
+    m1 <- t(apply(x$betasamp,2,quantile,probs=probs))
+    m2 <- t(apply(x$omegasamp,2,quantile,probs=probs))
+    return(list(betaquant=m1,omegaquant=m2))
+}
 
 
 ##' summary.mcmcspatsurv function
@@ -108,6 +169,27 @@ summary.mcmcspatsurv <- function(object,probs=c(0.5,0.025,0.975),...){
 
 vcov.mcmcspatsurv <- function(object,...){
     return(cov(cbind(object$betasamp,object$omegasamp,object$etasamp)))
+} 
+
+##' vcov.mlspatsurv function
+##'
+##' A function to return the variance covariance matrix of the parameters beta, omega and eta
+##'
+##' @method vcov mlspatsurv
+##' @param object an object inheriting class mcmcspatsurv 
+##' @param ... other arguments, not used here
+##' @return the variance covariance matrix of the parameters beta, omega and eta
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, 
+##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
+##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
+##' \link{hazardexceedance}
+##' @export
+
+vcov.mlspatsurv <- function(object,...){
+    mat <- solve(object$mlmod$hessian)
+    rownames(mat) <- c(colnames(object$betasamp),colnames(object$omegasamp))
+    colnames(mat) <- c(colnames(object$betasamp),colnames(object$omegasamp))
+    return(mat)
 } 
 
 
@@ -219,6 +301,7 @@ randompars <- function(x){
 ##' @param probs vector of probabilities 
 ##' @param cumulative logical, whether to return the baseline hazard (default i.e. FALSE) or cumulative baseline hazard 
 ##' @param plot whether to plot the result
+##' @param ... additional arguments to be passed to plot
 ##' @return the vector of times and quantiles of the baseline or cumulative baseline hazard at those times
 ##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
@@ -226,7 +309,7 @@ randompars <- function(x){
 ##' \link{hazardexceedance}
 ##' @export
 
-baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FALSE,plot=TRUE){
+baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FALSE,plot=TRUE,...){
 
     omegasamp <- x$omegasamp   
     
@@ -254,13 +337,13 @@ baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FA
     }    
     samp <- t(apply(omegasamp,1,fun))   
 
-    toreturn <- t(apply(samp,2,quantile,probs=probs))
+    toreturn <- t(apply(samp,2,quantile,probs=probs,na.rm=TRUE))
     
     rownames(toreturn) <- t 
     
     if(plot){
         if(length(probs)==3){
-            matplot(t,toreturn,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="time",ylab=YLAB)
+            matplot(t,toreturn,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="time",ylab=YLAB,...)
             legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
         }
         else{

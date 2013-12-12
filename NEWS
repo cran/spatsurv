@@ -65,3 +65,10 @@ BUG FIXES
 BUG FIXES  
 
     o Fixed bug in naming beta paramters caused by factor variables.
+
+        CHANGES IN spatsurv VERSION 0.9-8
+
+SIGNIFICANT USER-VISIBLE CHANGES  
+
+    o Added capability to use basis splines to model the baseline hazard
+    o Non-spatial modelling function, survspatNS, now included too.

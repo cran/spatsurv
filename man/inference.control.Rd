@@ -4,7 +4,8 @@
 \title{inference.control function}
 \usage{
 inference.control(gridded = FALSE, cellwidth = NULL, ext = 2,
-  MLinits = NULL, plotcal = FALSE, timeonlyMCMC = FALSE)
+  optimcontrol = NULL, hessian = FALSE, plotcal = FALSE,
+  timeonlyMCMC = FALSE)
 }
 \arguments{
 \item{gridded}{logical. Whether to perform compuation on a grid. Default is FALSE.}
@@ -13,7 +14,9 @@ inference.control(gridded = FALSE, cellwidth = NULL, ext = 2,
 
 \item{ext}{integer the number of times to extend the computational grid by in order to perform compuitation. The default is 2.}
 
-\item{MLinits}{optional initial values for the non-spatial maximum likelihood routine used to initialise the MCMC, a vector of length
+\item{optimcontrol}{a list of optional arguments to be passed to optim for non-spatial models}
+
+\item{hessian}{whether to return a numerical hessian. Set this to TRUE for non-spatial models.
 equal to the number of parameters of the baseline hazard}
 
 \item{plotcal}{logical, whether to produce plots of the MCMC calibration process, this is a technical option and should onyl be set

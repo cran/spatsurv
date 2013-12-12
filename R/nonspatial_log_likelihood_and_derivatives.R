@@ -25,13 +25,17 @@ maxlikparamPHsurv <- function(surv,X,control){
     
     betainit <- rep(0,ncol(X))
     
-    if(is.null(control$MLinits)){
+    if(is.null(distinfo(control$dist)()$MLinits)){
         omegainit <- rep(1e-10,distinfo(control$dist)()$npars)
     }
+    else{
+        omegainit <- distinfo(control$dist)()$MLinits
+    }
     
-    opt <- try(optim(par=c(betainit,omegainit),fn=likfun,gr=gradfun,method="BFGS"))
+    #browser()
+    opt <- try(optim(par=c(betainit,omegainit),fn=likfun,gr=gradfun,method="BFGS",control=control$optimcontrol,hessian=control$hessian))
     if(inherits(opt,"try-error")){
-        stop("Problem with initial values in obtaining maximum likelihood estimates of parameters, try setting MLinits in function inference.control")
+        stop("Possible problem with initial values in obtaining maximum likelihood estimates of parameters, try setting MLinits in function distinfo for chosen baseline hazard distribution")
     }
     
     return(opt)
