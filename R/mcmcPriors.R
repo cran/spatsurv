@@ -136,19 +136,45 @@ indepGaussianprior <- function(beta=NULL,omega=NULL,eta=NULL,priors){
 ##' @export
 
 derivindepGaussianprior <- function(beta=NULL,omega=NULL,eta=NULL,priors){
-    deriv1 <- c((-1/priors$betaprior$sd^2)*(beta-priors$betaprior$mean),(-1/priors$omegaprior$sd^2)*(omega-priors$omegaprior$mean),(-1/priors$etaprior$sd^2)*(eta-priors$etaprior$mean))
-    sdbeta <- priors$betaprior$sd
-    sdomega <- priors$omegaprior$sd
-    sdeta <- priors$etaprior$sd
-    if (length(priors$betaprior$sd)<length(beta)){
-        sdbeta <- rep(priors$betaprior$sd,length(beta))
+    if(is.null(beta)){
+        deriv1beta <- c()
+        deriv2beta <- c()
     }
-    if (length(priors$omegaprior$sd)<length(omega)){
-        sdomega <- rep(priors$omegaprior$sd,length(omega))
+    else{
+        deriv1beta <- (-1/priors$betaprior$sd^2)*(beta-priors$betaprior$mean)
+        sdbeta <- priors$betaprior$sd
+        if (length(priors$betaprior$sd)<length(beta)){
+            sdbeta <- rep(priors$betaprior$sd,length(beta))
+        }
+        deriv2beta <- -1/sdbeta^2
     }
-    if (length(priors$etaprior$sd)<length(eta)){
-        sdeta <- rep(priors$etaprior$sd,length(eta))
+    if(is.null(omega)){
+        deriv1omega <- c()
+        deriv2omega <- c()
     }
-    deriv2 <- diag(c(-1/sdbeta^2,-1/sdomega^2,-1/sdeta^2)) # in fact, the 2nd derivative with respect to eta is not necessary, as this is dealt with elsewhere.
+    else{
+        deriv1omega <- (-1/priors$omegaprior$sd^2)*(omega-priors$omegaprior$mean)
+        sdomega <- priors$omegaprior$sd 
+        if (length(priors$omegaprior$sd)<length(omega)){
+            sdomega <- rep(priors$omegaprior$sd,length(omega))
+        } 
+        deriv2omega <- -1/sdomega^2 
+    }
+    if(is.null(eta)){
+        deriv1eta <- c()
+        deriv2eta <- c()
+    }
+    else{
+        deriv1eta <- (-1/priors$etaprior$sd^2)*(eta-priors$etaprior$mean)
+        sdeta <- priors$etaprior$sd
+        if (length(priors$etaprior$sd)<length(eta)){
+            sdeta <- rep(priors$etaprior$sd,length(eta))
+        }
+        deriv2eta <- -1/sdeta^2
+    }
+
+    deriv1 <- c(deriv1beta,deriv1omega,deriv1eta)
+    deriv2 <- diag(c(deriv2beta,deriv2omega,deriv2eta)) # in fact, the 2nd derivative with respect to eta is not necessary, as this is dealt with elsewhere.
+    
     return(list(deriv1=deriv1,deriv2=deriv2))
 }

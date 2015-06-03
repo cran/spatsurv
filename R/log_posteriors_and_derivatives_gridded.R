@@ -15,6 +15,10 @@
 ##' @param gradient logical whether to evaluate the gradient
 ##' @param hessian logical whether to evaluate the Hessian 
 ##' @return evaluates the log-posterior and the gradient and hessian, if required.
+##' @references 
+##' \enumerate{
+##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. http://arxiv.org/abs/1501.01665
+##' }
 ##' @export
 
 
@@ -140,7 +144,7 @@ logPosterior_gridded <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,
             dJ_dbeta1 <- J1*X
             dJ_domega1 <- matrix(as.vector(expXbetaplusY)*haz$gradH(surv[,"time1"]),ncol=length(omega))
             
-            dJ_dbeta2 <- J1*X
+            dJ_dbeta2 <- J2*X
             dJ_domega2 <- matrix(as.vector(expXbetaplusY)*haz$gradH(surv[,"time2"]),ncol=length(omega))
         }        
             
@@ -219,7 +223,12 @@ logPosterior_gridded <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,
             dS_domega <- -S*dJ_domega            
             
             d2S_dbetak_dbetaj <- mapply('*',mapply('-',lapply(1:nrow(X),function(i){outer(dJ_dbeta[i,],dJ_dbeta[i,])}),d2J_dbetak_dbetaj,SIMPLIFY=FALSE),S,SIMPLIFY=FALSE)
-            d2S_domega_dbeta <- mapply('*',lapply(1:nrow(X),function(i){outer(dJ_domega[i,],dJ_dbeta[i,])-t(sapply(d2J_domega_dbeta,function(x){x[i,]}))}),S,SIMPLIFY=FALSE)
+            if(length(beta)>1){
+                d2S_domega_dbeta <- mapply('*',lapply(1:nrow(X),function(i){outer(dJ_domega[i,],dJ_dbeta[i,])-t(sapply(d2J_domega_dbeta,function(x){x[i,]}))}),S,SIMPLIFY=FALSE)
+            }
+            else{
+                d2S_domega_dbeta <- mapply('*',lapply(1:nrow(X),function(i){outer(dJ_domega[i,],dJ_dbeta[i,])-t(t(sapply(d2J_domega_dbeta,function(x){x[i,]})))}),S,SIMPLIFY=FALSE)                
+            }
             d2S_domega1_domega2 <- mapply('*',mapply('-',lapply(1:nrow(X),function(i){outer(dJ_domega[i,],dJ_domega[i,])}),d2J_domega1_domega2,SIMPLIFY=FALSE),S,SIMPLIFY=FALSE)
 
             cross_dS_dbeta <- lapply(1:nrow(X),function(i){outer(dS_dbeta[i,],dS_dbeta[i,])})
@@ -243,7 +252,12 @@ logPosterior_gridded <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,
             dS_domega_1 <- -S1*dJ_domega1            
             
             d2S_dbetak_dbetaj_1 <- mapply('*',mapply('-',lapply(1:nrow(X),function(i){outer(dJ_dbeta1[i,],dJ_dbeta1[i,])}),d2J_dbetak_dbetaj_1,SIMPLIFY=FALSE),S1,SIMPLIFY=FALSE)
-            d2S_domega_dbeta_1 <- mapply('*',lapply(1:nrow(X),function(i){outer(dJ_domega1[i,],dJ_dbeta1[i,])-t(sapply(d2J_domega_dbeta_1,function(x){x[i,]}))}),S1,SIMPLIFY=FALSE)
+            if(length(beta)>1){
+                d2S_domega_dbeta_1 <- mapply('*',lapply(1:nrow(X),function(i){outer(dJ_domega1[i,],dJ_dbeta1[i,])-t(sapply(d2J_domega_dbeta_1,function(x){x[i,]}))}),S1,SIMPLIFY=FALSE)
+            }
+            else{
+                d2S_domega_dbeta_1 <- mapply('*',lapply(1:nrow(X),function(i){outer(dJ_domega1[i,],dJ_dbeta1[i,])-t(t(sapply(d2J_domega_dbeta_1,function(x){x[i,]})))}),S1,SIMPLIFY=FALSE)
+            }
             d2S_domega1_domega2_1 <- mapply('*',mapply('-',lapply(1:nrow(X),function(i){outer(dJ_domega1[i,],dJ_domega1[i,])}),d2J_domega1_domega2_1,SIMPLIFY=FALSE),S1,SIMPLIFY=FALSE)
             
             
@@ -252,7 +266,12 @@ logPosterior_gridded <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,
             dS_domega_2 <- -S2*dJ_domega2             
             
             d2S_dbetak_dbetaj_2 <- mapply('*',mapply('-',lapply(1:nrow(X),function(i){outer(dJ_dbeta2[i,],dJ_dbeta2[i,])}),d2J_dbetak_dbetaj_2,SIMPLIFY=FALSE),S2,SIMPLIFY=FALSE)
-            d2S_domega_dbeta_2 <- mapply('*',lapply(1:nrow(X),function(i){outer(dJ_domega2[i,],dJ_dbeta2[i,])-t(sapply(d2J_domega_dbeta_2,function(x){x[i,]}))}),S2,SIMPLIFY=FALSE)
+            if(length(beta)>1){
+                d2S_domega_dbeta_2 <- mapply('*',lapply(1:nrow(X),function(i){outer(dJ_domega2[i,],dJ_dbeta2[i,])-t(sapply(d2J_domega_dbeta_2,function(x){x[i,]}))}),S2,SIMPLIFY=FALSE)
+            }
+            else{
+                d2S_domega_dbeta_2 <- mapply('*',lapply(1:nrow(X),function(i){outer(dJ_domega2[i,],dJ_dbeta2[i,])-t(t(sapply(d2J_domega_dbeta_2,function(x){x[i,]})))}),S2,SIMPLIFY=FALSE)   
+            }
             d2S_domega1_domega2_2 <- mapply('*',mapply('-',lapply(1:nrow(X),function(i){outer(dJ_domega2[i,],dJ_domega2[i,])}),d2J_domega1_domega2_2,SIMPLIFY=FALSE),S2,SIMPLIFY=FALSE)
             
     

@@ -50,7 +50,7 @@ QuadApprox <- function(fun,npts,argRanges,plot=FALSE,...){
     }
     
     form <- paste("funvals ~",paste(parnames,collapse=" + "))
-     
+
     mod <- lm(form,data=dataf)
     co <- coefficients(mod)
     
@@ -245,7 +245,7 @@ proposalVariance <- function(X,surv,betahat,omegahat,Yhat,priors,cov.model,u,con
     matr <- qa$curvature
     etahat <- qa$max
     
-    # entry for eta in propossal covariance
+    # entry for eta in proposal covariance
     sigma[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)] <- matr    
         
     #estimate of gamma
@@ -326,7 +326,7 @@ proposalVariance_gridded <- function(X,surv,betahat,omegahat,Yhat,priors,cov.mod
     
     sigma <- matrix(0,lenbeta + lenomega + leneta,lenbeta + lenomega + leneta)
     
-    # entry for eta in propossal covariance
+    # entry for eta in proposal covariance
     sigma[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)] <- matr    
         
     #estimate of gamma
@@ -356,6 +356,183 @@ proposalVariance_gridded <- function(X,surv,betahat,omegahat,Yhat,priors,cov.mod
     sigmaret[matidx] <- -1/hess_gam   
     
     return(list(etahat=etahat,sigma=sigmaret)) 
+}
+
+##' proposalVariance_polygonal function
+##'
+##' A function to compute an approximate scaling matrix for the MCMC algorithm. Not intended for general use. 
+##'
+##' @param X the design matrix, containing covariate information 
+##' @param surv an object of class Surv 
+##' @param betahat an estimate of beta 
+##' @param omegahat an estimate of omega 
+##' @param Yhat an estimate of Y 
+##' @param priors the priors 
+##' @param cov.model the spatial covariance model 
+##' @param u a vector of pairwise distances 
+##' @param control a list containg various control parameters for the MCMC and post-processing routines 
+##' @return an estimate of eta and also an approximate scaling matrix for the MCMC
+##' @export
+
+proposalVariance_polygonal <- function(X,surv,betahat,omegahat,Yhat,priors,cov.model,u,control){
+
+    Ygrid <- gridY_polygonal(Y=Yhat,control=control)    
+     
+    lenbeta <- length(betahat)
+    lenomega <- length(omegahat)
+    leneta <- getleneta(cov.model)
+    lenY <- length(Ygrid)
+    npars <- lenbeta + lenomega + leneta + lenY
+
+    sigma <- matrix(0,npars,npars)
+
+    
+    # eta
+    logpost <- function(eta,surv,X,beta,omega,Ygrid,priors,cov.model,u,control){
+
+        etapars <- cov.model$itrans(eta)
+        sigma <- matrix(EvalCov(cov.model=cov.model,u=u,parameters=etapars),control$n,control$n)
+        cholsigma <- t(chol(sigma))
+        cholsigmainv <- solve(cholsigma)
+        MU <- -etapars[control$sigmaidx]^2/2
+        gamma <- cholsigmainv%*%(Ygrid-MU)  
+        
+        logpost <- logPosterior_polygonal(surv=surv,X=X,beta=beta,omega=omega,eta=eta,gamma=gamma,priors=priors,cov.model=cov.model,u=u,control=control)        
+                          
+        return(logpost)
+    }
+
+    npts <- 20
+    if(leneta>=3){
+        npts <- 10
+    }
+    rgs <- getparranges(priors=priors,leneta=leneta)   
+    qa <- QuadApprox(logpost,npts=npts,argRanges=rgs,plot=control$plotcal,surv=surv,X=X,beta=betahat,omega=omegahat,Ygrid=Ygrid,priors=priors,cov.model=cov.model,u=u,control=control)
+    
+    matr <- qa$curvature
+    etahat <- qa$max
+    
+    # entry for eta in proposal covariance
+    sigma[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)] <- matr    
+        
+    #estimate of gamma
+    etahatpars <- cov.model$itrans(etahat)  
+    ssigma <- matrix(EvalCov(cov.model=cov.model,u=u,parameters=etahatpars),control$n,control$n)
+    cholssigma <- t(chol(ssigma))
+    MU <- -etahatpars[control$sigmaidx]^2/2
+    gammahat <- solve(cholssigma)%*%(Ygrid-MU)
+    
+    hessian <- logPosterior_polygonal(surv=surv,X=X,beta=betahat,omega=omegahat,eta=etahat,gamma=gammahat,priors=priors,cov.model=cov.model,u=u,control=control,hessian=TRUE)
+    
+    # beta and omega
+    sigma[1:lenbeta,1:lenbeta] <- hessian$hess_beta
+    sigma[(lenbeta+1):(lenbeta+lenomega),(lenbeta+1):(lenbeta+lenomega)] <- hessian$hess_omega
+    sigma[(lenbeta+1):(lenbeta+lenomega),(1:lenbeta)] <- hessian$hess_omega_beta
+    sigma[(1:lenbeta),(lenbeta+1):(lenbeta+lenomega)] <- t(hessian$hess_omega_beta)       
+    # gamma
+    diag(sigma)[(lenbeta+lenomega+leneta+1):npars] <- hessian$hess_gamma   
+    
+    return(list(etahat=etahat,sigma=solve(-sigma))) 
+}
+
+
+
+##' proposalVariance_SPDE function
+##'
+##' A function to compute an approximate scaling matrix for the MCMC algorithm. Not intended for general use. 
+##'
+##' @param X the design matrix, containing covariate information 
+##' @param surv an object of class Surv 
+##' @param betahat an estimate of beta 
+##' @param omegahat an estimate of omega 
+##' @param Yhat an estimate of Y 
+##' @param priors the priors 
+##' @param cov.model the spatial covariance model 
+##' @param u a vector of pairwise distances 
+##' @param control a list containg various control parameters for the MCMC and post-processing routines 
+##' @return an estimate of eta and also an approximate scaling matrix for the MCMC
+##' @export
+
+proposalVariance_SPDE <- function(X,surv,betahat,omegahat,Yhat,priors,cov.model,u,control){
+
+    Ygrid <- gridY_polygonal(Y=Yhat,control=control)    
+
+
+     
+    lenbeta <- length(betahat)
+    lenomega <- length(omegahat)
+    leneta <- getleneta(cov.model)
+    lenY <- length(Ygrid)
+    npars <- lenbeta + lenomega + leneta + lenY
+
+    sigma <- matrix(0,npars,npars)
+    
+    # eta
+    logpost <- function(eta,surv,X,beta,omega,Ygrid,priors,cov.model,u,control){
+
+        etapars <- cov.model$itrans(eta)
+        prec <- (1/etapars[1])*control$precmat(SPDEprec(etapars[2],cov.model$order))
+        U <- Matrix::chol(prec)
+
+        if(cov.model$order>1){
+            margvar <- etapars[1]/(4*pi*(cov.model$order-1)*(etapars[2]-4)^(cov.model$order-1)) # marginal var of Y = psi*variance_of_GMRF
+        }
+        else{
+            margvar <- etapars[1]*etapars[2]/(4*pi)
+        }
+        MU <- rep(-margvar/2,control$n)
+        gamma <- GammaFromY_SPDE(Ygrid,U=U,mu=MU)
+
+        # y <- YFromGamma_SPDE(gamma=gamma,U=U,mu=MU)
+        # hist(Ygrid-y)
+        # browser()
+
+        logpost <- logPosterior_SPDE(surv=surv,X=X,beta=beta,omega=omega,eta=eta,gamma=gamma,priors=priors,cov.model=cov.model,u=u,control=control)        
+                          
+        return(logpost)
+    }
+
+    npts <- 20
+    if(leneta>=3){
+        npts <- 10
+    }
+    rgs <- getparranges(priors=priors,leneta=leneta)   
+    qa <- QuadApprox(logpost,npts=npts,argRanges=rgs,plot=control$plotcal,surv=surv,X=X,beta=betahat,omega=omegahat,Ygrid=Ygrid,priors=priors,cov.model=cov.model,u=u,control=control)
+    
+    matr <- qa$curvature
+    etahat <- qa$max
+    
+    # entry for eta in proposal covariance
+    sigma[(lenbeta+lenomega+1):(lenbeta+lenomega+leneta),(lenbeta+lenomega+1):(lenbeta+lenomega+leneta)] <- matr    
+        
+    #estimate of gamma
+    etahatpars <- cov.model$itrans(etahat)  
+    prec <- (1/etahatpars[1])*control$precmat(SPDEprec(etahatpars[2],cov.model$order))
+    # cholprec <- t(chol(prec))
+    # margvar <- etahatpars[1]/(4*pi*(cov.model$order-1)*(etahatpars[2]-4)^(cov.model$order-1)) # marginal var of Y = psi*variance_of_GMRF
+    # MU <- rep(-margvar/2,control$n)
+    # gammahat <- GammaFromY_SPDE(Ygrid,P=prec,L=cholprec,mu=MU)
+    U <- chol(prec)
+    if(cov.model$order>1){
+        margvar <- etahatpars[1]/(4*pi*(cov.model$order-1)*(etahatpars[2]-4)^(cov.model$order-1)) # marginal var of Y = psi*variance_of_GMRF
+    }
+    else{
+        margvar <- etahatpars[1]*etahatpars[2]/(4*pi)
+    }
+    MU <- rep(-margvar/2,control$n)
+    gammahat <- GammaFromY_SPDE(Ygrid,U=U,mu=MU)
+    
+    hessian <- logPosterior_SPDE(surv=surv,X=X,beta=betahat,omega=omegahat,eta=etahat,gamma=gammahat,priors=priors,cov.model=cov.model,u=u,control=control,hessian=TRUE)
+    
+    # beta and omega
+    sigma[1:lenbeta,1:lenbeta] <- hessian$hess_beta
+    sigma[(lenbeta+1):(lenbeta+lenomega),(lenbeta+1):(lenbeta+lenomega)] <- hessian$hess_omega
+    sigma[(lenbeta+1):(lenbeta+lenomega),(1:lenbeta)] <- hessian$hess_omega_beta
+    sigma[(1:lenbeta),(lenbeta+1):(lenbeta+lenomega)] <- t(hessian$hess_omega_beta)       
+    # gamma
+    diag(sigma)[(lenbeta+lenomega+leneta+1):npars] <- hessian$hess_gamma   
+    
+    return(list(etahat=etahat,sigma=solve(-sigma))) 
 }
 
 
@@ -449,6 +626,9 @@ guess_t <- function(surv){
             next # leave tsubs[i] alone 
         }
         else{
+            if(length(tpot)==1){
+                tpot <- c(tpot,tpot)
+            }
             tsubs[i] <- sample(tpot,1) # ignoring covariates, sample from empirical distribution of times exceeding (right censored), or less than (left censored) the observed time 
         }
 

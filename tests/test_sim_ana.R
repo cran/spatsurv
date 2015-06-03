@@ -1,4 +1,5 @@
 library(spatsurv)
+library(survival)
 
 set.seed(10)
 

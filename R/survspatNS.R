@@ -10,6 +10,10 @@
 ##' @seealso \link{tpowHaz}, \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{weibullHaz}, 
 ##' \link{covmodel}, link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
 ##' \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control} 
+##' @references 
+##' \enumerate{
+##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. http://arxiv.org/abs/1501.01665
+##' }
 ##' @export
 
 
@@ -51,7 +55,7 @@ survspatNS <- function( formula,
     # End of borrowed code    
     ##########
  
-    X <- X[, -1, drop = FALSE]                                   
+    X <- X[, -1, drop = FALSE]                               
               
     info <- distinfo(dist)()
     
@@ -60,7 +64,7 @@ survspatNS <- function( formula,
     control$omegajacobian <- info$jacobian # used in computing the derivative of the log posterior with respect to the transformed omega (since it is easier to compute with respect to omega) 
     control$omegahessian <- info$hessian
     
-    cat("\n","Getting initial estimates of model parameters using maximum likelihood on non-spatial version of the model","\n")
+    cat("\n","Maximum likelihood using BFGS ...","\n")
     mlmod <- maxlikparamPHsurv(surv=survivaldata,X=X,control=control)
     estim <- mlmod$par
     print(mlmod)
@@ -100,6 +104,8 @@ survspatNS <- function( formula,
     colnames(betasamp) <- colnames(model.matrix(formula,data))[-1] #attr(Terms,"term.labels")
     retlist$betasamp <- betasamp
     retlist$omegasamp <- omegasamp
+
+    retlist$Ysamp <- matrix(0,1000,nrow(X))
     
     #retlist$loglik <- loglik
     

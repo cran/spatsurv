@@ -6,6 +6,10 @@
 ##' @param X the design matrix, containing covariate information 
 ##' @param control a list containg various control parameters for the MCMC and post-processing routines  
 ##' @return initial estimates of the parameters
+##' @references 
+##' \enumerate{
+##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. http://arxiv.org/abs/1501.01665
+##' }
 ##' @export
 
 maxlikparamPHsurv <- function(surv,X,control){
@@ -37,6 +41,27 @@ maxlikparamPHsurv <- function(surv,X,control){
     if(inherits(opt,"try-error")){
         stop("Possible problem with initial values in obtaining maximum likelihood estimates of parameters, try setting MLinits in function distinfo for chosen baseline hazard distribution")
     }
+
+    # opar <- opt$par
+    # beta <- opar[1:ncol(X)]
+    # omega <- opar[(ncol(X)+1):length(opar)]
+    # for(i in 1:length(omega)){
+    #     print(i)
+    #     sq <- seq(omega[i]-0.5,omega[i]+0.5,length.out=100) 
+    #     if(i==6|i==7){
+    #         sq <- seq(omega[i]-20,omega[i]+0.5,length.out=100) 
+    #     }     
+    #     ll <- c()
+    #     for(j in 1:100){
+    #         omegatemp <- omega
+    #         omegatemp[i] <- sq[j]
+    #         ll[j] <- likfun(c(beta,omegatemp))
+    #     }
+    #     plot(sq,ll)
+    #     browser()
+    # }
+
+
     
     return(opt)
 }
@@ -54,6 +79,10 @@ maxlikparamPHsurv <- function(surv,X,control){
 ##' @param loglikelihood logical whether to evaluate the log-likelihood
 ##' @param gradient logical whether to evaluate the gradient
 ##' @return ...
+##' @references 
+##' \enumerate{
+##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. http://arxiv.org/abs/1501.01665
+##' }
 ##' @export
 
 NonSpatialLogLikelihood_or_gradient <- function(surv,X,beta,omega,control,loglikelihood,gradient){

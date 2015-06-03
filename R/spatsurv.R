@@ -13,7 +13,7 @@
 ##' 
 ##' section{Dependencies}{
 ##' The package \code{spatsurv} depends upon some other important contributions to CRAN in order to operate; their uses here are indicated:\cr\cr
-##'     survival, sp, iterators, RandomFields, fields, rgl, Matrix, stringr, mcmcplots.
+##'     survival, sp, iterators, raster, spatstat, RandomFields, fields, rgl, Matrix, stringr, mcmcplots.
 ##' }
 ##' 
 ##' section{Citation}{
@@ -34,15 +34,25 @@
 ##' @keywords package
 ##'
 ##'
-##' @import survival
-##' @import sp
-##' @importFrom Matrix Matrix
-##' @importFrom Matrix nearPD 
-##' @importFrom RandomFields CovarianceFct 
-##' @importFrom iterators nextElem
-##' @importFrom fields image.plot
-##' @importFrom stats quantile
-##' @importFrom stringr str_count
+
+###' @importFrom RColorBrewer brewer.pal 
+###' @importFrom stringr str_count str_detect
+###' @importFrom Matrix Matrix sparseMatrix
+###' @importFrom rgl abclines3d aspect3d axes3d planes3d points3d segments3d text3d title3d 
+###' @importFrom fields image.plot  
+###' @importFrom RandomFields CovarianceFct
+###' @importFrom rgeos gBuffer
+###' @importFrom iterators icount iter nextElem
+###' @importFrom sp bbox proj4string<- proj4string SpatialPixelsDataFrame SpatialGridDataFrame Polygon Polygons SpatialPolygons coordinates CRS geometry GridTopology over overlay proj4string SpatialGrid SpatialPixels SpatialPoints SpatialPolygonsDataFrame split spTransform 
+###' @importFrom spatstat rpoint progressreport
+###' @importFrom survival Surv survfit
+###' @importFrom geostatsp asImRaster
+###' @importFrom raster crop
+###' @importFrom stats acf coefficients deriv dexp dist dnorm end fft fitted formula Gamma integrate knots lm model.matrix optim optimise poly quantile rbinom rexp rnorm runif sd start update var 
+###' @importFrom graphics hist legend lines matplot par plot points title 
+
+
+
 
 
 

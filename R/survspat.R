@@ -9,11 +9,17 @@
 ##' @param cov.model an object of class covmodel, see ?covmodel ?ExponentialCovFct or ?SpikedExponentialCovFct
 ##' @param mcmc.control mcmc control parameters, see ?mcmcpars
 ##' @param priors an object of class Priors, see ?mcmcPriors
+##' @param shape when data is a data.frame, this can be a SpatialPolygonsDataFrame, or a SpatialPointsDataFrame, used to model spatial variation at the small region level. The regions are the polygons, or they represent the (possibly weighted) centroids of the polygons.
+##' @param ids named list entry shpid character string giving name of variable in shape to be matched to variable dataid in data. dataid is the second entry of the named list.
 ##' @param control additional control parameters, see ?inference.control
 ##' @return an object inheriting class 'mcmcspatsurv' for which there exist methods for printing, summarising and making inference from.
 ##' @seealso \link{tpowHaz}, \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{weibullHaz}, 
 ##' \link{covmodel}, link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
 ##' \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control} 
+##' @references 
+##' \enumerate{
+##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. http://arxiv.org/abs/1501.01665
+##' }
 ##' @export
 
 
@@ -23,21 +29,65 @@ survspat <- function(   formula,
                         cov.model,
                         mcmc.control,
                         priors,
+                        shape=NULL,
+                        ids=list(shpid=NULL,dataid=NULL),
                         control=inference.control(gridded=FALSE)){
                         
                             
     
     # initial checks
-    if(!inherits(data,"SpatialPointsDataFrame")){
-        stop("'data' must be of class 'SpatialPointsDataFrame'.")
-    }                    
+    if(!(inherits(data,"SpatialPointsDataFrame")|inherits(data,"data.frame"))){
+        stop("'data' must be of class 'SpatialPointsDataFrame' or 'data.frame'.")
+    }   
+    if(inherits(data,"data.frame")&is.null(shape)){
+        stop("If inherits(data,'data.frame')==TRUE, shape cannot be NULL")
+    }   
+
+    latentmode <- "points"
+    if(inherits(data,"data.frame")){
+        latentmode <- "polygons"
+    }
+    if(inherits(cov.model,"SPDEmodel")){
+        latentmode <- "SPDE"
+    }
+
+    if(inherits(data,"SpatialPointsDataFrame")&!is.null(shape)){
+        if(latentmode!="SPDE"){
+            warning("Non NULL shape, ignoring shape.",immediate.=TRUE)
+            Sys.sleep(2)
+        }
+    }
+
+    if(latentmode=="polygons" & control$gridded){
+        stop("Cannot have control$gridded==TRUE and !is.null(shape)==TRUE at the same time")
+    }
+
+    if(latentmode=="SPDE" & control$gridded){
+        stop("Cannot use SPDE mode and have !is.null(shape)==TRUE at the same time. Please provide a polygon object on which to produce spatial predictions.")
+    }
+
     responsename <- as.character(formula[[2]])
-    survivaldata <- data@data[[responsename]]
+    if(latentmode=="points"){
+        survivaldata <- data@data[[responsename]]
+    }
+    else{
+        survivaldata <- data[[responsename]]
+    }
     checkSurvivalData(survivaldata) 
+
+    if(latentmode=="SPDE"){
+        if(proj4string(data)!=proj4string(shape)){
+            stop("'shape' and 'data' must have the same proj4string.")
+        } 
+        if(is.null(control$cellwidth)){
+            stop("Must specify 'cellwidth' in inference.control in SPDE mode.")
+        }   
+    }
     
-    if(!inherits(data,"SpatialPointsDataFrame")){
-        stop("data must be an object of class SpatialPointsDataFrame")
-    }                     
+    
+    # if(!inherits(data,"SpatialPointsDataFrame")){
+    #     stop("data must be an object of class SpatialPointsDataFrame")
+    # }                     
 
     # okay, start the MCMC!
 
@@ -46,13 +96,24 @@ survspat <- function(   formula,
         start <- Sys.time()
     }
 
-    coords <- coordinates(data)
+    if(latentmode=="points" | latentmode=="SPDE"){
+        coords <- coordinates(data)
+    }
+    else{
+        coords <- coordinates(shape)
+    }
 
     control$dist <- dist
     
     funtxt <- ""    
     if(control$gridded){
         funtxt <- "_gridded"
+    }
+    if(latentmode=="polygons"){
+        funtxt <- "_polygonal"
+    }
+    if(latentmode=="SPDE"){
+        funtxt <- "_SPDE"
     }
     
     gridobj <- NULL
@@ -85,12 +146,61 @@ survspat <- function(   formula,
         cat("Output grid size: ",Mext/control$ext," x ",Next/control$ext,"\n")
     }
     else{
-        u <- as.vector(as.matrix(dist(coords)))
+        if(latentmode=="polygons"){
+            u <- as.vector(as.matrix(dist(coords)))
+            control$idx <- match(data[,ids$dataid],shape@data[,ids$shpid])
+            control$n <- nrow(shape)
+            control$uqidx <- unique(control$idx)
+        }
+        else if(latentmode=="SPDE"){
+            
+            matobj <- setupPrecMatStruct(shape=shape,cellwidth=control$cellwidth,no=cov.model$order)
+            control$precmat <- matobj$f
+            control$grid <- matobj$grid
+
+            # require(INLA)
+            # now reorder the indices for faster computation
+            # tempprec <- control$precmat(SPDEprec(0.1,cov.model$order))            
+            # reord <- inla.qreordering(tempprec)
+            # env <- environment(control$precmat)
+            # image.plot(as.matrix(tempprec))
+            # image.plot(as.matrix(tempprec)[reord$reordering,reord$reordering])
+            # rord <- function(oldidx,newidx){
+            #     ans <- rep(NA,length(oldidx))
+            #     for(i in 1:length(newidx)){
+            #         ans[oldidx==i] <- newidx[i]
+            #     }
+            #     return(ans)
+            # }
+            # env$index[,1] <- rord(env$index[,1],reord$reordering)
+            # env$index[,2] <- rord(env$index[,2],reord$reordering)
+            # shuff <- function(x){
+            #     if(x[2]>x[1]){
+            #         return(c(x[2:1],x[3]))
+            #     }
+            #     else{
+            #         return(x)
+            #     }    
+            # }
+            # env$index <- t(apply(env$index,1,shuff))
+            # env$grid <- env$grid[reord$reordering]
+            # tempprec1 <- control$precmat(SPDEprec(0.1,cov.model$order)) 
+            #browser()
+
+            control$idx <- over(data,geometry(control$grid))
+            control$n <- length(control$grid)
+            control$uqidx <- unique(control$idx)
+        }
+        else{
+            u <- as.vector(as.matrix(dist(coords)))
+        }
     }
 
     DATA <- data    
     
-    data <- data@data  
+    if(latentmode=="points" | latentmode=="SPDE"){
+        data <- data@data  
+    }
                         
     ##########
     # This chunk of code borrowed from flexsurvreg    
@@ -134,10 +244,12 @@ survspat <- function(   formula,
     
     betahat <- estim[1:ncol(X)]
     omegahat <- estim[(ncol(X)+1):length(estim)]
-      
-    control$sigmaidx <- match("sigma",cov.model$parnames)
-    if(is.na(control$sigmaidx)){
-        stop("At least one of the parameters must be the variance of Y, it should be named sigma")
+    
+    if(latentmode!="SPDE"){  
+        control$sigmaidx <- match("sigma",cov.model$parnames)
+        if(is.na(control$sigmaidx)){
+            stop("At least one of the parameters must be the variance of Y, it should be named sigma")
+        }
     }
     
     Yhat <- estimateY(  X=X,
@@ -169,6 +281,9 @@ survspat <- function(   formula,
     gamma <- rep(0,nrow(X))
     if(control$gridded){
         gamma <- matrix(0,control$Mext,control$Next)
+    }
+    if(latentmode=="polygons" | latentmode=="SPDE"){
+        gamma <- rep(0,control$n)
     }
         
     lenbeta <- length(beta)
@@ -246,6 +361,8 @@ survspat <- function(   formula,
     if(control$timeonlyMCMC){
         start <- Sys.time()
     }
+
+    bad <-  c()
     
     
     while(nextStep(mcmcloop)){
@@ -290,6 +407,11 @@ survspat <- function(   formula,
                             (0.5/h)*sum(forwdiffgamma*SIGMAgammaINV*forwdiffgamma)
         
         ac <- min(1,exp(as.numeric(logfrac)))
+        if(is.na(ac) | is.nan(ac)){
+            ac <- 0
+            bad <- c(bad,iteration(mcmcloop))
+            warning("An acceptance probability could not be calculated for this iteration, this is likely because the spatial decay parameter was too big for this choice of 'ext'. Either increase ext, or tighten prior on spatial decay parameter. At the end of the run check $bad to see which iterations this affected. Stop the run if this problem persists.",immediate.=TRUE)
+        }
         
         if(ac>runif(1)){
             beta <- newstuffpars[1:lenbeta]
@@ -389,7 +511,13 @@ survspat <- function(   formula,
     retlist$survivaldata <- survivaldata
     
     retlist$gridded <- control$gridded
-    if(control$gridded){
+    if(latentmode=="SPDE"){
+        retlist$precmat <- control$precmat
+        retlist$grid <- control$grid
+        retlist$idx <- control$idx
+        retlist$uqidx <- control$uqidx
+    }
+    else if(control$gridded){
         retlist$M <- Mext/control$ext
         retlist$N <- Next/control$ext
         retlist$xvals <- mcens[1:retlist$M]
@@ -401,12 +529,17 @@ survspat <- function(   formula,
     
     retlist$tarrec <- tarrec
     retlist$lasth <- h
+    retlist$bad <- bad
     
     retlist$omegatrans <- control$omegatrans
     retlist$omegaitrans <- control$omegaitrans
     
     retlist$control <- control
     retlist$censoringtype <- attr(survivaldata,"type")
+
+    retlist$shape <- shape
+    retlist$ids <- ids    
+    retlist$latentmode <- latentmode
     
     retlist$time.taken <- Sys.time() - start
     

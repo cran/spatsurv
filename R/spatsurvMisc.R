@@ -10,7 +10,7 @@ getleneta <- function(cov.model){
     if(inherits(cov.model,"fromRandomFieldsCovarianceFct")){
         leneta <- 2
     }
-    else if(inherits(cov.model,"fromUserFunction")){
+    else if(inherits(cov.model,"fromUserFunction") | inherits(cov.model,"SPDEmodel")){
         leneta <- cov.model$npar
     }
     else{
@@ -376,4 +376,44 @@ transformweibull <- function(x){
 
 spatsurvVignette <- function(){
     browseURL("www.lancaster.ac.uk/staff/taylorb1/preprints/spatsurv.pdf") 
+}
+
+
+##' allocate function
+##'
+##' A function to allocate coordinates to an observation whose spatial location is known to the regional level
+##'
+##' @param poly a SpatialPolygonsDataFrame, on which the survival data exist in aggregate form
+##' @param popden a sub-polygon raster image of population density
+##' @param survdat data.frame containing the survival data
+##' @param pid name of the variable in the survival data that gives the region identifier in poly
+##' @param sid the name of the variable in poly to match the region identifier in survdat to
+##' @param n the number of different allocations to make. e.g. if n=2 (the default) two candidate sets of locations are available.
+##' @param wid The default is 2000, interpreted in metres ie 2Km. size of buffer to add to window for raster cropping purposes: this ensures that for each polygon, the cropped raster covers it completely. 
+##' @return matrices x and y, both of size (number of observations in survdat x n) giving n potential candidate locations of points in the columns of x and y.
+##' @export
+
+allocate <- function(poly,popden,survdat,pid,sid,n=2,wid=2000){
+    nr <- length(poly)
+    X <- matrix(NA,nrow(survdat),n)
+    Y <- matrix(NA,nrow(survdat),n)
+    for(i in 1:nr){
+        progressreport(i,nr)
+        spol <- gBuffer(poly[i,],width=wid)
+        win <- as(poly[i,],"owin")
+        den <- asImRaster(crop(popden,spol))
+        idx <- survdat[,sid]==poly@data[i,pid]
+        ns <- sum(idx)
+        if(ns==0){
+            next
+        }
+        else{
+            pts <- rpoint(ns*n,f=den,win=win)
+            for(j in 1:n){              
+                X[which(idx),] <- matrix(pts$x,ns,n)
+                Y[which(idx),] <- matrix(pts$y,ns,n)
+            }
+        }       
+    }
+    return(list(x=X,y=Y))
 }

@@ -196,10 +196,11 @@ vcov.mlspatsurv <- function(object,...){
 
 ##' frailtylag1 function
 ##'
-##' A function to produce a plot of, and return, the lag 1 autocorrelation for each of the spatially correlated frailty chains
+##' A function to produce a plot of, and return, the lag 1 (or higher, see argument 'lag') autocorrelation for each of the spatially correlated frailty chains
 ##'
 ##' @param object an object inheriting class mcmcspatsurv 
 ##' @param plot logical whether to plot the result, default is TRUE
+##' @param lag the lag to plot, the default is 1
 ##' @param ... other arguments to be passed to the plot function 
 ##' @return the lag 1 autocorrelation for each of the spatially correlated frailty chains
 ##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
@@ -208,8 +209,8 @@ vcov.mlspatsurv <- function(object,...){
 ##' \link{hazardexceedance} 
 ##' @export
 
-frailtylag1 <- function(object,plot=TRUE,...){
-    lag1acf <- apply(object$Ysamp,2,function(x){acf(x,plot=FALSE)$acf[2]})
+frailtylag1 <- function(object,plot=TRUE,lag=1,...){
+    lag1acf <- apply(object$Ysamp,2,function(x){acf(x,plot=FALSE)$acf[lag+1]})
     if(plot){
         plot(lag1acf,xlab="Frailty Index",ylab="Lag 1 Autocorrelation",ylim=c(-1,1),...)
     }
@@ -301,6 +302,7 @@ randompars <- function(x){
 ##' @param probs vector of probabilities 
 ##' @param cumulative logical, whether to return the baseline hazard (default i.e. FALSE) or cumulative baseline hazard 
 ##' @param plot whether to plot the result
+##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
 ##' @param ... additional arguments to be passed to plot
 ##' @return the vector of times and quantiles of the baseline or cumulative baseline hazard at those times
 ##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
@@ -309,7 +311,7 @@ randompars <- function(x){
 ##' \link{hazardexceedance}
 ##' @export
 
-baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FALSE,plot=TRUE,...){
+baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FALSE,plot=TRUE,bw=FALSE,...){
 
     omegasamp <- x$omegasamp   
     
@@ -318,7 +320,7 @@ baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FA
             t <- seq(0,max(x$survivaldata[,"time"],na.rm=TRUE),length.out=n)
         }
         else{
-            t <- seq(0,max(c(x$survivaldata[,"time1"],x$survivaldata[,"time1"]),na.rm=TRUE),length.out=n)
+            t <- seq(0,max(c(x$survivaldata[,"time"],x$survivaldata[,"time1"]),na.rm=TRUE),length.out=n)
         }
     }
     
@@ -343,8 +345,14 @@ baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FA
     
     if(plot){
         if(length(probs)==3){
-            matplot(t,toreturn,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="time",ylab=YLAB,...)
-            legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
+            if(bw){
+                matplot(t,toreturn,type="l",col=c("black","black","black"),lty=c("dotted","solid","dashed"),xlab="time",ylab=YLAB,...)
+                legend("topright",lty=c("dashed","solid","dotted"),col=rev(c("black","black","black")),legend=rev(probs))
+            }
+            else{
+                matplot(t,toreturn,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="time",ylab=YLAB,...)
+                legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
+            }            
         }
         else{
             matplot(t,toreturn,type="l",xlab="time",ylab="Baseline Hazard")
@@ -503,6 +511,7 @@ densityquantile_PP <- function(inputs){
 ##' @param probs vector of probabilities
 ##' @param plot whether to plot the result
 ##' @param pause logical whether to pause between plots, the default is TRUE
+##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
 ##' @param ... other arguments, not used here 
 ##' @return the required predictions
 ##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
@@ -511,7 +520,7 @@ densityquantile_PP <- function(inputs){
 ##' \link{hazardexceedance}
 ##' @export
 
-predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,probs=c(0.025,0.5,0.975),plot=TRUE,pause=TRUE,...){
+predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,probs=c(0.025,0.5,0.975),plot=TRUE,pause=TRUE,bw=FALSE,...){
 
     newdata <- object$X
 
@@ -529,6 +538,8 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
             t <- seq(0,max(c(object$survivaldata[,"time1"],object$survivaldata[,"time1"]),na.rm=TRUE),length.out=n)
         }
     }
+
+    svdat <- as.matrix(object$survivaldata)
 
     predictmat <- NULL    
     if(type=="densityquantile"){
@@ -554,9 +565,15 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
         inputs <- list()
         inputs$X <- newdata[i,]
         inputs$dist <- object$dist
+        inputs$survdat <- svdat[i,]
         for (j in 1:nits){
-            if(object$gridded){
-                inputs$Y <- object$Ysamp[j,object$cellidx[i]]
+            if(object$gridded | object$latentmode=="polygons"){
+                if(object$gridded){
+                    inputs$Y <- object$Ysamp[j,object$cellidx[i]]
+                }
+                if(object$latentmode=="polygons"){
+                    inputs$Y <- object$Ysamp[j,object$control$idx[i]]
+                }
             }
             else{
                 inputs$Y <- object$Ysamp[j,i]    
@@ -565,18 +582,25 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
             inputs$beta <- object$betasamp[j,]
             inputs$omega <- omegasamp[j,]
             fun <- get(paste(type,"_PP",sep=""))(inputs)
-            if(type!="Et"){
-                dat[j,] <- fun(t)
-            }
-            else{
+            if(type=="Et"){
                 dat[j,i] <- fun
+            }
+            else{   
+                dat[j,] <- fun(t)                
             }      
         }
 
-        if(type!="densityquantile" & type!="Et"){          
-            toplot <- t(apply(dat,2,quantile,probs=probs))        
-            matplot(t,toplot,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="time",ylab=type,main=paste("Individual",i))
-            legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
+        if(type!="densityquantile" & type!="Et"){        
+            toplot <- t(apply(dat,2,quantile,probs=probs,na.rm=TRUE)) 
+            if(bw){
+                matplot(t,toplot,type="l",col=c("black","black","black"),lty=c("dotted","solid","dashed"),xlab="time",ylab=type,main=paste("Individual",i))
+                legend("topright",lty=c("dashed","solid","dotted"),col=rev(c("black","black","black")),legend=rev(probs))
+            }
+            else{
+                matplot(t,toplot,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="time",ylab=type,main=paste("Individual",i))
+                legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
+            }       
+            
             if(pause){
                 cat("[press [enter] to continue]")
                 ob <- scan(n=1,quiet=TRUE)
@@ -626,6 +650,7 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
 ##' @param ylab optional y label 
 ##' @param main optional title 
 ##' @param pause logical whether to pause between plots, the default is TRUE
+##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
 ##' @param ... other arguments passed to the hist function
 ##' @return plots of the prior (red line) and posterior (histogram).
 ##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
@@ -634,7 +659,7 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
 ##' \link{hazardexceedance}
 ##' @export
 
-priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,...){
+priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALSE,...){
     nbeta <- ncol(x$betasamp)
     nomega <- ncol(x$omegasamp)
     neta <- ncol(x$etasamp)
@@ -655,7 +680,12 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,...){
         h <- hist(x$betasamp[,i],ylab=ylab,xlab=colnames(x$betasamp)[i],breaks=breaks,freq=FALSE,main=main,...)
         xrg <- range(h$breaks)
         r <- seq(xrg[1],xrg[2],length.out=1000)               
-        lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)       
+        if(bw){
+            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)       
+        }
+        else{
+            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),lwd=2)
+        }
         if(pause){
             cat("[press [enter] to continue]")
             scan(n=1,quiet=TRUE)
@@ -687,7 +717,12 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,...){
         h <- hist(samp[,i],ylab=ylab,xlab=paste("Transformed",colnames(x$omegasamp)[i]),breaks=breaks,freq=FALSE,main=main,...)
         xrg <- range(h$breaks)
         r <- seq(xrg[1],xrg[2],length.out=1000)
-        lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)       
+        if(bw){
+            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)       
+        }
+        else{
+            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),lwd=2)
+        }      
         if(pause){
             cat("[press [enter] to continue]")
             scan(n=1,quiet=TRUE)
@@ -713,12 +748,17 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,...){
     else{
         samp <- t(t(apply(samp,1,x$cov.model$trans)))
     }
-    colnames(samp) <- distinfo(x$dist)()$parnames 
+    colnames(samp) <- colnames(x$etasamp)
     for(i in 1:neta){
         h <- hist(samp[,i],ylab=ylab,xlab=paste("Transformed",colnames(x$etasamp)[i]),breaks=breaks,freq=FALSE,main=main,...)
         xrg <- range(h$breaks)
         r <- seq(xrg[1],xrg[2],length.out=1000)
-        lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)
+        if(bw){
+            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)       
+        }
+        else{
+            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),lwd=2)
+        }
         if(pause){
             cat("[press [enter] to continue]")
             scan(n=1,quiet=TRUE)
@@ -737,6 +777,7 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,...){
 ##' @param rmax  maximum distance in space to compute this distance up to
 ##' @param n the number of points at which to evaluate the posterior covariance.
 ##' @param plot whether to plot the result
+##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
 ##' @param ... other arguments to be passed to matplot function 
 ##' @return produces a plot of the posterior spatial covariance function.
 ##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
@@ -745,25 +786,41 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,...){
 ##' \link{hazardexceedance}
 ##' @export
 
-posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,...){
+posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,bw=FALSE,...){
     nr <- nrow(x$etasamp)
     nc <- ncol(x$etasamp)
     
-    rmaxx <- 0.25*sum(apply(bbox(x$data),1,diff))/2 # approx 1/4 of mean length of observation window
     if(!is.null(rmax)){
         rmaxx <- rmax
     }
+    else{
+        if(is.null(x$shape)){
+            rmaxx <- 0.25*sum(apply(bbox(x$data),1,diff))/2 # approx 1/4 of mean length of observation window
+        }
+        else{
+            rmaxx <- 0.25*sum(apply(bbox(x$shape),1,diff))/2 # approx 1/4 of mean length of observation window
+        }
+    }
     
     r <- seq(0,rmaxx,length.out=n)
-    covs <- t(apply(x$etasamp,1,function(pp){x$cov.model$eval(r,pars=pp)}))  
+    #covs <- t(apply(x$etasamp,1,function(pp){x$cov.model$eval(r,pars=pp)})) 
+    covs <- t(apply(x$etasamp,1,function(pp){EvalCov(x$cov.model,u=r,parameters=pp)}))
+    
     qts <- t(apply(covs,2,quantile,probs=probs))
     
     rownames(qts) <- r
     
     if(plot){
         if(length(probs)==3){
-            matplot(r,qts,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="Distance",ylab="Covariance")
-            legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
+            if(bw){
+                matplot(r,qts,type="l",col=c("black","black","black"),lty=c("dotted","solid","dashed"),xlab="Distance",ylab="Covariance")
+                legend("topright",lty=c("dashed","solid","dotted"),col=c("black","black","black"),legend=rev(probs))
+            }
+            else{
+                matplot(r,qts,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="Distance",ylab="Covariance")
+                legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
+            }
+            
         }
         else{
             matplot(r,qts,type="l",xlab="Distance",ylab="Covariance")
@@ -832,4 +889,146 @@ hazardexceedance <- function(threshold,direction="upper"){
     attr(fun,"threshold") <- threshold
     attr(fun,"direction") <- direction
     return(fun)
+}
+
+
+##' reconstruct.bs function
+##'
+##' When bs(varname) has been used in the formula of a model, this function can be used to reconstruct the posterior relative risk of 
+##' that parameter over time.
+##'
+##' @param mod model output, created by function survspat 
+##' @param varname name of the variable modelled by a B-spline
+##' @param probs upper and lower quantiles for confidence regions to plot> The default is c(0.025,0.975).
+##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
+##' @param xlab label for x axis, there is a sensible default
+##' @param ylab label for y axis, there is a sensible default
+##' @param plot logical, whether to plot the effect of varname over time
+##' @param ... other arguments to be passed to the plotting function.
+##' @return median, upper and lower confidence bands for the effect of varname over time; the funciton also produces a plot.
+##' @export
+
+reconstruct.bs <- function(mod,varname,probs=c(0.025,0.975),bw=FALSE,xlab=NULL,ylab=NULL,plot=TRUE,...){
+    colidx <- str_detect(colnames(mod$X),paste("bs\\(",varname,"\\)",sep=""))
+    bss <- mod$X[,colidx]
+    idx <- which(colidx)
+    fit <- colSums(summary(mod)[idx,1]*t(bss))
+    fitall <- t(apply(mod$betasamp[,idx],1,function(x){colSums(x*t(bss))}))
+    ul <- apply(fitall,2,quantile,probs=probs)
+    xx <- mod$data[,varname]
+    
+    ord <- order(xx)
+    xx <- xx[ord]
+    yy <- exp(fit)
+    yy <- yy[ord]
+    low <- exp(ul[1,ord])
+    upp <- exp(ul[2,ord])
+    if(is.null(xlab)){
+        xlab <- varname
+    }
+    if(is.null(ylab)){
+        ylab <- "Relative Risk"
+    }
+    if(plot){
+        plot(xx,yy,type="l",ylim=c(min(low,na.rm=TRUE),max(upp,na.rm=TRUE)),xlab=xlab,ylab=ylab,...)
+        if(bw){
+            lines(xx,low,col="black",lty="dotted")
+            lines(xx,upp,col="black",lty="dashed")
+            legend("topright",lty=c("dashed","solid","dotted"),col=rev(c("black","black","black")),legend=c(probs[2],0.5,probs[1]))
+        }
+        else{
+            lines(xx,low,col="purple",lty="dashed")
+            lines(xx,upp,col="blue",lty="dashed")
+            legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=c(probs[2],0.5,probs[1])) 
+        }
+    }
+    retlist <- list()
+    retlist$varname <- varname
+    retlist$x <- xx
+    retlist$y <- cbind(lower=low,median=yy,upper=upp)
+    return(retlist)
+}
+
+##' resuiduals.mcmcspatsurv function
+##'
+##' A function to compute Cox-Snell / modeified Cox-Snell / Martingale or Deviance residuals
+##'
+##' @method residuals mcmcspatsurv
+##' @param object an object produced by the function survspat
+##' @param type type of residuals to return. Possible choices are 'Cox-Snell', 'modified-Cox-Snell', 'Martingale' or 'deviance'.
+##' @param ... other arguments (not used here)
+##' @return the residuals
+##' @export
+residuals.mcmcspatsurv <- function(object,type="Cox-Snell",...){
+
+    if(object$censoringtype!="right"){
+        stop("Can only compute residuals for right censored data.")
+    }
+
+    betahat <- colMeans(object$beta)
+    omegahat <- colMeans(object$omegasamp)
+    Yhat <- colMeans(object$Ysamp[,object$cellidx])
+    
+    Xbeta <- colSums(betahat*t(object$X))
+    expXbeta <- exp(Xbeta)
+    expXbeta_plus_Y <- expXbeta*exp(Yhat)
+
+    H <- cumbasehazard(object$dist)(omegahat)
+
+    cs <- expXbeta_plus_Y*H(object$survivaldata[,1])
+    delta <- object$survivaldata[,2]
+
+    if(type=="Cox-Snell"){
+        toreturn <- cs
+        #attr(toreturn,"Hcs") <- expXbeta_plus_Y*H(cs) # does not work for flexible parametric models
+    }
+    else if(type=="modified-Cox-Snell"){
+        toreturn <- 1-delta+cs
+    }
+    else if(type=="Martingale"){
+        toreturn <- delta-cs
+    }
+    else if(type=="deviance"){
+        mg <- delta-cs
+        toreturn <- sign(mg) * (-2*(mg+delta*log(delta-mg)))^(1/2)
+    }
+    else{
+        stop("Unknown residual type.")
+    }
+
+    return(toreturn)      
+}
+
+
+
+
+
+##' CSplot function
+##'
+##' A function to produce a diagnostic plot for model fit using the Cox-Snell residuals.
+##'
+##' @param mod an object produced by the function survspat 
+##' @param plot whether to plot the result, default is TRUE
+##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
+##' @param ... other arguments to pass to plot
+##' @return the x and y values used in the plot
+##' @export
+
+CSplot <- function(mod,plot=TRUE,bw=FALSE,...){
+    sda <- mod$survivaldata
+    cs <- residuals(mod,type="Cox-Snell")
+    sda[,1] <- cs
+    sf <- survfit(Surv(cs,mod$survivaldata[,2])~1)
+    x <- sf$time
+    y <- log(sf$surv)
+    if(plot){
+        plot(x,y,xlab="Residual, r",ylab="Log proportion of residuals exceeding r",...)
+        if(bw){
+            abline(0,-1,col="black",lty="dashed")
+        }
+        else{
+            abline(0,-1,col="red")
+        }        
+    }
+    return(list(x=x,y=y))
 }

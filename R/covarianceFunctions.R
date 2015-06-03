@@ -87,6 +87,34 @@ SpikedExponentialCovFct <- function(){
 }
 
 
+##' SPDE function
+##'
+##' A function to declare and evaluate an SPDE covariance function.
+##'
+##' @param ord the order of the model to be used, currently an integer between 1 an 3. See Lindgren 2011 paper.
+##' @return an covariance function based on the SPDE model
+##' @seealso \link{ExponentialCovFct}, \link{covmodel}, \link{CovarianceFct}
+##' @export
+
+SPDE <- function(ord){
+    ans <- list()
+    ans$npar <- 2
+    ans$parnames <- c("psi","a")
+    ans$itrans <- function(x){return(c(exp(x[1]),4+exp(x[2])))} # inverse transform back to correct scale
+    ans$trans <- function(x){return(c(log(x[1]),log(x[2]-4)))} # transform assumed  
+    ans$eval <- function(precMatStruct,pars){
+        ans <- list()
+        ans$precmat <- precMatStruct(SPDEprec(pars[2],ord))
+        ans$vmult <- pars[1] 
+        return(ans)
+    }
+    ans$order <- ord
+    class(ans) <- c("covmodel","SPDEmodel")
+    return(ans)
+}
+
+
+
 
 
 ##' EvalCov function
@@ -113,3 +141,64 @@ EvalCov <- function(cov.model,u,parameters){
 }
 
 
+##############################################
+# OLD CODE ...
+##############################################
+
+## CentroidsCovFct function
+##
+## A function to declare and also evaluate an exponential covariance function.
+##
+## @param model the choice of covariance model e.g. ExponentialCovFct()
+## @param shpid character string the name of the column in the shapefile to be matched to the data
+## @param dataid character string the name of the column in the data to be matched to the shapefile
+## @return the exponential covariance function
+## @seealso \link{SpikedExponentialCovFct}, \link{covmodel}, \link{CovarianceFct}
+## @export
+
+#CentroidsCovFct <- function(model,shpid,dataid){
+#     ans <- list()
+#     ans$model <- model
+#     ans$npar <- model$npar
+#     ans$parnames <- model$parnames
+#     ans$itrans <- model$itrans # inverse transform back to correct scale
+#     ans$trans <- model$trans # transform assumed  
+#     ans$eval <- model$eval
+#     ans$shpid <- shpid
+#     ans$dataid <- dataid
+
+#     class(ans) <- c("covmodel","fromCentroids")
+#     return(ans)
+# }
+
+
+## bymCovFct function
+##
+## A function to declare and also evaluate an exponential covariance function.
+##
+## @param shape a SpatialPOlygonsDataFrame
+## @param model the choice of covariance model e.g. ExponentialCovFct()
+## @param additional named list of additional parameters
+## @return the exponential covariance function
+## @seealso \link{SpikedExponentialCovFct}, \link{covmodel}, \link{CovarianceFct}
+## @export
+
+# bymCovFct <- function(shape){
+#     ans <- list()
+#     ans$npar <- 1 
+#     ans$parnames <- "sigma"
+#     ans$itrans <- exp # inverse transform back to correct scale
+#     ans$trans <- log # transform assumed     
+#     ans$nb <- poly2nb(shape)
+#     W <- nb2mat(ans$nb, style = "B", zero.policy = TRUE)
+#     ans$W <- Matrix(W)
+#     ans$nn <- rowSums(W)
+#     ans$eval <- function(pars,Y){
+
+#     }
+
+#     browser()
+
+#     class(ans) <- c("covmodel","fromBYM")
+#     return(ans)
+# }

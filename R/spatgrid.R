@@ -104,10 +104,28 @@ grid2spdf <- function(xgrid,ygrid,proj4string=CRS(as.character(NA))){
 gridY <- function(Y,control){
     newy <- matrix(-var(Y)/2,control$fftgrid$Mext,control$fftgrid$Next)
 
-    uqidx <- unique(control$idx)
-    Ytemp <- sapply(uqidx,function(i){mean(Y[control$idx==i])})    
+    Ytemp <- sapply(control$uqidx,function(i){mean(Y[control$idx==i])})    
     
-    newy[uqidx] <- Ytemp
+    newy[control$uqidx] <- Ytemp
+    return(newy)
+}
+
+
+##' gridY_polygonal function
+##'
+##' A function to put estimated individual Y's onto a grid
+##'
+##' @param Y estimate of Y
+##' @param control control parameters
+##' @return ...
+##' @export
+
+gridY_polygonal <- function(Y,control){
+    newy <- rep(-var(Y)/2,control$n) #matrix(-var(Y)/2,control$fftgrid$Mext,control$fftgrid$Next)
+
+    Ytemp <- sapply(control$uqidx,function(i){mean(Y[control$idx==i])})    
+    
+    newy[control$uqidx] <- Ytemp
     return(newy)
 }
 
