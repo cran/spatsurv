@@ -8,7 +8,7 @@ spplot1(x, what, palette = brewer.pal(5, "Oranges"), breaks = NULL,
   legpos = "topleft", fun = identity, include.lowest = TRUE, bty = "n",
   bg = NULL, printlegend = TRUE, bw = FALSE, useLeaflet = FALSE,
   urltemplate = urlTemplate("Stamen_Toner"), fillOpacity = 0.5,
-  legendOpacity = 0.5, ...)
+  legendOpacity = 0.5, OSMbg = NULL, ...)
 }
 \arguments{
 \item{x}{a SpatialPolgonsDataFrame or a SpatialPointsDataFrame}
@@ -41,6 +41,8 @@ spplot1(x, what, palette = brewer.pal(5, "Oranges"), breaks = NULL,
 
 \item{legendOpacity}{see opacity argument in function addLegend}
 
+\item{OSMbg}{optional OpenStreetMap background to add to plot, obtain this using the function getBackground}
+
 \item{...}{other arguments to be passed to plot}
 }
 \value{
@@ -57,6 +59,6 @@ See \url{http://leaflet-extras.github.io/leaflet-providers/preview/} for example
 Instructions on installing the leaflet R package are available from  \url{https://rstudio.github.io/leaflet/}
 }
 \seealso{
-\link{urlTemplate}, \link{brewer.pal}
+\link{urlTemplate}, \link{getBackground}, brewer.pal
 }
 

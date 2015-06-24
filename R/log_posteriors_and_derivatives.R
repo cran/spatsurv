@@ -17,11 +17,25 @@
 ##' @return evaluates the log-posterior and the gradient and hessian, if required.
 ##' @references 
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. http://arxiv.org/abs/1501.01665
+##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
 ##' }
 ##' @export
 
 logPosterior <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,control,gradient=FALSE,hessian=FALSE){
+
+    censoringtype <- control$censoringtype
+    censored <- control$censored
+    notcensored <- control$notcensored
+    Ctest <- control$Ctest
+    Utest <- control$Utest
+    rightcensored <- control$rightcensored
+    notcensored <- control$notcensored
+    leftcensored <- control$leftcensored
+    intervalcensored <- control$intervalcensored
+    Rtest <- control$Rtest
+    Utest <- control$Utest
+    Ltest <- control$Ltest
+    Itest <- control$Itest
 
     if(hessian){
         gradient <- TRUE
@@ -34,7 +48,6 @@ logPosterior <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,control,
         deriv[(length(beta)+length(omega)+1):(length(beta)+length(omega)+length(eta))] <- 0 # random walk for eta ...
     } 
     
-    censoringtype <- attr(surv,"type")
     
     omegaorig <- omega # recall we are working with omega on the transformed scale
     omega <- control$omegaitrans(omega) # this is omega on the correct scale
@@ -53,28 +66,6 @@ logPosterior <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,control,
     XbetaplusY <- Xbeta + Y
     expXbetaplusY <- exp(XbetaplusY)
     
-    if(censoringtype=="left" | censoringtype=="right"){
-        censored <- surv[,"status"]==0
-        notcensored <- !censored
-
-        Ctest <- any(censored)
-        Utest <- any(notcensored)        
-        
-    }
-    else{
-        rightcensored <- surv[,"status"] == 0
-        notcensored <- surv[,"status"] == 1
-        leftcensored <- surv[,"status"] == 2
-        intervalcensored <- surv[,"status"] == 3
-
-        Rtest <- any(rightcensored)        
-        Utest <- any(notcensored) 
-        Ltest <- any(leftcensored)
-        Itest <- any(intervalcensored)
-    }
-
-    
-
     # setup function J=exp(X%*%beta + Y)*H_0(t)
     if(censoringtype=="left" | censoringtype=="right"){
         H <- haz$H(surv[,"time"])

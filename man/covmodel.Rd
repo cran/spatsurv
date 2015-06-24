@@ -20,6 +20,6 @@ i.e. not estimated by the MCMC algorithm. To have spatsurv estimate these parame
 see the spatsurv vignette.
 }
 \seealso{
-\link{CovarianceFct}
+CovarianceFct
 }
 

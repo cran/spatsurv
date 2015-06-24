@@ -18,7 +18,7 @@
 ##' \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control} 
 ##' @references 
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. http://arxiv.org/abs/1501.01665
+##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
 ##' }
 ##' @export
 
@@ -232,6 +232,71 @@ survspat <- function(   formula,
     control$omegaitrans <- info$itrans
     control$omegajacobian <- info$jacobian # used in computing the derivative of the log posterior with respect to the transformed omega (since it is easier to compute with respect to omega) 
     control$omegahessian <- info$hessian
+
+
+    #######
+
+    control$censoringtype <- attr(survivaldata,"type")
+
+    if(control$censoringtype=="left" | control$censoringtype=="right"){
+        control$censored <- survivaldata[,"status"]==0
+        control$notcensored <- !control$censored
+
+        control$Ctest <- any(control$censored)
+        control$Utest <- any(control$notcensored)
+
+        control$idxi <- list()
+        control$idxicensored <- list()
+        control$idxinotcensored <- list()
+        lapply(control$uqidx,function(i){control$idxi[[i]] <<- which(control$idx==i)})
+        lapply(control$uqidx,function(i){control$idxicensored[[i]] <<- control$censored & control$idx==i})
+        lapply(control$uqidx,function(i){control$idxinotcensored[[i]] <<- control$notcensored & control$idx==i})
+        
+        if(control$Ctest){
+            control$idxicensored <- lapply(control$idxicensored,function(x){try(which(x),silent=TRUE)})
+        }
+        if(control$Utest){
+            control$sumidxinotcensored <- lapply(control$idxinotcensored,function(x){try(sum(x),silent=TRUE)})
+            control$idxinotcensored <- lapply(control$idxinotcensored,function(x){try(which(x),silent=TRUE)})
+        }
+    }
+    else{
+        control$rightcensored <- survivaldata[,"status"] == 0
+        control$notcensored <- survivaldata[,"status"] == 1
+        control$leftcensored <- survivaldata[,"status"] == 2
+        control$intervalcensored <- survivaldata[,"status"] == 3
+
+        control$Rtest <- any(control$rightcensored)        
+        control$Utest <- any(control$notcensored) 
+        control$Ltest <- any(control$leftcensored)
+        control$Itest <- any(control$intervalcensored)
+
+        control$idxirightcensored <- list()
+        control$idxinotcensored <- list()
+        control$idxileftcensored <- list()
+        control$idxiintervalcensored <- list()
+
+        lapply(control$uqidx,function(i){control$idxirightcensored[[i]] <- control$rightcensored & control$idx==i})
+        lapply(control$uqidx,function(i){control$idxinotcensored[[i]] <- control$notcensored & control$idx==i})
+        lapply(control$uqidx,function(i){control$idxileftcensored[[i]] <- control$leftcensored & control$idx==i})
+        lapply(control$uqidx,function(i){control$idxiintervalcensored[[i]] <- control$intervalcensored & control$idx==i})
+
+        if(control$Rtest){
+            control$idxirightcensored <- lapply(control$idxirightcensored,function(x){try(which(x),silent=TRUE)})
+        }
+        if(control$Utest){
+            control$idxinotcensored <- lapply(control$idxinotcensored,function(x){try(which(x),silent=TRUE)})
+        }
+        if(control$Ltest){
+            control$idxileftcensored <- lapply(control$idxileftcensored,function(x){try(which(x),silent=TRUE)})
+        }
+        if(control$Itest){
+            control$idxiintervalcensored <- lapply(control$idxiintervalcensored,function(x){try(which(x),silent=TRUE)})
+        }
+    }
+
+    #######
+
     
     cat("\n","Getting initial estimates of model parameters using maximum likelihood on non-spatial version of the model","\n")
     mlmod <- maxlikparamPHsurv(surv=survivaldata,X=X,control=control)

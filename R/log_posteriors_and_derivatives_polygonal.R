@@ -17,11 +17,25 @@
 ##' @return evaluates the log-posterior and the gradient and hessian, if required.
 ##' @references 
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. http://arxiv.org/abs/1501.01665
+##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
 ##' }
 ##' @export
 
 logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,control,gradient=FALSE,hessian=FALSE){
+
+    censoringtype <- control$censoringtype
+    censored <- control$censored
+    notcensored <- control$notcensored
+    Ctest <- control$Ctest
+    Utest <- control$Utest
+    rightcensored <- control$rightcensored
+    notcensored <- control$notcensored
+    leftcensored <- control$leftcensored
+    intervalcensored <- control$intervalcensored
+    Rtest <- control$Rtest
+    Utest <- control$Utest
+    Ltest <- control$Ltest
+    Itest <- control$Itest
 
     if(hessian){
         gradient <- TRUE
@@ -33,8 +47,6 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
         deriv <- c(deriv,-gamma) # tag on gamma
         deriv[(length(beta)+length(omega)+1):(length(beta)+length(omega)+length(eta))] <- 0 # random walk for eta ...
     } 
-    
-    censoringtype <- attr(surv,"type")
     
     omegaorig <- omega # recall we are working with omega on the transformed scale
     omega <- control$omegaitrans(omega) # this is omega on the correct scale
@@ -51,28 +63,6 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
     Xbeta <- X%*%beta
     XbetaplusY <- Xbeta + Y[control$idx]
     expXbetaplusY <- exp(XbetaplusY)
-    
-    if(censoringtype=="left" | censoringtype=="right"){
-        censored <- surv[,"status"]==0
-        notcensored <- !censored
-
-        Ctest <- any(censored)
-        Utest <- any(notcensored)        
-        
-    }
-    else{
-        rightcensored <- surv[,"status"] == 0
-        notcensored <- surv[,"status"] == 1
-        leftcensored <- surv[,"status"] == 2
-        intervalcensored <- surv[,"status"] == 3
-
-        Rtest <- any(rightcensored)        
-        Utest <- any(notcensored) 
-        Ltest <- any(leftcensored)
-        Itest <- any(intervalcensored)
-    }
-
-    
 
     # setup function J=exp(X%*%beta + Y)*H_0(t)
     if(censoringtype=="left" | censoringtype=="right"){
@@ -157,7 +147,7 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
             dP_domega <- control$omegajacobian(omegaorig)*dP_domega # this puts the derivative back on the correct scale dL/dpsi = dL/dtheta * dtheta/dpsi, e.g. psi=log(theta)
 
             bitsnbobs <- rep(0,control$n)
-            bitsnbobs[control$uqidx] <- bitsnbobs[control$uqidx] + sapply(control$uqidx,function(i){sum(control$idx==i & notcensored)-sum(J[control$idx==i])})            
+            bitsnbobs[control$uqidx] <- bitsnbobs[control$uqidx] + sapply(control$uqidx,function(i){control$sumidxinotcensored[[i]]-sum(J[control$idxi[[i]]])})            
             dP_dgamma <- cholsigma%*%bitsnbobs #as.vector(Re((1/(control$Mext*control$Next))*fft(invrootQeigs*fft(bitsnbobs,inverse=TRUE))))
 
             #dP_dgamma <-    (if(Utest){colSums(cholsigma[notcensored,,drop=FALSE] - dJ_dgamma[notcensored,,drop=FALSE])}else{0}) + 
@@ -176,8 +166,8 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
             
             bitsnbobs <- rep(0,control$n)
             bitsnbobs[control$uqidx] <- bitsnbobs[control$uqidx] + 
-                                        (if(Utest){sapply(control$uqidx,function(i){sum(1-J[control$idx==i & notcensored])})}else{0}) +
-                                        (if(Ctest){sapply(control$uqidx,function(i){sum((S[control$idx==i & censored]/(1-S[control$idx==i & censored]))*J[control$idx==i & censored])})}else{0})            
+                                        (if(Utest){sapply(control$uqidx,function(i){sum(1-J[control$idxinotcensored[[i]]])})}else{0}) +
+                                        (if(Ctest){sapply(control$uqidx,function(i){sum((S[control$idxicensored[[i]]]/(1-S[control$idxicensored[[i]]]))*J[control$idxicensored[[i]]])})}else{0})            
             dP_dgamma <- cholsigma%*%bitsnbobs # as.vector(Re((1/(control$Mext*control$Next))*fft(invrootQeigs*fft(bitsnbobs,inverse=TRUE))))
 
             #dP_dgamma <-    (if(Utest){colSums(cholsigma[notcensored,,drop=FALSE] - dJ_dgamma[notcensored,,drop=FALSE])}else{0}) + 
@@ -199,10 +189,10 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
 
             bitsnbobs <- rep(0,control$n)
             bitsnbobs[control$uqidx] <- bitsnbobs[control$uqidx] + 
-                                        (if(Utest){sapply(control$uqidx,function(i){sum(1-J1[control$idx==i & notcensored])})}else{0}) -
-                                        (if(Rtest){sapply(control$uqidx,function(i){sum(-J1[control$idx==i & rightcensored])})}else{0}) +  
-                                        (if(Ltest){sapply(control$uqidx,function(i){sum((S1[control$idx==i & leftcensored]/(1-S1[control$idx==i & leftcensored]))*J1[control$idx==i & leftcensored])})}else{0}) +                                                   
-                                        (if(Itest){sapply(control$uqidx,function(i){sum(((1/(S1-S2))*(J2*S2-J1*S1))[control$idx==i & intervalcensored])})}else{0})
+                                        (if(Utest){sapply(control$uqidx,function(i){sum(1-J1[control$idxinotcensored[[i]]])})}else{0}) -
+                                        (if(Rtest){sapply(control$uqidx,function(i){sum(-J1[control$idxirightcensored[[i]]])})}else{0}) +  
+                                        (if(Ltest){sapply(control$uqidx,function(i){sum((S1[control$idxileftcensored[[i]]]/(1-S1[control$idxileftcensored[[i]]]))*J1[control$idxileftcensored[[i]]])})}else{0}) +                                                   
+                                        (if(Itest){sapply(control$uqidx,function(i){sum(((1/(S1-S2))*(J2*S2-J1*S1))[control$idxiintervalcensored[[i]]])})}else{0})
         
 
             dP_dgamma <- cholsigma%*%bitsnbobs #as.vector(Re((1/(control$Mext*control$Next))*fft(invrootQeigs*fft(bitsnbobs,inverse=TRUE))))  
@@ -333,7 +323,7 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
             hess_omega_beta <- control$omegajacobian(omegaorig)*hess_omega_beta                        
             
             bitsnbobs <- rep(0,control$n)
-            bitsnbobs[control$uqidx] <- bitsnbobs[control$uqidx] + sapply(control$uqidx,function(i){sum(-J[control$idx==i])})            
+            bitsnbobs[control$uqidx] <- bitsnbobs[control$uqidx] + sapply(control$uqidx,function(i){sum(-J[control$idxi[[i]]])})            
             hess_gamma <- sigma%*%bitsnbobs #as.vector(Re((1/(control$Mext*control$Next))*fft(covbase*fft(bitsnbobs,inverse=TRUE))))
 
             #hess_gamma <- (if(Utest){-colSums(d2J_dgamma2[notcensored,,drop=FALSE])}else{0}) - 
@@ -354,8 +344,8 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
             
             bitsnbobs <- rep(0,control$n)
             bitsnbobs[control$uqidx] <- bitsnbobs[control$uqidx] + 
-                                    (if(Utest){sapply(control$uqidx,function(i){sum(-J[notcensored & control$idx==i])})}else{0}) -
-                                    (if(Ctest){sapply(control$uqidx,function(i){sum((S*(J^2-J)/(1-S)+(J*S/(1-S))^2)[censored & control$idx==i])})}else{0})           
+                                    (if(Utest){sapply(control$uqidx,function(i){sum(-J[control$idxinotcensored[[i]]])})}else{0}) -
+                                    (if(Ctest){sapply(control$uqidx,function(i){sum((S*(J^2-J)/(1-S)+(J*S/(1-S))^2)[control$idxicensored[[i]]])})}else{0})           
             hess_gamma <- sigma%*%bitsnbobs #as.vector(Re((1/(control$Mext*control$Next))*fft(covbase*fft(bitsnbobs,inverse=TRUE))))
 
             #hess_gamma <- (if(Utest){-colSums(d2J_dgamma2[notcensored,,drop=FALSE])}else{0}) -
@@ -384,10 +374,10 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
             bitsnbobs <- rep(0,control$n)
             
             bitsnbobs[control$uqidx] <- bitsnbobs[control$uqidx] + 
-                                    (if(Utest){sapply(control$uqidx,function(i){sum(-J1[notcensored & control$idx==i])})}else{0}) +
-                                    (if(Rtest){sapply(control$uqidx,function(i){sum(-J1[rightcensored & control$idx==i])})}else{0}) -
-                                    (if(Ltest){sapply(control$uqidx,function(i){sum((S1*(J1^2-J1)/(1-S1)+(J1*S1/(1-S1))^2)[notcensored & control$idx==i])})}else{0}) +
-                                    (if(Itest){sapply(control$uqidx,function(i){sum(((1/(S1-S2))*(S1*(J1^2-J1)-S2*(J2^2-J2))-(1/(S1-S2)^2)*(J1^2*S1^2-2*J1*J2*S1*S2+J2^2*S2^2))[intervalcensored & control$idx==i])})}else{0})          
+                                    (if(Utest){sapply(control$uqidx,function(i){sum(-J1[control$idxinotcensored[[i]]])})}else{0}) +
+                                    (if(Rtest){sapply(control$uqidx,function(i){sum(-J1[control$idxirightcensored[[i]]])})}else{0}) -
+                                    (if(Ltest){sapply(control$uqidx,function(i){sum((S1*(J1^2-J1)/(1-S1)+(J1*S1/(1-S1))^2)[control$idxileftcensored[[i]]])})}else{0}) +
+                                    (if(Itest){sapply(control$uqidx,function(i){sum(((1/(S1-S2))*(S1*(J1^2-J1)-S2*(J2^2-J2))-(1/(S1-S2)^2)*(J1^2*S1^2-2*J1*J2*S1*S2+J2^2*S2^2))[control$idxiintervalcensored[[i]]])})}else{0})          
             hess_gamma <- sigma%*%bitsnbobs # as.vector(Re((1/(control$Mext*control$Next))*fft(covbase*fft(bitsnbobs,inverse=TRUE))))
 
             # hess_gamma <- (if(Utest){-colSums(d2J_dgamma2_1[notcensored,,drop=FALSE])}else{0}) - 

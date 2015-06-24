@@ -23,9 +23,10 @@
 ##' @param urltemplate template for leaflet map background, default is urlTemplate('Stamen-Toner'), but any valid web address for leaflet templates will work here. See ?urlTemplate.
 ##' @param fillOpacity see ?addPolygons
 ##' @param legendOpacity see opacity argument in function addLegend
+##' @param OSMbg optional OpenStreetMap background to add to plot, obtain this using the function getBackground
 ##' @param ... other arguments to be passed to plot
 ##' @return either produces a plot or if useLeaflet is TRUE, returns a leaflet map widget to which further layers can be added
-##' @seealso \link{urlTemplate}, \link{brewer.pal}
+##' @seealso \link{urlTemplate}, \link{getBackground}, brewer.pal
 ##' @export
 
 spplot1 <- function(x,
@@ -43,6 +44,7 @@ spplot1 <- function(x,
 					urltemplate=urlTemplate("Stamen_Toner"),
 					fillOpacity = 0.5,
 					legendOpacity = 0.5,
+					OSMbg=NULL,
 					...){
 
 	if(bw){
@@ -81,7 +83,17 @@ spplot1 <- function(x,
 	
 	
 	if(!useLeaflet){
-		sp::plot(x,col=cols,...)
+		if(is.null(OSMbg)){
+			sp::plot(x,col=cols,...)
+		}
+		else{
+			plot(OSMbg,...)
+			cols <- adjustcolor(cols,alpha.f=0.5)
+			palette <- adjustcolor(palette,alpha.f=0.5)
+			x <- spTransform(x,CRS("+init=epsg:3857"))
+			sp::plot(x,col=cols,add=TRUE,...)
+		}
+
 		if(printlegend){
 			legend(legpos,pch=rep(15,n),col=palette,legend=lvls,bty=bty,bg=bg)
 		}
@@ -94,14 +106,14 @@ spplot1 <- function(x,
 				ns <- spTransform(x,CRS('+init=epsg:4326'))
 				m <- leaflet() %>%
 				addTiles(urlTemplate=urltemplate) %>%
-				addPolygons(data=ns,color=cols,fillColor=cols,weight=1,fillOpacity = fillOpacity) %>%
+				addPolygons(data=ns,color=cols,fillColor=cols,weight=0,fillOpacity = fillOpacity,stroke=FALSE) %>%
 				addLegend(position='topright', labels = lvls, colors = palette,opacity=legendOpacity)
 			}
 			else if(inherits(x,'SpatialPointsDataFrame')){
 				ns <- spTransform(x,CRS('+init=epsg:4326'))
 				m <- leaflet() %>%
 				addTiles(urlTemplate=urltemplate) %>%
-				addCircles(data=ns,color=cols) %>%
+				addCircles(data=ns,color=cols,stroke=FALSE) %>%
 				addLegend(position='topright', labels = lvls, colors = palette,opacity=legendOpacity)
 			}
 			else{
@@ -165,3 +177,21 @@ spplot_compare <- function(x,y,what,what1=what,palette=brewer.pal(9,"Oranges"),l
 
 	par(mfrow=c(1,1))
 }
+
+
+##' getBackground function
+##'
+##' A function to 
+##'
+##' @param poly X 
+##' @param type X 
+##' @return ...
+##' @export
+
+getBackground <- function(poly,type="stamen-toner"){
+	poly <- spTransform(poly,CRS("+init=epsg:4326"))
+	bb <- bbox(poly)
+	map <- openmap(upperLeft=c(lat=bb[2,2],lon=bb[1,1]), lowerRight=c(lat=bb[2,1],lon=bb[1,2]),type="stamen-toner")
+	return(map)
+}
+

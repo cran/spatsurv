@@ -25,7 +25,7 @@ getcov <- function(u,sigma,phi,model,pars){
 ##' @param model correlation type, a string see ?CovarianceFct 
 ##' @param pars vector of additional parameters for certain classes of covariance function (eg Matern), these must be supplied in the order given in ?CovarianceFct and are not estimated 
 ##' @return an object of class covmodel
-##' @seealso \link{CovarianceFct}
+##' @seealso CovarianceFct
 ##' @export
 
 covmodel <- function(model,pars){
@@ -46,7 +46,7 @@ covmodel <- function(model,pars){
 ##' A function to declare and also evaluate an exponential covariance function.
 ##'
 ##' @return the exponential covariance function
-##' @seealso \link{SpikedExponentialCovFct}, \link{covmodel}, \link{CovarianceFct}
+##' @seealso \link{SpikedExponentialCovFct}, \link{covmodel}, CovarianceFct
 ##' @export
 
 ExponentialCovFct <- function(){
@@ -68,7 +68,7 @@ ExponentialCovFct <- function(){
 ##' A function to declare and also evaluate a spiked exponential covariance function. This is an exponential covariance function with a nugget.
 ##'
 ##' @return the spiked exponential covariance function
-##' @seealso \link{ExponentialCovFct}, \link{covmodel}, \link{CovarianceFct}
+##' @seealso \link{ExponentialCovFct}, \link{covmodel}, CovarianceFct
 ##' @export
 
 SpikedExponentialCovFct <- function(){
@@ -93,7 +93,7 @@ SpikedExponentialCovFct <- function(){
 ##'
 ##' @param ord the order of the model to be used, currently an integer between 1 an 3. See Lindgren 2011 paper.
 ##' @return an covariance function based on the SPDE model
-##' @seealso \link{ExponentialCovFct}, \link{covmodel}, \link{CovarianceFct}
+##' @seealso \link{ExponentialCovFct}, \link{covmodel}, CovarianceFct
 ##' @export
 
 SPDE <- function(ord){
@@ -153,7 +153,7 @@ EvalCov <- function(cov.model,u,parameters){
 ## @param shpid character string the name of the column in the shapefile to be matched to the data
 ## @param dataid character string the name of the column in the data to be matched to the shapefile
 ## @return the exponential covariance function
-## @seealso \link{SpikedExponentialCovFct}, \link{covmodel}, \link{CovarianceFct}
+## @seealso \link{SpikedExponentialCovFct}, \link{covmodel}, CovarianceFct
 ## @export
 
 #CentroidsCovFct <- function(model,shpid,dataid){
@@ -180,7 +180,7 @@ EvalCov <- function(cov.model,u,parameters){
 ## @param model the choice of covariance model e.g. ExponentialCovFct()
 ## @param additional named list of additional parameters
 ## @return the exponential covariance function
-## @seealso \link{SpikedExponentialCovFct}, \link{covmodel}, \link{CovarianceFct}
+## @seealso \link{SpikedExponentialCovFct}, \link{covmodel}, CovarianceFct
 ## @export
 
 # bymCovFct <- function(shape){

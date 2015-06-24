@@ -388,7 +388,7 @@ spatsurvVignette <- function(){
 ##' @param survdat data.frame containing the survival data
 ##' @param pid name of the variable in the survival data that gives the region identifier in poly
 ##' @param sid the name of the variable in poly to match the region identifier in survdat to
-##' @param n the number of different allocations to make. e.g. if n=2 (the default) two candidate sets of locations are available.
+##' @param n the number of different allocations to make. e.g. if n is 2 (the default) two candidate sets of locations are available.
 ##' @param wid The default is 2000, interpreted in metres ie 2Km. size of buffer to add to window for raster cropping purposes: this ensures that for each polygon, the cropped raster covers it completely. 
 ##' @return matrices x and y, both of size (number of observations in survdat x n) giving n potential candidate locations of points in the columns of x and y.
 ##' @export

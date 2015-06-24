@@ -17,7 +17,7 @@ allocate(poly, popden, survdat, pid, sid, n = 2, wid = 2000)
 
 \item{sid}{the name of the variable in poly to match the region identifier in survdat to}
 
-\item{n}{the number of different allocations to make. e.g. if n=2 (the default) two candidate sets of locations are available.}
+\item{n}{the number of different allocations to make. e.g. if n is 2 (the default) two candidate sets of locations are available.}
 
 \item{wid}{The default is 2000, interpreted in metres ie 2Km. size of buffer to add to window for raster cropping purposes: this ensures that for each polygon, the cropped raster covers it completely.}
 }

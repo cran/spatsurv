@@ -78,3 +78,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
 BUG FIXES  
 
     o Fixed bug in posteriorcov when using RandomFields covariance functions
+
+        CHANGES IN spatsurv VERSION 0.9-10
+
+SIGNIFICANT USER-VISIBLE CHANGES  
+
+    o Profiled code to get substantial speedup for gridded, polygonal and SPDE methods
+    o spplot1 function now has leaflet capability and also can produce static maps with an OpenStreetMap background via the function getBackground.

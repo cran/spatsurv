@@ -12,7 +12,7 @@
 ##' \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control} 
 ##' @references 
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. http://arxiv.org/abs/1501.01665
+##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
 ##' }
 ##' @export
 
@@ -63,6 +63,30 @@ survspatNS <- function( formula,
     control$omegaitrans <- info$itrans
     control$omegajacobian <- info$jacobian # used in computing the derivative of the log posterior with respect to the transformed omega (since it is easier to compute with respect to omega) 
     control$omegahessian <- info$hessian
+
+    control$censoringtype <- attr(survivaldata,"type")
+
+    if(control$censoringtype=="left" | control$censoringtype=="right"){
+        control$censored <- survivaldata[,"status"]==0
+        control$notcensored <- !control$censored
+
+        control$Ctest <- any(control$censored)
+        control$Utest <- any(control$notcensored)        
+        
+    }
+    else{
+        control$rightcensored <- survivaldata[,"status"] == 0
+        control$notcensored <- survivaldata[,"status"] == 1
+        control$leftcensored <- survivaldata[,"status"] == 2
+        control$intervalcensored <- survivaldata[,"status"] == 3
+
+        control$Rtest <- any(control$rightcensored)        
+        control$Utest <- any(control$notcensored) 
+        control$Ltest <- any(control$leftcensored)
+        control$Itest <- any(control$intervalcensored)
+    }
+
+    #######
     
     cat("\n","Maximum likelihood using BFGS ...","\n")
     mlmod <- maxlikparamPHsurv(surv=survivaldata,X=X,control=control)

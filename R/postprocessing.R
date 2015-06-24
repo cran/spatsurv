@@ -1032,3 +1032,37 @@ CSplot <- function(mod,plot=TRUE,bw=FALSE,...){
     }
     return(list(x=x,y=y))
 }
+
+
+
+##' getGrid function
+##'
+##' A function to extract and return the computational grid from a gridded analysis.
+##'
+##' @param mod an object of class mcmcspatsurv, returned by the function survspat 
+##' @param returnclass the class of object to return, default is a'SpatialPolygonsDataFrame'. Other options are 'raster', which returns a raster brick; or 'SpatialPixelsDataFrame'
+##' @return a SpatialPolygonsDataFrame in which Monte Carlo expectations can be stored and later plotted.
+##' @export
+
+getGrid <- function(mod,returnclass="SpatialPolygonsDataFrame"){
+    if(inherits(mod$grid,"SpatialPolygonsDataFrame")){
+        polys <- mod$grid
+    }
+    else if(!is.null(mod$xvals)){
+        polys <- as(SpatialPixels(SpatialPoints(expand.grid(mod$xvals,mod$yvals)),proj4string=CRS(proj4string(mod$data))),"SpatialPolygons")
+        polys <- SpatialPolygonsDataFrame(polys,data=data.frame(ID_from_grid=1:length(polys)),match.ID=FALSE)
+    }
+    else{
+        stop("This is not a gridded analysis, cannot return computational grid")
+    }
+
+    if(returnclass=="SpatialPixelsDataFrame" | returnclass=="raster"){
+        polys <- SpatialPixels(SpatialPoints(coordinates(polys)),proj4string=CRS(proj4string(mod$data)))
+        polys <- SpatialPixelsDataFrame(polys,data=data.frame(ID_from_grid=1:length(polys)))
+        if(returnclass=="raster"){
+            polys <- brick(polys)            
+        }
+    }
+
+    return(polys)
+}
