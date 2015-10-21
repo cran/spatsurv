@@ -32,7 +32,7 @@ simsurv <- function(X=cbind(age=runif(100,5,50),sex=rbinom(100,1,0.5),cancer=rbi
 
     mcmcloop <- mcmcLoop(N=mcmc.control$nits,burnin=mcmc.control$burn,thin=mcmc.control$thin,progressor=mcmcProgressTextBar)
 
-    distmat <- as.matrix(dist(coords))
+    distmat <- as.matrix(stats::dist(coords))
 
     n <- nrow(X)
     u <- as.vector(distmat)

@@ -37,10 +37,24 @@ maxlikparamPHsurv <- function(surv,X,control){
     }
     
     #browser()
+    cat("Initial optimisation via BFGS ...\n")
     opt <- try(optim(par=c(betainit,omegainit),fn=likfun,gr=gradfun,method="BFGS",control=control$optimcontrol,hessian=control$hessian))
     if(inherits(opt,"try-error")){
         stop("Possible problem with initial values in obtaining maximum likelihood estimates of parameters, try setting MLinits in function distinfo for chosen baseline hazard distribution")
     }
+
+    cat("Refining optimum via Nelder Mead ...\n")
+    opt <- try(optim(par=opt$par,fn=likfun,control=control$optimcontrol,hessian=control$hessian))
+    if(inherits(opt,"try-error")){
+        stop("Possible problem with initial values in obtaining maximum likelihood estimates of parameters, try setting MLinits in function distinfo for chosen baseline hazard distribution")
+    }
+
+    cat("Refining optimum via BFGS ...\n")
+    opt <- try(optim(par=opt$par,fn=likfun,gr=gradfun,method="BFGS",control=control$optimcontrol,hessian=control$hessian))
+    if(inherits(opt,"try-error")){
+        stop("Possible problem with initial values in obtaining maximum likelihood estimates of parameters, try setting MLinits in function distinfo for chosen baseline hazard distribution")
+    }
+
 
     # opar <- opt$par
     # beta <- opar[1:ncol(X)]
@@ -60,8 +74,6 @@ maxlikparamPHsurv <- function(surv,X,control){
     #     plot(sq,ll)
     #     browser()
     # }
-
-
     
     return(opt)
 }

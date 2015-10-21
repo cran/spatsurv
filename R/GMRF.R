@@ -1,3 +1,26 @@
+##' getbb function
+##'
+##' A function to get the bounding box of a Spatial object
+##'
+##' @param obj a spatial object e.g. a SpatialPolygonsDataFrame, SpatialPolygons, etc ... anything with a bounding box that can be computed with bbox(obj)
+##' @return a SpatialPolygons object: the bounding box
+##' @export
+
+getbb <- function(obj){
+    bb <- bbox(obj)
+    pg <- matrix(NA,5,2)
+    pg[1,] <- c(bb[1,1],bb[2,1])
+    pg[2,] <- c(bb[1,1],bb[2,2])
+    pg[3,] <- c(bb[1,2],bb[2,2])
+    pg[4,] <- c(bb[1,2],bb[2,1])
+    pg[5,] <- pg[1,]
+    bound <- Polygon(pg)
+    bound <- Polygons(list(poly1=bound),ID=1)
+    bound <- SpatialPolygons(list(poly=bound))
+    proj4string(bound) <- CRS(proj4string(obj))
+    return(bound)
+}
+
 ##' getgrd function
 ##'
 ##' A function to create a regular grid over an observation window in order to model the spatial randome effects as a Gaussian

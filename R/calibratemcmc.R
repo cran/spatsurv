@@ -423,7 +423,18 @@ proposalVariance_polygonal <- function(X,surv,betahat,omegahat,Yhat,priors,cov.m
     gammahat <- solve(cholssigma)%*%(Ygrid-MU)
     
     hessian <- logPosterior_polygonal(surv=surv,X=X,beta=betahat,omega=omegahat,eta=etahat,gamma=gammahat,priors=priors,cov.model=cov.model,u=u,control=control,hessian=TRUE)
-    
+
+    # if(any(eigen(hessian$hess_beta)$values<0)){
+    #     cat("Problem with calibrating beta component, fixing using ad-hoc method...\n")
+    #     hessian$hess_beta <- diag(abs(hessian$hess_beta))
+    #     hessian$hess_omega_beta <- 0
+    # }
+    # if(any(eigen(hessian$hess_omega)$values<0)){
+    #     cat("Problem with calibrating omega component, fixing using ad-hoc method ...\n")
+    #     hessian$hess_omega <- diag(abs(hessian$hess_omega))
+    #     hessian$hess_omega_beta <- 0
+    # }
+
     # beta and omega
     sigma[1:lenbeta,1:lenbeta] <- hessian$hess_beta
     sigma[(lenbeta+1):(lenbeta+lenomega),(lenbeta+1):(lenbeta+lenomega)] <- hessian$hess_omega
@@ -432,6 +443,8 @@ proposalVariance_polygonal <- function(X,surv,betahat,omegahat,Yhat,priors,cov.m
     # gamma
     diag(sigma)[(lenbeta+lenomega+leneta+1):npars] <- hessian$hess_gamma   
     
+    #browser()
+
     return(list(etahat=etahat,sigma=solve(-sigma))) 
 }
 

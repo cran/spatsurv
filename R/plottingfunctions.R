@@ -24,6 +24,7 @@
 ##' @param fillOpacity see ?addPolygons
 ##' @param legendOpacity see opacity argument in function addLegend
 ##' @param OSMbg optional OpenStreetMap background to add to plot, obtain this using the function getBackground
+##' @param leafletLegend logical, display the leaflet legend?
 ##' @param ... other arguments to be passed to plot
 ##' @return either produces a plot or if useLeaflet is TRUE, returns a leaflet map widget to which further layers can be added
 ##' @seealso \link{urlTemplate}, \link{getBackground}, brewer.pal
@@ -45,6 +46,7 @@ spplot1 <- function(x,
 					fillOpacity = 0.5,
 					legendOpacity = 0.5,
 					OSMbg=NULL,
+					leafletLegend=TRUE,
 					...){
 
 	if(bw){
@@ -100,6 +102,7 @@ spplot1 <- function(x,
 	}
 	else{
 		m <- NULL
+		
 		s <- "require(leaflet)
 		{
 			if(inherits(x,'SpatialPolygonsDataFrame')){
@@ -113,7 +116,7 @@ spplot1 <- function(x,
 				ns <- spTransform(x,CRS('+init=epsg:4326'))
 				m <- leaflet() %>%
 				addTiles(urlTemplate=urltemplate) %>%
-				addCircles(data=ns,color=cols,stroke=FALSE) %>%
+				addCircleMarkers(data=ns,color=cols,stroke=FALSE) %>%
 				addLegend(position='topright', labels = lvls, colors = palette,opacity=legendOpacity)
 			}
 			else{
@@ -121,6 +124,28 @@ spplot1 <- function(x,
 			}
 		}
 		cat('Leaflet map returned, type name of object to visualise in a web browser.\n')"
+
+		if(!leafletLegend){
+			s <- "require(leaflet)
+			{
+				if(inherits(x,'SpatialPolygonsDataFrame')){
+					ns <- spTransform(x,CRS('+init=epsg:4326'))
+					m <- leaflet() %>%
+					addTiles(urlTemplate=urltemplate) %>%
+					addPolygons(data=ns,color=cols,fillColor=cols,weight=0,fillOpacity = fillOpacity,stroke=FALSE) 
+				}
+				else if(inherits(x,'SpatialPointsDataFrame')){
+					ns <- spTransform(x,CRS('+init=epsg:4326'))
+					m <- leaflet() %>%
+					addTiles(urlTemplate=urltemplate) %>%
+					addCircleMarkers(data=ns,color=cols,stroke=FALSE) 
+				}
+				else{
+					stop('Leaflet mapping for this kind of object not supported at present')
+				}
+			}
+			cat('Leaflet map returned, type name of object to visualise in a web browser.\n')"
+		}
 
 		eval(parse(text=s))
 

@@ -120,6 +120,8 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
         logpost <- loglik + priorcontrib
     }
 
+    #browser()
+
     
     if(gradient){
     
@@ -147,6 +149,7 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
             dP_domega <- control$omegajacobian(omegaorig)*dP_domega # this puts the derivative back on the correct scale dL/dpsi = dL/dtheta * dtheta/dpsi, e.g. psi=log(theta)
 
             bitsnbobs <- rep(0,control$n)
+            browser()
             bitsnbobs[control$uqidx] <- bitsnbobs[control$uqidx] + sapply(control$uqidx,function(i){control$sumidxinotcensored[[i]]-sum(J[control$idxi[[i]]])})            
             dP_dgamma <- cholsigma%*%bitsnbobs #as.vector(Re((1/(control$Mext*control$Next))*fft(invrootQeigs*fft(bitsnbobs,inverse=TRUE))))
 

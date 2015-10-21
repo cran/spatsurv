@@ -33,7 +33,7 @@ survspat <- function(   formula,
                         ids=list(shpid=NULL,dataid=NULL),
                         control=inference.control(gridded=FALSE)){
                         
-                            
+    formula <- as.formula(formula)                    
     
     # initial checks
     if(!(inherits(data,"SpatialPointsDataFrame")|inherits(data,"data.frame"))){
@@ -276,10 +276,10 @@ survspat <- function(   formula,
         control$idxileftcensored <- list()
         control$idxiintervalcensored <- list()
 
-        lapply(control$uqidx,function(i){control$idxirightcensored[[i]] <- control$rightcensored & control$idx==i})
-        lapply(control$uqidx,function(i){control$idxinotcensored[[i]] <- control$notcensored & control$idx==i})
-        lapply(control$uqidx,function(i){control$idxileftcensored[[i]] <- control$leftcensored & control$idx==i})
-        lapply(control$uqidx,function(i){control$idxiintervalcensored[[i]] <- control$intervalcensored & control$idx==i})
+        lapply(control$uqidx,function(i){control$idxirightcensored[[i]] <<- control$rightcensored & control$idx==i})
+        lapply(control$uqidx,function(i){control$idxinotcensored[[i]] <<- control$notcensored & control$idx==i})
+        lapply(control$uqidx,function(i){control$idxileftcensored[[i]] <<- control$leftcensored & control$idx==i})
+        lapply(control$uqidx,function(i){control$idxiintervalcensored[[i]] <<- control$intervalcensored & control$idx==i})
 
         if(control$Rtest){
             control$idxirightcensored <- lapply(control$idxirightcensored,function(x){try(which(x),silent=TRUE)})
@@ -374,6 +374,7 @@ survspat <- function(   formula,
     diagidx <- 1:npars
     diagidx <- matrix(diagidx,nrow=npars,ncol=2)
     SIGMApars <- as.matrix(SIGMA[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)])
+    
     SIGMAparsINV <- solve(SIGMApars)
     cholSIGMApars <- t(chol(SIGMApars))  
   

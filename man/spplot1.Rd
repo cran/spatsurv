@@ -8,7 +8,7 @@ spplot1(x, what, palette = brewer.pal(5, "Oranges"), breaks = NULL,
   legpos = "topleft", fun = identity, include.lowest = TRUE, bty = "n",
   bg = NULL, printlegend = TRUE, bw = FALSE, useLeaflet = FALSE,
   urltemplate = urlTemplate("Stamen_Toner"), fillOpacity = 0.5,
-  legendOpacity = 0.5, OSMbg = NULL, ...)
+  legendOpacity = 0.5, OSMbg = NULL, leafletLegend = TRUE, ...)
 }
 \arguments{
 \item{x}{a SpatialPolgonsDataFrame or a SpatialPointsDataFrame}
@@ -42,6 +42,8 @@ spplot1(x, what, palette = brewer.pal(5, "Oranges"), breaks = NULL,
 \item{legendOpacity}{see opacity argument in function addLegend}
 
 \item{OSMbg}{optional OpenStreetMap background to add to plot, obtain this using the function getBackground}
+
+\item{leafletLegend}{logical, display the leaflet legend?}
 
 \item{...}{other arguments to be passed to plot}
 }

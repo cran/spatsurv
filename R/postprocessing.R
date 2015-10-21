@@ -102,7 +102,7 @@ print.mlspatsurv <- function(x,probs=c(0.5,0.025,0.975),digits = 3, scientific =
 ##' @export
 
 quantile.mcmcspatsurv <- function(x,probs=c(0.025,0.5,0.975),...){
-    m1 <- t(apply(x$betasamp,2,quantile,probs=probs))
+    m1 <- t(apply(exp(x$betasamp),2,quantile,probs=probs))
     m2 <- t(apply(x$omegasamp,2,quantile,probs=probs))
     m3 <- t(apply(x$etasamp,2,quantile,probs=probs))
     return(list(betaquant=m1,omegaquant=m2,etaquant=m3))
@@ -125,7 +125,7 @@ quantile.mcmcspatsurv <- function(x,probs=c(0.025,0.5,0.975),...){
 ##' @export
 
 quantile.mlspatsurv <- function(x,probs=c(0.025,0.5,0.975),...){
-    m1 <- t(apply(x$betasamp,2,quantile,probs=probs))
+    m1 <- t(apply(exp(x$betasamp),2,quantile,probs=probs))
     m2 <- t(apply(x$omegasamp,2,quantile,probs=probs))
     return(list(betaquant=m1,omegaquant=m2))
 }
@@ -320,7 +320,7 @@ baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FA
             t <- seq(0,max(x$survivaldata[,"time"],na.rm=TRUE),length.out=n)
         }
         else{
-            t <- seq(0,max(c(x$survivaldata[,"time"],x$survivaldata[,"time1"]),na.rm=TRUE),length.out=n)
+            t <- seq(0,max(c(x$survivaldata[,"time1"],x$survivaldata[,"time2"]),na.rm=TRUE),length.out=n)
         }
     }
     
@@ -1045,6 +1045,13 @@ CSplot <- function(mod,plot=TRUE,bw=FALSE,...){
 ##' @export
 
 getGrid <- function(mod,returnclass="SpatialPolygonsDataFrame"){
+
+    if(mod$latentmode=="polygons"){
+        shp <- mod$shape
+        shp@data <- data.frame(ID=1:length(shp))
+        return(shp)
+    }
+
     if(inherits(mod$grid,"SpatialPolygonsDataFrame")){
         polys <- mod$grid
     }

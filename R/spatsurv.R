@@ -4,7 +4,7 @@
 ##' 
 ##' \tabular{ll}{
 ##' Package: \tab spatsurv\cr
-##' Version: \tab 0.9-10\cr
+##' Version: \tab 0.9-11\cr
 ##' Date: \tab 2015-06-24\cr
 ##' License: \tab GPL-3 \cr
 ##' }
@@ -59,7 +59,7 @@
 ## @import utils
 ## @import grDevices
 
-##' @importFrom stats acf coefficients deriv dexp dist dnorm end fft fitted formula Gamma integrate knots lm model.matrix optim optimise poly quantile rbinom rexp rnorm runif sd start update var residuals cov
+##' @importFrom stats as.formula acf coefficients deriv dexp dist dnorm end fft fitted formula Gamma integrate knots lm model.matrix optim optimise poly quantile rbinom rexp rnorm runif sd start update var residuals cov
 ##' @importFrom graphics hist legend lines matplot par plot points title abline
 ##' @importFrom methods as
 ##' @importFrom utils txtProgressBar setTxtProgressBar browseURL flush.console

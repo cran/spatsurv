@@ -417,3 +417,6 @@ allocate <- function(poly,popden,survdat,pid,sid,n=2,wid=2000){
     }
     return(list(x=X,y=Y))
 }
+
+
+

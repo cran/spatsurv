@@ -169,6 +169,76 @@ YfromGamma <- function(Gamma,invrootQeigs,mu){
 
 
 
+##' getOptCellwidth function
+##'
+##' A function to compute an optimal cellwidth close to an initial suggestion. This maximises the efficiency of the 
+##' MCMC algorithm when in the control argument of the function survspat, the option gridded is set to TRUE
+##'
+##' @param dat any spatial data object whose bounding box can be computed using the function bbox.
+##' @param cellwidth an initial suggested cellwidth
+##' @param ext the extension parameter for the FFT transform, set to 2 by default 
+##' @param plot whether to plot the grid and data to illustrate the optimal grid
+##' @return the optimum cell width
+##' @export
+
+
+getOptCellwidth <- function(dat,cellwidth,ext=2,plot=TRUE){
+    dataArea <- prod(apply(bbox(dat),1,diff))
+    fun <- function(x){
+        gridobj <- FFTgrid(spatialdata=dat,cellwidth=x,ext=ext)
+        del1 <- gridobj$del1
+        del2 <- gridobj$del2
+        mcens <- gridobj$mcens
+        ncens <- gridobj$ncens 
+        xdiff <- diff(range(mcens)) + del1
+        ydiff <- diff(range(ncens)) + del2
+        gridArea <- xdiff * ydiff
+        return(gridArea/dataArea)
+    }
+    opt <- optimise(fun,interval=c(cellwidth/2,cellwidth*2))
+
+    gridobj <- FFTgrid(spatialdata=dat,cellwidth=opt$minimum,ext=ext)
+    del1 <- gridobj$del1
+    del2 <- gridobj$del2
+    Mext <- gridobj$Mext
+    Next <- gridobj$Next
+    mcens <- gridobj$mcens
+    ncens <- gridobj$ncens 
+
+    cat("Suggest using cellwidth:",opt$minimum,"which gives an output grid size of",Mext/ext," by ",Next/ext," this should be rounded upwards, if at all.\n")
+
+    if(plot){
+        plot(expand.grid(mcens[1:(Mext/ext)],ncens[1:(Next/ext)]),pch="+",col="red",cex=0.5)
+        sp::plot(dat,cex=0.5,add=TRUE,pch=19)
+    }
+
+    return(opt$minimum)
+}
+
+
+##' showGrid function
+##'
+##' A function to show the grid that will be used for a given cellwidth
+##'
+##' @param dat any spatial data object whose bounding box can be computed using the function bbox.
+##' @param cellwidth an initial suggested cellwidth
+##' @param ext the extension parameter for the FFT transform, set to 2 by default 
+##' @return a plot showing the grid and the data. Ideally the data should only just fit inside the grid.
+##' @export
+
+showGrid <- function(dat,cellwidth,ext=2){
+    gridobj <- FFTgrid(spatialdata=dat,cellwidth=cellwidth,ext=ext)
+    del1 <- gridobj$del1
+    del2 <- gridobj$del2
+    Mext <- gridobj$Mext
+    Next <- gridobj$Next
+    mcens <- gridobj$mcens
+    ncens <- gridobj$ncens 
+
+    plot(expand.grid(mcens[1:(Mext/ext)],ncens[1:(Next/ext)]),pch="+",col="red",cex=0.5)
+    sp::plot(dat,cex=0.5,add=TRUE,pch=19)
+}
+
 
 
 
