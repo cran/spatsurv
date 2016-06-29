@@ -55,14 +55,14 @@ gompertzHaz <- function(){
     }
     
     flist$basehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(pars[1]*exp(pars[2]*t)) # in this case alpha=pars[1], beta=pars[2] 
         }
         return(fun)  
     }
     
     flist$gradbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(exp(pars[2]*t)*cbind(1,pars[1]*t)) # in this case alpha=pars[1], beta=pars[2]
         }
         return(fun)
@@ -78,7 +78,7 @@ gompertzHaz <- function(){
             return(m) # in this case alpha=pars[1], beta=pars[2]
         }
         
-        fun <- function(t){
+        fun <- function(t,...){
             return(lapply(t,funfun,pars=pars))
         }
         return(fun)
@@ -86,14 +86,14 @@ gompertzHaz <- function(){
     }
     
     flist$cumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return((pars[1]/pars[2])*(exp(pars[2]*t)-1)) # in this case alpha=pars[1], beta=pars[2]
         }
         return(fun) 
     }
     
     flist$gradcumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(cbind((1/pars[2])*(exp(pars[2]*t)-1),(pars[1]/pars[2])*exp(pars[2]*t)*(-1/pars[2]+t)+pars[1]/pars[2]^2)) # in this case alpha=pars[1], beta=pars[2]
         }
         return(fun)    
@@ -107,14 +107,14 @@ gompertzHaz <- function(){
             return(m) # in this case alpha=pars[1], beta=pars[2]
         }
         
-        fun <- function(t){
+        fun <- function(t,...){
             return(lapply(t,funfun,pars=pars))
         }
         return(fun)
     }
     
     flist$densityquantile <- function(pars,other){
-        fun <- function(probs){
+        fun <- function(probs,...){
             stop("densityquantile for gompertz not implemented yet ...")
             #return((-log(1-probs)/(pars[2]*other$expXbetaplusY))^(1/pars[1]))
         }

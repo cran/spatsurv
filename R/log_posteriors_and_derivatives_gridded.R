@@ -64,7 +64,12 @@ logPosterior_gridded <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,
     Ygrid <- YfromGamma(gamma,invrootQeigs=invrootQeigs,mu=ymean)
     
     Xbeta <- X%*%beta
-    XbetaplusY <- Xbeta + Ygrid[control$idx]
+    if(control$nugget){
+        XbetaplusY <- Xbeta + Ygrid[control$idx] + control$U
+    }
+    else{
+        XbetaplusY <- Xbeta + Ygrid[control$idx]   
+    }
     expXbetaplusY <- exp(XbetaplusY)
 
     # setup function J=exp(X%*%beta + Y)*H_0(t)
@@ -97,29 +102,46 @@ logPosterior_gridded <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,
     
      
     if(censoringtype=="right"){
-        h <- haz$h(surv[,"time"])
-        
-        loglik <-  (if(Utest){sum(XbetaplusY[notcensored] + log(h)[notcensored] - J[notcensored])}else{0}) + 
-                    (if(Ctest){sum(-J[censored])}else{0})
-                    
-        logpost <- loglik + priorcontrib
+        #h <- haz$h(surv[,"time"])
+
+        Uterm <- c()
+        Cterm <- c()
+          
+        loglik <-  (if(Utest){Uterm <- XbetaplusY[notcensored] + log(h)[notcensored] - J[notcensored];sum(Uterm)}else{0}) + 
+                    (if(Ctest){Cterm <- -J[censored];sum(Cterm)}else{0})
+
+        logpost <- loglik + priorcontrib  
+
+        indiv_loglik <- c(Uterm,Cterm)                  
     }
     else if(censoringtype=="left"){
-        h <- haz$h(surv[,"time"])
+        #h <- haz$h(surv[,"time"])
+
+        Uterm <- c()
+        Cterm <- c()
         
-        loglik <-  (if(Utest){sum(XbetaplusY[notcensored] + log(h)[notcensored] - J[notcensored])}else{0}) + 
-                    (if(Ctest){sum(log(1-S[censored]))}else{0})
-                    
+        loglik <-  (if(Utest){Uterm <- XbetaplusY[notcensored] + log(h)[notcensored] - J[notcensored];sum(Uterm)}else{0}) + 
+                    (if(Ctest){Cterm <- log(1-S[censored]);sum(Cterm)}else{0})
+
+        indiv_loglik <- c(Uterm,Cterm)
+        
         logpost <- loglik + priorcontrib
     }
     else{ #censoringtype=="interval"
         h <- haz$h(surv[,"time1"])
+
+        Uterm <- c()
+        Rterm <- c()
+        Lterm <- c()
+        Iterm <- c()
         
-        loglik <-  (if(Utest){sum(XbetaplusY[notcensored] + log(h)[notcensored] - J1[notcensored])}else{0}) + 
-                    (if(Rtest){sum(-J1[rightcensored])}else{0}) + 
-                    (if(Ltest){sum(log(1-S1[leftcensored]))}else{0}) + 
-                    (if(Itest){sum(log(S1[intervalcensored]-S2[intervalcensored]))}else{0})
-                    
+        loglik <-  (if(Utest){Uterm <- XbetaplusY[notcensored] + log(h)[notcensored] - J1[notcensored];sum(Uterm)}else{0}) + 
+                    (if(Rtest){Rterm <- -J1[rightcensored];sum(Rterm)}else{0}) + 
+                    (if(Ltest){Lterm <- log(1-S1[leftcensored]);sum(Lterm)}else{0}) + 
+                    (if(Itest){Iterm <- log(S1[intervalcensored]-S2[intervalcensored]);sum(Iterm)}else{0})
+
+        indiv_loglik <- c(Uterm,Rterm,Lterm,Iterm)
+        
         logpost <- loglik + priorcontrib
     }
 
@@ -152,6 +174,19 @@ logPosterior_gridded <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,
                             
                             
             grad <- deriv + c(dP_dbeta,dP_domega,rep(0,length(eta)),dP_dgamma)
+
+            if(control$nugget){
+                dP_dUgamma <- -control$Ugamma
+                if(Utest){
+                    dP_dUgamma[notcensored] <-dP_dUgamma[notcensored] + control$Usigma - control$Usigma*J[notcensored]
+                }
+                if(Ctest){
+                    dP_dUgamma[censored] <- dP_dUgamma[censored] - control$Usigma*J[censored] 
+                }
+                                                 
+                dP_dlogUsigma <- (-1/control$logUsigma_priorsd^2)*(control$logUsigma-control$logUsigma_priormean) + # derivative of prior 
+                                    control$Usigma*sum(-control$Usigma + control$Ugamma - (-control$Usigma + control$Ugamma)*J)  # Usigma is the Jacobian
+            }
             
         }
         else if(censoringtype=="left"){
@@ -169,6 +204,20 @@ logPosterior_gridded <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,
             dP_dgamma <- as.vector(Re((1/(control$Mext*control$Next))*fft(invrootQeigs*fft(bitsnbobs,inverse=TRUE))))                            
             
             grad <- deriv + c(dP_dbeta,dP_domega,rep(0,length(eta)),dP_dgamma)
+
+            if(control$nugget){
+
+                dP_dUgamma <- -control$Ugamma
+                if(Utest){
+                    dP_dUgamma[notcensored] <-dP_dUgamma[notcensored] + control$Usigma - control$Usigma*J[notcensored]
+                }
+                if(Ctest){
+                    dP_dUgamma[censored] <- dP_dUgamma[censored] + (S[censored]/(1-S[censored]))*control$Usigma*J[censored] 
+                }
+
+                dP_dlogUsigma <- (-1/control$logUsigma_priorsd^2)*(control$logUsigma-control$logUsigma_priormean) +  # derivative of prior
+                                    control$Usigma*sum((-control$Usigma + control$Ugamma)*J*S/(1-S))  # Usigma is the Jacobian
+            }
         }
         else{ #censoringtype=="interval" 
             dP_dbeta <- (if(Utest){colSums(X[notcensored,,drop=FALSE] - dJ_dbeta1[notcensored,,drop=FALSE])}else{0}) + 
@@ -193,6 +242,26 @@ logPosterior_gridded <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,
             dP_dgamma <- as.vector(Re((1/(control$Mext*control$Next))*fft(invrootQeigs*fft(bitsnbobs,inverse=TRUE))))            
             
             grad <- deriv + c(dP_dbeta,dP_domega,rep(0,length(eta)),dP_dgamma)
+
+            if(control$nugget){
+
+                dP_dUgamma <- -control$Ugamma
+                if(Utest){
+                    dP_dUgamma[notcensored] <-dP_dUgamma[notcensored] + control$Usigma - control$Usigma*J[notcensored]
+                }
+                if(Rtest){
+                    dP_dUgamma[rightcensored] <- dP_dUgamma[rightcensored] - control$Usigma*J[rightcensored] 
+                }
+                if(Ltest){
+                    dP_dUgamma[leftcensored] <- dP_dUgamma[leftcensored] + (S[leftcensored]/(1-S[leftcensored]))*control$Usigma*J[leftcensored] 
+                }
+                if(Itest){
+                    dP_dUgamma[intervalcensored] <- dP_dUgamma[intervalcensored] + (1/(S1[intervalcensored]-S2[intervalcensored]))*(control$Usigma*J2[intervalcensored]*S2[intervalcensored]-control$Usigma*J1[intervalcensored]*S1[intervalcensored])
+                }
+
+                dP_dlogUsigma <- (-1/control$logUsigma_priorsd^2)*(control$logUsigma-control$logUsigma_priormean) +  # derivative of prior
+                                    control$Usigma*sum(((-control$Usigma + control$Ugamma)*J2*S2-(-control$Usigma + control$Ugamma)*J1*S1)*1/(S1-S2)) # Usigma is the Jacobian 
+            }
         }
     
     }
@@ -369,9 +438,14 @@ logPosterior_gridded <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,u,
         retlist <- list()
         retlist$logpost <- logpost
         retlist$loglik <- loglik
+        retlist$indiv_loglik <- indiv_loglik
         retlist$Y <- Ygrid
         if(gradient){
             retlist$grad <- grad
+            if(control$nugget){
+                retlist$dP_dUgamma <- dP_dUgamma
+                retlist$dP_dlogUsigma <- dP_dlogUsigma
+            }
         }
         if(hessian){
             retlist$hess_beta <- hess_beta

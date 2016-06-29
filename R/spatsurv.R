@@ -40,17 +40,18 @@
 ##' @importFrom OpenStreetMap openmap
 ##' @importFrom RColorBrewer brewer.pal 
 ##' @importFrom stringr str_count str_detect
-##' @importFrom Matrix Matrix sparseMatrix
+##' @importFrom Matrix nearPD Matrix sparseMatrix bdiag
 ##' @importFrom rgl abclines3d aspect3d axes3d planes3d points3d segments3d text3d title3d 
 ##' @importFrom fields image.plot  
 ##' @importFrom RandomFields CovarianceFct
 ##' @importFrom rgeos gBuffer
 ##' @importFrom iterators icount iter nextElem
 ##' @importFrom sp bbox proj4string<- proj4string SpatialPixelsDataFrame SpatialGridDataFrame Polygon Polygons SpatialPolygons coordinates CRS geometry GridTopology over proj4string SpatialGrid SpatialPixels SpatialPoints SpatialPolygonsDataFrame split spTransform 
-##' @importFrom spatstat rpoint progressreport
+##' @importFrom spatstat rpoint progressreport inside.owin
 ##' @importFrom survival Surv survfit
 ##' @importFrom geostatsp asImRaster
 ##' @importFrom raster crop brick raster
+##' @import lubridate
 
 
 ## @import stats
@@ -59,8 +60,8 @@
 ## @import utils
 ## @import grDevices
 
-##' @importFrom stats as.formula acf coefficients deriv dexp dist dnorm end fft fitted formula Gamma integrate knots lm model.matrix optim optimise poly quantile rbinom rexp rnorm runif sd start update var residuals cov
-##' @importFrom graphics hist legend lines matplot par plot points title abline
+##' @importFrom stats vcov as.formula acf coefficients deriv dexp dist dnorm end fft fitted formula Gamma integrate knots lm model.matrix optim optimise poly quantile rbinom rexp rnorm runif sd start update var residuals cov
+##' @importFrom graphics boxplot polygon hist legend lines matplot par plot points title abline
 ##' @importFrom methods as
 ##' @importFrom utils txtProgressBar setTxtProgressBar browseURL flush.console
 ##' @importFrom grDevices adjustcolor 

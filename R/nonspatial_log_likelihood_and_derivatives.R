@@ -14,6 +14,7 @@
 
 maxlikparamPHsurv <- function(surv,X,control){
     
+    fix_some <- distinfo(control$dist)()$MLmethod
     
     likfun <- function(pars){
         beta <- pars[1:ncol(X)]
@@ -38,23 +39,53 @@ maxlikparamPHsurv <- function(surv,X,control){
     
     #browser()
     cat("Initial optimisation via BFGS ...\n")
-    opt <- try(optim(par=c(betainit,omegainit),fn=likfun,gr=gradfun,method="BFGS",control=control$optimcontrol,hessian=control$hessian))
+    if(is.null(fix_some)){
+        opt <- try(optim(par=c(betainit,omegainit),fn=likfun,gr=gradfun,method="BFGS",control=control$optimcontrol,hessian=control$hessian))
+    }
+    else{
+        opt <- try(optifix(par=c(betainit,omegainit),fixed=c(rep(FALSE,length(betainit)),distinfo(control$dist)()$MLfixpars),fn=likfun,gr=gradfun,method="BFGS",control=control$optimcontrol,hessian=control$hessian))
+    }    
     if(inherits(opt,"try-error")){
         stop("Possible problem with initial values in obtaining maximum likelihood estimates of parameters, try setting MLinits in function distinfo for chosen baseline hazard distribution")
     }
 
     cat("Refining optimum via Nelder Mead ...\n")
-    opt <- try(optim(par=opt$par,fn=likfun,control=control$optimcontrol,hessian=control$hessian))
+    if(is.null(fix_some)){
+        opt <- try(optim(par=opt$par,fn=likfun,control=control$optimcontrol,hessian=control$hessian))
+    }
+    else{
+        ini <- c(opt$par[1:length(betainit)])
+        omegaini <- distinfo(control$dist)()$MLinits
+        omegaini[!distinfo(control$dist)()$MLfixpars] <- opt$par[(length(betainit)+1):length(opt$par)]
+        ini <- c(ini,omegaini)
+        opt <- try(optifix(par=ini,fn=likfun,fixed=c(rep(FALSE,length(betainit)),distinfo(control$dist)()$MLfixpars),method="Nelder-Mead",control=control$optimcontrol,hessian=control$hessian))
+    }    
     if(inherits(opt,"try-error")){
         stop("Possible problem with initial values in obtaining maximum likelihood estimates of parameters, try setting MLinits in function distinfo for chosen baseline hazard distribution")
     }
 
     cat("Refining optimum via BFGS ...\n")
-    opt <- try(optim(par=opt$par,fn=likfun,gr=gradfun,method="BFGS",control=control$optimcontrol,hessian=control$hessian))
+    if(is.null(fix_some)){
+        opt <- try(optim(par=opt$par,fn=likfun,gr=gradfun,method="BFGS",control=control$optimcontrol,hessian=control$hessian))
+    }
+    else{
+        ini <- c(opt$par[1:length(betainit)])
+        omegaini <- distinfo(control$dist)()$MLinits
+        omegaini[!distinfo(control$dist)()$MLfixpars] <- opt$par[(length(betainit)+1):length(opt$par)]
+        ini <- c(ini,omegaini)
+        opt <- try(optifix(par=ini,fixed=c(rep(FALSE,length(betainit)),distinfo(control$dist)()$MLfixpars),fn=likfun,gr=gradfun,method="BFGS",control=control$optimcontrol,hessian=control$hessian))
+    }
     if(inherits(opt,"try-error")){
         stop("Possible problem with initial values in obtaining maximum likelihood estimates of parameters, try setting MLinits in function distinfo for chosen baseline hazard distribution")
     }
 
+    if(!is.null(fix_some)){
+        ini <- c(opt$par[1:length(betainit)])
+        omegaini <- distinfo(control$dist)()$MLinits
+        omegaini[!distinfo(control$dist)()$MLfixpars] <- opt$par[(length(betainit)+1):length(opt$par)]
+        ini <- c(ini,omegaini)
+        opt$par <- ini
+    }
 
     # opar <- opt$par
     # beta <- opar[1:ncol(X)]

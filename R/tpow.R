@@ -60,14 +60,14 @@ tpowHaz <- function(powers){
     }
     
     flist$basehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(colSums(pars*powers*t(outer(t,powers-1,FUN="^"))))  
         }
         return(fun)  
     }
     
     flist$gradbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(t(powers*t(outer(t,powers-1,FUN="^")))) 
         }
         return(fun)
@@ -79,7 +79,7 @@ tpowHaz <- function(powers){
             return(matrix(0,npow,npow)) 
         }
         
-        fun <- function(t){
+        fun <- function(t,...){
             return(lapply(t,funfun,pars=pars))
         }
         return(fun)
@@ -87,14 +87,14 @@ tpowHaz <- function(powers){
     }
     
     flist$cumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(colSums(pars*t(outer(t,powers,FUN="^")))) 
         }
         return(fun) 
     }
     
     flist$gradcumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(outer(t,powers,FUN="^")) 
         }
         return(fun)    
@@ -105,14 +105,14 @@ tpowHaz <- function(powers){
             return(matrix(0,npow,npow)) 
         }
         
-        fun <- function(t){
+        fun <- function(t,...){
             return(lapply(t,funfun,pars=pars))
         }
         return(fun)
     }
     
     flist$densityquantile <- function(pars,other){
-        fun <- function(probs){
+        fun <- function(probs,...){
             stop("densityquantile not available yet")
             #return((-log(1-probs)/(pars[2]*other$expXbetaplusY))^(1/pars[1]))
         }

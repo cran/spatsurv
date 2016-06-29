@@ -31,8 +31,19 @@ print.mcmcspatsurv <- function(x,probs=c(0.5,0.025,0.975),digits = 3, scientific
     cat("Spatial Covariance Parameters:\n")   
     print(quant$etaquant,digits=digits,scientific=scientific)
     cat("\n")
+
+    if(x$control$nugget){
+        cat("Estimated standard deviation of nugget:\n")   
+        print(x$Usigma_mean,digits=digits,scientific=scientific)
+        cat("standard error:\n")   
+        print(sqrt(x$Usigma_var),digits=digits,scientific=scientific)
+        cat("\n")
+    }
     
     cat("Deviance Information Criterion: ",x$DIC,"\n")
+    cat("\n")
+
+    cat("Watanabe-Akaike Information Criterion: ",x$WAIC,"\n")
     cat("\n")
     
     cat("MCMC Details:\n")
@@ -778,6 +789,7 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
 ##' @param n the number of points at which to evaluate the posterior covariance.
 ##' @param plot whether to plot the result
 ##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
+##' @param corr logical whether to return the correlation function, default is FALSE i.e. returns the covariance function
 ##' @param ... other arguments to be passed to matplot function 
 ##' @return produces a plot of the posterior spatial covariance function.
 ##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
@@ -786,7 +798,7 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
 ##' \link{hazardexceedance}
 ##' @export
 
-posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,bw=FALSE,...){
+posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,bw=FALSE,corr=FALSE,...){
     nr <- nrow(x$etasamp)
     nc <- ncol(x$etasamp)
     
@@ -805,6 +817,14 @@ posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,bw
     r <- seq(0,rmaxx,length.out=n)
     #covs <- t(apply(x$etasamp,1,function(pp){x$cov.model$eval(r,pars=pp)})) 
     covs <- t(apply(x$etasamp,1,function(pp){EvalCov(x$cov.model,u=r,parameters=pp)}))
+
+    sig2 <- x$etasamp[,which(colnames(x$etasamp)=="sigma")]^2
+
+    LAB <- "Covariance"
+    if(corr){
+        covs <- covs / sig2
+        LAB <- "Correlation"
+    }
     
     qts <- t(apply(covs,2,quantile,probs=probs))
     
@@ -813,17 +833,17 @@ posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,bw
     if(plot){
         if(length(probs)==3){
             if(bw){
-                matplot(r,qts,type="l",col=c("black","black","black"),lty=c("dotted","solid","dashed"),xlab="Distance",ylab="Covariance")
+                matplot(r,qts,type="l",col=c("black","black","black"),lty=c("dotted","solid","dashed"),xlab="Distance",ylab=LAB)
                 legend("topright",lty=c("dashed","solid","dotted"),col=c("black","black","black"),legend=rev(probs))
             }
             else{
-                matplot(r,qts,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="Distance",ylab="Covariance")
+                matplot(r,qts,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="Distance",ylab=LAB)
                 legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
             }
             
         }
         else{
-            matplot(r,qts,type="l",xlab="Distance",ylab="Covariance")
+            matplot(r,qts,type="l",xlab="Distance",ylab=LAB)
         }
     }
     
@@ -891,8 +911,21 @@ hazardexceedance <- function(threshold,direction="upper"){
     return(fun)
 }
 
-
 ##' reconstruct.bs function
+##'
+##' Generic function for reconstructing B-spline covariate effects. See ?reconstruct.bs.mcmcspatsurv and ?reconstruct.bs.coxph
+##'
+##' @param mod an object
+##' @param ... additional arguments
+##' @return method reconstruct.bs
+##' @export
+
+reconstruct.bs <- function(mod,...){
+    UseMethod("reconstruct.bs")
+}
+
+
+##' reconstruct.bs.mcmcspatsurv function
 ##'
 ##' When bs(varname) has been used in the formula of a model, this function can be used to reconstruct the posterior relative risk of 
 ##' that parameter over time.
@@ -908,15 +941,22 @@ hazardexceedance <- function(threshold,direction="upper"){
 ##' @return median, upper and lower confidence bands for the effect of varname over time; the funciton also produces a plot.
 ##' @export
 
-reconstruct.bs <- function(mod,varname,probs=c(0.025,0.975),bw=FALSE,xlab=NULL,ylab=NULL,plot=TRUE,...){
+reconstruct.bs.mcmcspatsurv <- function(mod,varname,probs=c(0.025,0.975),bw=FALSE,xlab=NULL,ylab=NULL,plot=TRUE,...){
+    if(length(probs)!=2){
+        stop("length of probs must be 2")
+    }
+    probs1 <- sort(probs)
+    probs1 <- c(probs[1],0.5,probs[2])
     colidx <- str_detect(colnames(mod$X),paste("bs\\(",varname,"\\)",sep=""))
     bss <- mod$X[,colidx]
     idx <- which(colidx)
-    fit <- colSums(summary(mod)[idx,1]*t(bss))
+    #fit <- colSums(summary(mod)[idx,1]*t(bss))
     fitall <- t(apply(mod$betasamp[,idx],1,function(x){colSums(x*t(bss))}))
-    ul <- apply(fitall,2,quantile,probs=probs)
+    ul <- apply(fitall,2,quantile,probs=probs1)
+    fit <- ul[2,]
+    ul <- ul[-2,]
     xx <- mod$data[,varname]
-    
+
     ord <- order(xx)
     xx <- xx[ord]
     yy <- exp(fit)
@@ -928,6 +968,91 @@ reconstruct.bs <- function(mod,varname,probs=c(0.025,0.975),bw=FALSE,xlab=NULL,y
     }
     if(is.null(ylab)){
         ylab <- "Relative Risk"
+    }
+    if(plot){
+        plot(xx,yy,type="l",ylim=c(min(low,na.rm=TRUE),max(upp,na.rm=TRUE)),xlab=xlab,ylab=ylab,...)
+        if(bw){
+            lines(xx,low,col="black",lty="dotted")
+            lines(xx,upp,col="black",lty="dashed")
+            legend("topright",lty=c("dashed","solid","dotted"),col=rev(c("black","black","black")),legend=c(probs[2],0.5,probs[1]))
+        }
+        else{
+            lines(xx,low,col="purple",lty="dashed")
+            lines(xx,upp,col="blue",lty="dashed")
+            legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=c(probs[2],0.5,probs[1])) 
+        }
+    }
+    retlist <- list()
+    retlist$varname <- varname
+    retlist$x <- xx
+    retlist$y <- cbind(lower=low,median=yy,upper=upp)
+    return(retlist)
+}
+
+
+##' reconstruct.bs.coxph function
+##'
+##' When bs(varname) has been used in the formula of a coxph model, this function can be used to reconstruct the predicted relative risk of 
+##' that parameter over time.
+##'
+##' @param mod model output, created by function survspat 
+##' @param varname name of the variable modelled by a B-spline
+##' @param fun optional function to feed in. Default is to plot relative risk against the covariate of interest. Useful choices include "identity" (but with no quotes), which plots the non-linear effect on the scale of the linear predictor.
+##' @param probs upper and lower quantiles for confidence regions to plot> The default is c(0.025,0.975).
+##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
+##' @param xlab label for x axis, there is a sensible default
+##' @param ylab label for y axis, there is a sensible default
+##' @param plot logical, whether to plot the effect of varname over time
+##' @param ... other arguments to be passed to the plotting function.
+##' @return median, upper and lower confidence bands for the effect of varname over time; the funciton also produces a plot.
+##' @export
+
+reconstruct.bs.coxph <- function(mod,varname,fun=NULL,probs=c(0.025,0.975),bw=FALSE,xlab=NULL,ylab=NULL,plot=TRUE,...){
+    X <- model.matrix(mod)
+    colidx <- str_detect(colnames(X),paste("bs\\(",varname,"\\)",sep=""))
+    bss <- X[,colidx]
+    idx <- which(colidx)
+    beta <- coefficients(mod)[idx]
+    fit <- colSums(beta*t(bss))
+    betachol <- t(chol(vcov(mod)[idx,idx]))
+    betasamp <- t(sapply(1:nrow(X),function(x){beta+betachol%*%rnorm(length(idx))}))
+    fitall <- t(apply(betasamp,1,function(x){colSums(x*t(bss))}))
+    ul <- apply(fitall,2,quantile,probs=probs)
+
+    ca <- mod$call
+    mm <- as.character(ca[2])
+    mm <- gsub(paste("bs\\(",varname,"\\)",sep=""),varname,mm)
+    ca[2] <- as.call(parse(text=mm))
+    ev <- eval(ca)
+    xx <- model.matrix(ev)[,varname]
+    
+    ord <- order(xx)
+    xx <- xx[ord]
+    if(is.null(fun)){
+        yy <- exp(fit)
+    }
+    else{
+        yy <- fun(fit)
+    }
+    yy <- yy[ord]
+    if(is.null(fun)){
+        low <- exp(ul[1,ord])
+        upp <- exp(ul[2,ord])
+    }
+    else{
+        low <- fun(ul[1,ord])
+        upp <- fun(ul[2,ord])
+    }
+    if(is.null(xlab)){
+        xlab <- varname
+    }
+    if(is.null(ylab)){
+        if(is.null(fun)){
+            ylab <- "Relative Risk"
+        }
+        else{
+            ylab <- as.character(quote(identity))
+        }
     }
     if(plot){
         plot(xx,yy,type="l",ylim=c(min(low,na.rm=TRUE),max(upp,na.rm=TRUE)),xlab=xlab,ylab=ylab,...)

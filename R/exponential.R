@@ -55,49 +55,49 @@ exponentialHaz <- function(){
     }
  
     flist$basehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(rep(pars,length(t))) # in this case pars is a 1-vector, the rate    
         }
         return(fun)
     }
  
     flist$gradbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(rep(1,length(t))) # in this case pars is a 1-vector, the rate
         }
         return(fun)
     }
    
     flist$hessbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(as.list(rep(0,length(t)))) # in this case pars is a 1-vector, the rate
         }
         return(fun)
     }
    
     flist$cumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(pars*t) # in this case pars is a 1-vector, the rate
         }
         return(fun)  
     }
   
     flist$gradcumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(t) # in this case pars is a 1-vector, the rate
         }
         return(fun)    
     }   
     
     flist$hesscumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(as.list(rep(0,length(t)))) # in this case pars is a 1-vector, the rate
         }
         return(fun)
     }  
     
     flist$densityquantile <- function(pars,other){
-        fun <- function(probs){
+        fun <- function(probs,...){
             return(-log(1-probs)/(pars*other$expXbetaplusY))
         }
         return(fun)    

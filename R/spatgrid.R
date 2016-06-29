@@ -6,12 +6,18 @@
 ##' @param spatialdata a SpatialPixelsDataFrame object
 ##' @param cellwidth width of computational cells
 ##' @param ext multiplying constant: the size of the extended grid: ext*M by ext*N
+##' @param boundingbox optional bounding box over which to construct computational grid, supplied as an object on which the function 'bbox' returns the bounding box
 ##' @return a list
 ##' @export
 
-FFTgrid <- function(spatialdata,cellwidth,ext){
+FFTgrid <- function(spatialdata,cellwidth,ext,boundingbox=NULL){
 
-    bb <- bbox(spatialdata)
+    if(is.null(boundingbox)){
+        bb <- bbox(spatialdata)
+    }
+    else{
+        bb <- bbox(boundingbox)
+    }
     xrange <- bb[1,]
     yrange <- bb[2,]
     
@@ -178,14 +184,15 @@ YfromGamma <- function(Gamma,invrootQeigs,mu){
 ##' @param cellwidth an initial suggested cellwidth
 ##' @param ext the extension parameter for the FFT transform, set to 2 by default 
 ##' @param plot whether to plot the grid and data to illustrate the optimal grid
+##' @param boundingbox optional bounding box over which to construct computational grid, supplied as an object on which the function 'bbox' returns the bounding box
 ##' @return the optimum cell width
 ##' @export
 
 
-getOptCellwidth <- function(dat,cellwidth,ext=2,plot=TRUE){
+getOptCellwidth <- function(dat,cellwidth,ext=2,plot=TRUE,boundingbox=NULL){
     dataArea <- prod(apply(bbox(dat),1,diff))
     fun <- function(x){
-        gridobj <- FFTgrid(spatialdata=dat,cellwidth=x,ext=ext)
+        gridobj <- FFTgrid(spatialdata=dat,cellwidth=x,ext=ext,boundingbox=boundingbox)
         del1 <- gridobj$del1
         del2 <- gridobj$del2
         mcens <- gridobj$mcens
@@ -197,7 +204,7 @@ getOptCellwidth <- function(dat,cellwidth,ext=2,plot=TRUE){
     }
     opt <- optimise(fun,interval=c(cellwidth/2,cellwidth*2))
 
-    gridobj <- FFTgrid(spatialdata=dat,cellwidth=opt$minimum,ext=ext)
+    gridobj <- FFTgrid(spatialdata=dat,cellwidth=opt$minimum,ext=ext,boundingbox=boundingbox)
     del1 <- gridobj$del1
     del2 <- gridobj$del2
     Mext <- gridobj$Mext
@@ -223,11 +230,12 @@ getOptCellwidth <- function(dat,cellwidth,ext=2,plot=TRUE){
 ##' @param dat any spatial data object whose bounding box can be computed using the function bbox.
 ##' @param cellwidth an initial suggested cellwidth
 ##' @param ext the extension parameter for the FFT transform, set to 2 by default 
+##' @param boundingbox optional bounding box over which to construct computational grid, supplied as an object on which the function 'bbox' returns the bounding box
 ##' @return a plot showing the grid and the data. Ideally the data should only just fit inside the grid.
 ##' @export
 
-showGrid <- function(dat,cellwidth,ext=2){
-    gridobj <- FFTgrid(spatialdata=dat,cellwidth=cellwidth,ext=ext)
+showGrid <- function(dat,cellwidth,ext=2,boundingbox=NULL){
+    gridobj <- FFTgrid(spatialdata=dat,cellwidth=cellwidth,ext=ext,boundingbox=boundingbox)
     del1 <- gridobj$del1
     del2 <- gridobj$del2
     Mext <- gridobj$Mext

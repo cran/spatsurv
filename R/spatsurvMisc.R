@@ -208,25 +208,49 @@ plotsurv <- function(spp,ss,maxcex=1,transform=identity,background=NULL,eventpt=
 ##' @param gridded logical. Whether to perform compuation on a grid. Default is FALSE.
 ##' @param cellwidth the width of computational cells to use 
 ##' @param ext integer the number of times to extend the computational grid by in order to perform compuitation. The default is 2.
+##' @param imputation for polygonal data, an optional model for inference at the sub-polygonal level, see function imputationModel
 ##' @param optimcontrol a list of optional arguments to be passed to optim for non-spatial models
 ##' @param hessian whether to return a numerical hessian. Set this to TRUE for non-spatial models.
 ##' equal to the number of parameters of the baseline hazard
 ##' @param plotcal logical, whether to produce plots of the MCMC calibration process, this is a technical option and should onyl be set 
 ##' to TRUE if poor mixing is evident (the printed h is low), then it is also useful to use a graphics device with multiple plotting windows. 
 ##' @param timeonlyMCMC logical, whether to only time the MCMC part of the algorithm, or whether to include in the reported running time the time taken to calibrate the method (default)
+##' @param nugget whether to include a nugget effect in the estimation. Note that only the mean and variance of the nugget effect is returned.
+##' @param savenugget whether to save the MCMC chain for the nugget effect
+##' @param split how to split the spatial and nugget proposal variance as a the proportion of variance assigned to the spatial effect apriori. Default is 0.5
+##' @param logUsigma_priormean prior mean for log standard deviation of nugget effect
+##' @param logUsigma_priorsd prior sd for log standard deviation of nugget effect
 ##' @return returns parameters to be used in the function survspat
 ##' @seealso \link{survspat}
 ##' @export
 
-inference.control <- function(gridded=FALSE,cellwidth=NULL,ext=2,optimcontrol=NULL,hessian=FALSE,plotcal=FALSE,timeonlyMCMC=FALSE){
+inference.control <- function(  gridded=FALSE,
+                                cellwidth=NULL,
+                                ext=2,
+                                imputation=NULL,
+                                optimcontrol=NULL,
+                                hessian=FALSE,
+                                plotcal=FALSE,
+                                timeonlyMCMC=FALSE,
+                                nugget=FALSE,
+                                savenugget=FALSE,
+                                split=0.5,
+                                logUsigma_priormean=0,
+                                logUsigma_priorsd=0.5){
     ans <- list()
     ans$gridded <- gridded
     ans$cellwidth <- cellwidth 
     ans$ext <- ext 
+    ans$imputation <- imputation
     ans$optimcontrol <- optimcontrol
     ans$hessian <- hessian
     ans$plotcal <- plotcal
     ans$timeonlyMCMC <- timeonlyMCMC
+    ans$nugget <- nugget
+    ans$savenugget <- savenugget
+    ans$split <- split
+    ans$logUsigma_priormean <- logUsigma_priormean
+    ans$logUsigma_priorsd <- logUsigma_priorsd
     class(ans) <- c("inference.control","list")
     return(ans)
 }
@@ -397,21 +421,36 @@ allocate <- function(poly,popden,survdat,pid,sid,n=2,wid=2000){
     nr <- length(poly)
     X <- matrix(NA,nrow(survdat),n)
     Y <- matrix(NA,nrow(survdat),n)
+    
     for(i in 1:nr){
         progressreport(i,nr)
         spol <- gBuffer(poly[i,],width=wid)
-        win <- as(poly[i,],"owin")
         den <- asImRaster(crop(popden,spol))
+        win <- as(poly[i,],"owin")
         idx <- survdat[,sid]==poly@data[i,pid]
         ns <- sum(idx)
         if(ns==0){
             next
         }
         else{
-            pts <- rpoint(ns*n,f=den,win=win)
+            test <- TRUE
+            pts <- c()
+            while(test){ # use rejection sampling to ensure all points are inside the observation window
+                ptstemp <- rpoint(ns*n,f=den,win=win)
+                tst <- inside.owin(ptstemp,w=win)
+                if(any(tst)){
+                    pts <- rbind(pts,cbind(ptstemp$x[tst],ptstemp$y[tst]))
+                }
+
+                if(nrow(pts)>=(ns*n)){
+                    pts <- pts[1:(ns*n),]
+                    test <- FALSE
+                }    
+            }
+            
             for(j in 1:n){              
-                X[which(idx),] <- matrix(pts$x,ns,n)
-                Y[which(idx),] <- matrix(pts$y,ns,n)
+                X[which(idx),] <- matrix(pts[,1],ns,n)
+                Y[which(idx),] <- matrix(pts[,2],ns,n)
             }
         }       
     }

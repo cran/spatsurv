@@ -63,6 +63,29 @@ ExponentialCovFct <- function(){
     return(ans)
 }
 
+##' Independent function
+##'
+##' A function to declare and also evaluate an exponential covariance function.
+##'
+##' @return the exponential covariance function
+##' @seealso \link{SpikedExponentialCovFct}, \link{covmodel}, CovarianceFct
+##' @export
+
+Independent <- function(){
+    ans <- list()
+    ans$npar <- 1
+    ans$parnames <- "sigma"
+    ans$itrans <- exp # inverse transform back to correct scale
+    ans$trans <- log # transform assumed  
+    ans$eval <- function(u,pars){
+        ans<- rep(pars[1]^2,length(u))
+        ans[u>0] <- 0
+        return(ans)
+    }
+    class(ans) <- c("covmodel","fromUserFunction")
+    return(ans)
+}
+
 ##' SpikedExponentialCovFct function
 ##'
 ##' A function to declare and also evaluate a spiked exponential covariance function. This is an exponential covariance function with a nugget.

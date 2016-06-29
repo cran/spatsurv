@@ -21,7 +21,7 @@
 simsurv <- function(X=cbind(age=runif(100,5,50),sex=rbinom(100,1,0.5),cancer=rbinom(100,1,0.2)),
                             beta=c(0.0296,0.0261,0.035),
                             omega=1,
-                            dist="exp",
+                            dist=exponentialHaz(),
                             coords=matrix(runif(2*nrow(X)),nrow(X),2),
                             cov.parameters=c(1,0.1),
                             cov.model=covmodel(model="exponential",pars=NULL),

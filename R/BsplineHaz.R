@@ -76,7 +76,7 @@ BsplineHaz <- function(times,knots=quantile(times),degree=3,MLinits=NULL){
     cat("Using B-spline with ",test$npars," parameters.\n")
     
     flist$basehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
         	idx <- match(t,times)
         	if(any(is.na(idx))){
         		basismatrix <- Bspline.construct(x=t,basis=basis) 
@@ -91,7 +91,7 @@ BsplineHaz <- function(times,knots=quantile(times),degree=3,MLinits=NULL){
     }
     
     flist$gradbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
         	idx <- match(t,times)
         	return(basismatrix[idx,])
         }
@@ -103,7 +103,7 @@ BsplineHaz <- function(times,knots=quantile(times),degree=3,MLinits=NULL){
             return(matrix(0,np,np)) 
         }
         
-        fun <- function(t){
+        fun <- function(t,...){
             return(lapply(t,funfun,pars=pars))
         }
         return(fun)
@@ -111,7 +111,7 @@ BsplineHaz <- function(times,knots=quantile(times),degree=3,MLinits=NULL){
     }
     
     flist$cumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
         	idx <- match(t,times)       	
         	if(any(is.na(idx))){
         		cbs <- cumulativeBspline.construct(x=t,basis=basis) 
@@ -125,7 +125,7 @@ BsplineHaz <- function(times,knots=quantile(times),degree=3,MLinits=NULL){
     }
     
     flist$gradcumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             idx <- match(t,times)
         	return(cbs$integral[idx,])        
         }
@@ -137,14 +137,14 @@ BsplineHaz <- function(times,knots=quantile(times),degree=3,MLinits=NULL){
             return(matrix(0,np,np)) 
         }
         
-        fun <- function(t){
+        fun <- function(t,...){
             return(lapply(t,funfun,pars=pars))
         }
         return(fun)
     }
     
     flist$densityquantile <- function(pars,other){
-        fun <- function(probs){
+        fun <- function(probs,...){
             stop("densityquantile not available yet")
             #return((-log(1-probs)/(pars[2]*other$expXbetaplusY))^(1/pars[1]))
         }

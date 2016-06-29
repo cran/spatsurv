@@ -54,14 +54,14 @@ weibullHaz <- function(){
     }
     
     flist$basehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(pars[2]*pars[1]*t^(pars[1]-1)) # in this case alpha=pars[1], lambda=pars[2] 
         }
         return(fun)  
     }
     
     flist$gradbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(t^(pars[1]-1)*cbind(pars[2]*(1+pars[1]*log(t)),pars[1])) # in this case alpha=pars[1], lambda=pars[2]
         }
         return(fun)
@@ -76,7 +76,7 @@ weibullHaz <- function(){
             return(m) # in this case alpha=pars[1], lambda=pars[2]
         }
         
-        fun <- function(t){
+        fun <- function(t,...){
             return(lapply(t,funfun,pars=pars))
         }
         return(fun)
@@ -84,14 +84,14 @@ weibullHaz <- function(){
     }
     
     flist$cumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(pars[2]*t^(pars[1])) # in this case alpha=pars[1], lambda=pars[2]
         }
         return(fun) 
     }
     
     flist$gradcumbasehazard <- function(pars){
-        fun <- function(t){
+        fun <- function(t,...){
             return(t^(pars[1])*cbind(pars[2]*log(t),1)) # in this case alpha=pars[1], lambda=pars[2]
         }
         return(fun)    
@@ -106,14 +106,14 @@ weibullHaz <- function(){
             return(m) # in this case alpha=pars[1], lambda=pars[2]
         }
         
-        fun <- function(t){
+        fun <- function(t,...){
             return(lapply(t,funfun,pars=pars))
         }
         return(fun)
     }
     
     flist$densityquantile <- function(pars,other){
-        fun <- function(probs){
+        fun <- function(probs,...){
             return((-log(1-probs)/(pars[2]*other$expXbetaplusY))^(1/pars[1]))
         }
         return(fun)    

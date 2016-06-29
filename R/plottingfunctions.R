@@ -25,6 +25,7 @@
 ##' @param legendOpacity see opacity argument in function addLegend
 ##' @param OSMbg optional OpenStreetMap background to add to plot, obtain this using the function getBackground
 ##' @param leafletLegend logical, display the leaflet legend?
+##' @param alpha.f point transparency, see ?adjustcolor, default is 0.5
 ##' @param ... other arguments to be passed to plot
 ##' @return either produces a plot or if useLeaflet is TRUE, returns a leaflet map widget to which further layers can be added
 ##' @seealso \link{urlTemplate}, \link{getBackground}, brewer.pal
@@ -47,6 +48,7 @@ spplot1 <- function(x,
 					legendOpacity = 0.5,
 					OSMbg=NULL,
 					leafletLegend=TRUE,
+					alpha.f=0.5,
 					...){
 
 	if(bw){
@@ -90,19 +92,22 @@ spplot1 <- function(x,
 		}
 		else{
 			plot(OSMbg,...)
-			cols <- adjustcolor(cols,alpha.f=0.5)
-			palette <- adjustcolor(palette,alpha.f=0.5)
+			cols <- adjustcolor(cols,alpha.f=alpha.f)
+			palette <- adjustcolor(palette,alpha.f=alpha.f)
 			x <- spTransform(x,CRS("+init=epsg:3857"))
 			sp::plot(x,col=cols,add=TRUE,...)
 		}
 
 		if(printlegend){
-			legend(legpos,pch=rep(15,n),col=palette,legend=lvls,bty=bty,bg=bg)
+			lg <- legend(legpos,pch=rep(15,n),col=palette,legend=lvls,bty=bty,plot=FALSE)
+		    polygon(c(lg[[1]]$left,lg[[1]]$left,lg[[1]]$left+lg[[1]]$w,lg[[1]]$left+lg[[1]]$w),c(lg[[1]]$top-lg[[1]]$h,lg[[1]]$top,lg[[1]]$top,lg[[1]]$top-lg[[1]]$h),border=NA,col=bg)
+  			legend(legpos,pch=rep(15,n),col=palette,legend=lvls,bty=bty,bg=bg)
+
 		}
 	}
 	else{
 		m <- NULL
-		
+
 		s <- "require(leaflet)
 		{
 			if(inherits(x,'SpatialPolygonsDataFrame')){
@@ -208,15 +213,15 @@ spplot_compare <- function(x,y,what,what1=what,palette=brewer.pal(9,"Oranges"),l
 ##'
 ##' A function to 
 ##'
-##' @param poly X 
-##' @param type X 
+##' @param poly a spatial object that can be transformed and the extent obtained using the bbox function.
+##' @param type see ?openmap
 ##' @return ...
 ##' @export
 
 getBackground <- function(poly,type="stamen-toner"){
 	poly <- spTransform(poly,CRS("+init=epsg:4326"))
 	bb <- bbox(poly)
-	map <- openmap(upperLeft=c(lat=bb[2,2],lon=bb[1,1]), lowerRight=c(lat=bb[2,1],lon=bb[1,2]),type="stamen-toner")
+	map <- openmap(upperLeft=c(lat=bb[2,2],lon=bb[1,1]), lowerRight=c(lat=bb[2,1],lon=bb[1,2]),type=type)
 	return(map)
 }
 

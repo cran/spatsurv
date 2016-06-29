@@ -24,26 +24,41 @@ QuadApprox <- function(fun,npts,argRanges,plot=FALSE,...){
     gr2 <- gr^2
     parnames <- c(parnames,paste("x",1:npar,".2",sep=""))
     paridx[(npar+2):(2*npar+1)] <- 1:npar
-    grcross <- matrix(NA,nrow(gr),choose(npar,2))
-    ct <- 1
-    for(i in 1:(npar-1)){
-        for(j in (i+1):npar){    
-            grcross[,ct] <- gr[,i]*gr[,j]
-            parnames <- c(parnames,paste(parn[i],parn[j],collapse="",sep=""))
-            paridx[[2*npar+1+ct]] <- c(i,j)
-            ct <- ct + 1
-        }
-    }
-    partype <- c("intercept",rep("single",npar),rep("squared",npar),rep("mixed",choose(npar,2)))
-    dataf <- cbind(gr,gr2,grcross)
-    names(dataf) <- parnames
     
+    if(npar>1){
+        grcross <- matrix(NA,nrow(gr),choose(npar,2))
+        ct <- 1
+        for(i in 1:(npar-1)){
+            for(j in (i+1):npar){    
+                grcross[,ct] <- gr[,i]*gr[,j]
+                parnames <- c(parnames,paste(parn[i],parn[j],collapse="",sep=""))
+                paridx[[2*npar+1+ct]] <- c(i,j)
+                ct <- ct + 1
+            }
+        }
+        partype <- c("intercept",rep("single",npar),rep("squared",npar),rep("mixed",choose(npar,2)))
+        dataf <- cbind(gr,gr2,grcross)
+    }
+    else{
+        partype <- c("intercept",rep("single",npar),rep("squared",npar))
+        dataf <- cbind(gr,gr2)
+    }
+
+    names(dataf) <- parnames
+
     cat("Constructing quadratic approximation to posterior (this can take some time) ...\n")
-    dataf$funvals <- apply(gr,1,function(params){fun(params,...)})
+    if(npar>1){
+        dataf$funvals <- apply(gr,1,function(params){fun(params,...)})
+    }
+    else{
+        dataf$funvals <- sapply(gr[[1]],function(params){fun(params,...)})
+    }
     cat("Done.\n")
     
-    
     if(plot){
+        if(npar==1){
+            plot(vals[[1]],dataf$funvals,main="Function")
+        }  
         if(npar==2){
             image.plot(vals[[1]],vals[[2]],matrix(dataf$funvals,npts,npts),main="Function")
         }  
@@ -55,40 +70,54 @@ QuadApprox <- function(fun,npts,argRanges,plot=FALSE,...){
     co <- coefficients(mod)
     
     if(plot){
+        if(npar==1){
+            lines(vals[[1]],fitted(mod),type="l",main="Function")
+        }  
         if(npar==2){
             image.plot(vals[[1]],vals[[2]],matrix(fitted(mod),npts,npts),main="Quadratic Approximation")
         }  
     }    
     
     # now construct matrix of second derivatives
-    sigmainv <- matrix(NA,npar,npar)
-    diag(sigmainv) <- 2 * co[which(partype=="squared")] # first the diagonal elements
-    idx <- which(partype=="mixed") # now the off diagonals
-    ct <- 1
-    for(i in 1:(npar-1)){
-        for(j in (i+1):npar){    
-            sigmainv[i,j] <- co[idx[ct]]
-            sigmainv[j,i] <- co[idx[ct]]
-            ct <- ct + 1
+    if(npar>1){
+        sigmainv <- matrix(NA,npar,npar)
+        diag(sigmainv) <- 2 * co[which(partype=="squared")] # first the diagonal elements
+        idx <- which(partype=="mixed") # now the off diagonals
+        ct <- 1
+        for(i in 1:(npar-1)){
+            for(j in (i+1):npar){    
+                sigmainv[i,j] <- co[idx[ct]]
+                sigmainv[j,i] <- co[idx[ct]]
+                ct <- ct + 1
+            }
         }
+    }
+    else{
+        sigmainv <- 2 * co[which(partype=="squared")]
     }
     
     # lastly, create a system of simultaneous equations, Ax = b, which when solved gives the maximum
     b <- (-1) * matrix(co[which(partype=="single")],npar,1)
-    A <- matrix(NA,npar,npar)
-    diag(A) <- 2 * co[which(partype=="squared")]
-    for(i in 1:(npar-1)){
-        for(j in (i+1):npar){
-            tst <- sapply(paridx,function(x){any(x==i)&any(x==j)})
-            idx <- which(tst)   
-            A[i,j] <- co[idx]
-            A[j,i] <- co[idx]
+    if(npar>1){
+        A <- matrix(NA,npar,npar)
+        diag(A) <- 2 * co[which(partype=="squared")]
+        for(i in 1:(npar-1)){
+            for(j in (i+1):npar){
+                tst <- sapply(paridx,function(x){any(x==i)&any(x==j)})
+                idx <- which(tst)   
+                A[i,j] <- co[idx]
+                A[j,i] <- co[idx]
+            }
         }
+        etaest <- as.vector(solve(A)%*%b) # now solve the system of simultaneous equations to get an initial guess for eta 
     }
-
-    etaest <- as.vector(solve(A)%*%b) # now solve the system of simultaneous equations to get an initial guess for eta 
+    else{
+        etaest <- as.vector(b/(2 * co[which(partype=="squared")]))
+    }
     
-    sigmainv <- fixmatrix(sigmainv)
+    if(npar>1){
+        sigmainv <- fixmatrix(sigmainv)
+    }
 
     return(list(max=etaest,curvature=sigmainv,mod=mod)) 
 }
@@ -222,7 +251,6 @@ proposalVariance <- function(X,surv,betahat,omegahat,Yhat,priors,cov.model,u,con
     
     # eta
     logpost <- function(eta,surv,X,beta,omega,Y,priors,cov.model,u,control){
-
         etapars <- cov.model$itrans(eta)
         sigma <- matrix(EvalCov(cov.model=cov.model,u=u,parameters=etapars),n,n)
         cholsigma <- t(chol(sigma))
@@ -239,7 +267,8 @@ proposalVariance <- function(X,surv,betahat,omegahat,Yhat,priors,cov.model,u,con
     if(leneta>=3){
         npts <- 10
     }
-    rgs <- getparranges(priors=priors,leneta=leneta)   
+    rgs <- getparranges(priors=priors,leneta=leneta)  
+
     qa <- QuadApprox(logpost,npts=npts,argRanges=rgs,plot=control$plotcal,surv=surv,X=X,beta=betahat,omega=omegahat,Y=Yhat,priors=priors,cov.model=cov.model,u=u,control=control)
     
     matr <- qa$curvature
@@ -343,13 +372,22 @@ proposalVariance_gridded <- function(X,surv,betahat,omegahat,Yhat,priors,cov.mod
     sigma[(lenbeta+1):(lenbeta+lenomega),(lenbeta+1):(lenbeta+lenomega)] <- hessian$hess_omega
     sigma[(lenbeta+1):(lenbeta+lenomega),(1:lenbeta)] <- hessian$hess_omega_beta
     sigma[(1:lenbeta),(lenbeta+1):(lenbeta+lenomega)] <- t(hessian$hess_omega_beta)       
+
+    #sigma[1:(lenbeta+lenomega),1:(lenbeta+lenomega)] <- as.matrix(nearPD(sigma[1:(lenbeta+lenomega),1:(lenbeta+lenomega)])$mat)
+    
     # gamma
     hess_gam <- hessian$hess_gamma 
     
     sigma <- (-1) * sigma # variance is inverse of observed information    
     
     matidx <- (lenbeta+lenomega+leneta+1):npars
-    matidx <- matrix(matidx,nrow=length(matidx),ncol=2) 
+    matidx <- matrix(matidx,nrow=length(matidx),ncol=2)
+
+    #browser()
+    #sigma[1:11,1:11] <- 0
+    #sigma[1:2,1:2] <- diag(1/1e-4,2)
+    #sigma[3:9,3:9] <- diag(1/1e-4,7)
+    #sigma[10:11,10:11] <- diag(1/1e-4,2)
 
     sigmaret <- Matrix(0,npars,npars)
     sigmaret[1:(lenbeta+lenomega+leneta),1:(lenbeta+lenomega+leneta)] <- solve(sigma)
@@ -568,7 +606,7 @@ estimateY <- function(X,betahat,omegahat,surv,control){
     
     haz <- setupHazard(dist=control$dist,pars=omega,grad=FALSE,hess=FALSE)    
     
-    tsubs <- guess_t(surv)   
+    tsubs <- guess_t(surv)  
     
     Y <- -X%*%betahat - log(haz$H(tsubs)) # greedy estimate of Y (maximise individual contributions to log-likelihood) ... note log(delta) is now omitted  
 
