@@ -15,24 +15,24 @@ OMEGA <- 1
 
 
 
-# Generate spatially correlated survival data ... 
+# Generate spatially correlated survival data ...
 dat <- simsurv(X=cbind( age=runif(n,5,50),sex=rbinom(n,1,0.5),cancer=rbinom(n,1,0.2)),
                         dist=DIST,
                         omega=OMEGA,
-                        mcmc.control=mcmcpars(nits=100,burn=10,thin=10))  
+                        mcmc.control=mcmcpars(nits=100,burn=10,thin=10))
 
 coords <- dat$coords
 SIGMA <- dat$cov.parameters[1]
-PHI <- dat$cov.parameters[2]                                          
+PHI <- dat$cov.parameters[2]
 
-par(mfrow=c(2,2))                                    
+par(mfrow=c(2,2))
 plot(coords,col=grey(1-dat$survtimes/max(dat$survtimes)),pch=19)
 
 X <- as.data.frame(dat$X) # covariates
 
 survtimes <- dat$survtimes
-censtimes <- runif(n,min(survtimes),max(survtimes))                                    
-survdat <- gencens(survtimes,censtimes)  
+censtimes <- runif(n,min(survtimes),max(survtimes))
+survdat <- gencens(survtimes,censtimes)
 
 
 # priors
@@ -45,9 +45,11 @@ priors <- mcmcPriors(   betaprior=betaprior,
                         call=indepGaussianprior,
                         derivative=derivindepGaussianprior)
 
-# create SpatialPointsDataFrame containing the covariate data and coordinates of the survival data 
+# create SpatialPointsDataFrame containing the covariate data and coordinates of the survival data
 spatdat <- SpatialPointsDataFrame(coords,data=as.data.frame(X))
 spatdat$ss <- survdat
+
+#browser()
 
 if(TRUE){
     ss <- survspat( formula=ss~age+sex+cancer,

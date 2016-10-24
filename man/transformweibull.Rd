@@ -13,7 +13,7 @@ transformweibull(x)
 the transformed parameters. For the weibull model, this is the back-transform from 'alpha' and 'lambda' to 'shape' 'scale' (see ?dweibull).
 }
 \description{
-A function to back-transform estimates of the parameters of the weibull baseline hazard function, so they are commensurate with R's inbuilt density functions. 
+A function to back-transform estimates of the parameters of the weibull baseline hazard function, so they are commensurate with R's inbuilt density functions.
 Transforms from (shape, scale) to (alpha, lambda)
 }
 

@@ -2,7 +2,7 @@
 ##'
 ##' A function to return the "idx" i.e. c(i,j) element of a circulant matrix with base "base".
 ##'
-##' @param idx vector of length 2 th (i,j) (row,column) index to return 
+##' @param idx vector of length 2 th (i,j) (row,column) index to return
 ##' @param base the base matrix of a circulant matrix
 ##' @return the ij element of the full circulant
 ##' @export
@@ -14,10 +14,10 @@ circulantij <- function(idx,base){
     if(i%%m==0){
         I1 <- i/m
     }
-    else{        
+    else{
         I1 <- floor(i/m) + 1
     }
-    
+
     if(j%%m==0){
         J1 <- j/m
     }
@@ -25,7 +25,7 @@ circulantij <- function(idx,base){
         J1 <- floor(j/m) + 1
     }
     colno <- (J1-I1)%%n + 1
-    
+
     I2 <- i%%m + 1
     J2 <- j%%m + 1
     rowno <- (J2-I2)%%m + 1
@@ -72,7 +72,7 @@ circulant.numeric <- function(x,...){
 
 ##' circulant.matrix function
 ##'
-##' If x is a matrix whose columns are the bases of the sub-blocks of a block circulant matrix, then this function returns the 
+##' If x is a matrix whose columns are the bases of the sub-blocks of a block circulant matrix, then this function returns the
 ##' block circulant matrix of interest.
 ##'
 ##' @method circulant matrix
@@ -88,7 +88,7 @@ circulant.matrix <- function(x,...){
     idx <- 1:N
     ct <- 1
     for (i in 1:N){
-        for (j in 1:N){ 
+        for (j in 1:N){
             xstart <- M*floor((ct-1)/N) + 1
             mult <- ct%%N
             if (mult==0){

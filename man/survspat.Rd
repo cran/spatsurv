@@ -42,7 +42,7 @@ Langevin algorithm.
 }
 }
 \seealso{
-\link{tpowHaz}, \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{weibullHaz}, 
+\link{tpowHaz}, \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{weibullHaz},
 \link{covmodel}, link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
 \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control}
 }

@@ -21,7 +21,7 @@ getOptCellwidth(dat, cellwidth, ext = 2, plot = TRUE, boundingbox = NULL)
 the optimum cell width
 }
 \description{
-A function to compute an optimal cellwidth close to an initial suggestion. This maximises the efficiency of the 
+A function to compute an optimal cellwidth close to an initial suggestion. This maximises the efficiency of the
 MCMC algorithm when in the control argument of the function survspat, the option gridded is set to TRUE
 }
 

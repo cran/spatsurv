@@ -1,11 +1,11 @@
-citHeader("To cite lgcp in publications use:")
+citHeader("To cite spatsurv in publications use:")
 
 
 citEntry(entry = "Article",
   title        = "spatsurv: an {R} Package for {B}ayesian Inference with Spatial Survival Models",
   author       = personList(as.person("Benjamin M. Taylor"),
                    as.person("Barry S. Rowlingson")),
-  journal      = "Submitted",
+  journal      = "to appear in the Journal of Statistical Software",
   year         = "X",
   volume       = "X",
   number       = "X",
@@ -17,4 +17,3 @@ citEntry(entry = "Article",
         "spatsurv: an R Package for Bayesian Inference with Spatial Survival Models",
         "Submitted")
 )
-

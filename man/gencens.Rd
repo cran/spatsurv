@@ -15,7 +15,7 @@ gencens(survtimes, censtimes, type = "right")
 }
 \value{
 an object of class 'Surv', the censoring indicator is equal to 1 if the
-event is uncensored and 0 otherwise for right/left censored data, or for interval censored data, the indicator is 0 uncensored, 1 right censored, 
+event is uncensored and 0 otherwise for right/left censored data, or for interval censored data, the indicator is 0 uncensored, 1 right censored,
 2 left censored, or 3 interval censored.
 }
 \description{

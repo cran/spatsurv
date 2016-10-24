@@ -21,7 +21,7 @@ QuadApprox(fun, npts, argRanges, plot = FALSE, ...)
 a 2 by 2 matrix containing the curvature at the maximum and the (x,y) value at which the maximum occurs
 }
 \description{
-A function to compute the second derivative of a function (of several real variables) using a quadratic approximation  on a 
+A function to compute the second derivative of a function (of several real variables) using a quadratic approximation  on a
 grid of points defined by the list argRanges. Also returns the local maximum.
 }
 

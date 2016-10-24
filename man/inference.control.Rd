@@ -24,7 +24,7 @@ inference.control(gridded = FALSE, cellwidth = NULL, ext = 2,
 \item{hessian}{whether to return a numerical hessian. Set this to TRUE for non-spatial models.
 equal to the number of parameters of the baseline hazard}
 
-\item{plotcal}{logical, whether to produce plots of the MCMC calibration process, this is a technical option and should onyl be set 
+\item{plotcal}{logical, whether to produce plots of the MCMC calibration process, this is a technical option and should onyl be set
 to TRUE if poor mixing is evident (the printed h is low), then it is also useful to use a graphics device with multiple plotting windows.}
 
 \item{timeonlyMCMC}{logical, whether to only time the MCMC part of the algorithm, or whether to include in the reported running time the time taken to calibrate the method (default)}

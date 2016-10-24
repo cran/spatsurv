@@ -20,33 +20,51 @@ FFTgrid <- function(spatialdata,cellwidth,ext,boundingbox=NULL){
     }
     xrange <- bb[1,]
     yrange <- bb[2,]
-    
+
     M <- 2^ceiling(log(diff(xrange)/cellwidth,base=2)) # minimum gridsize in x-direction
     N <- 2^ceiling(log(diff(yrange)/cellwidth,base=2)) # minimum gridsize in x-direction
-    
+
     xdim <- M * cellwidth
     ydim <- N * cellwidth
     xadd <- (xdim - diff(xrange))/2
-    yadd <- (ydim - diff(yrange))/2    
+    yadd <- (ydim - diff(yrange))/2
 
     xrange <- xrange + c(-xadd,xadd)
-    yrange <- yrange + c(-yadd,yadd)  
-    
+    yrange <- yrange + c(-yadd,yadd)
+
 
     del1 <- (xrange[2]-xrange[1])/M
-    del2 <- (yrange[2]-yrange[1])/N 
-    
-    Mext <- ext*M	
-    Next <- ext*N
-    
-    mcens <- xrange[1]+.5*del1+(0:(Mext-1))*del1
-    ncens <- yrange[1]+.5*del2+(0:(Next-1))*del2	
+    del2 <- (yrange[2]-yrange[1])/N
 
-    obj <- list(del1=del1,del2=del2,Mext=Mext,Next=Next,mcens=mcens,ncens=ncens)    
+    Mext <- ext*M
+    Next <- ext*N
+
+    mcens <- xrange[1]+.5*del1+(0:(Mext-1))*del1
+    ncens <- yrange[1]+.5*del2+(0:(Next-1))*del2
+
+    obj <- list(del1=del1,del2=del2,Mext=Mext,Next=Next,mcens=mcens,ncens=ncens)
     class(obj) <- "FFTgrid"
-    
-    return(obj)   
+
+    return(obj)
 }
+
+
+##' plot.FFTgrid function
+##'
+##' A function to
+##'
+##' @method plot FFTgrid
+##' @param x X
+##' @param y X
+##' @param ... X
+##' @return ...
+##' @export
+
+plot.FFTgrid <- function(x,y=NULL,...){
+    plot(expand.grid(x$mcens,x$ncens),pch="+",cex=0.5)
+}
+
+
 
 ##' grid2spix function
 ##'
@@ -60,7 +78,7 @@ FFTgrid <- function(spatialdata,cellwidth,ext,boundingbox=NULL){
 
 grid2spix <- function(xgrid,ygrid,proj4string=CRS(as.character(NA))){
     return(SpatialPixels(SpatialPoints(expand.grid(xgrid,ygrid),proj4string=proj4string)))
-} 
+}
 
 ##' grid2spts function
 ##'
@@ -74,12 +92,12 @@ grid2spix <- function(xgrid,ygrid,proj4string=CRS(as.character(NA))){
 
 grid2spts <- function(xgrid,ygrid,proj4string=CRS(as.character(NA))){
     return(SpatialPoints(expand.grid(xgrid,ygrid),proj4string=proj4string))
-} 
+}
 
 
 ##' grid2spdf function
 ##'
-##' A function to convert a regular (x,y) grid of centroids into a SpatialPoints object 
+##' A function to convert a regular (x,y) grid of centroids into a SpatialPoints object
 ##'
 ##' @param xgrid vector of x centroids (equally spaced)
 ##' @param ygrid vector of x centroids (equally spaced)
@@ -110,8 +128,8 @@ grid2spdf <- function(xgrid,ygrid,proj4string=CRS(as.character(NA))){
 gridY <- function(Y,control){
     newy <- matrix(-var(Y)/2,control$fftgrid$Mext,control$fftgrid$Next)
 
-    Ytemp <- sapply(control$uqidx,function(i){mean(Y[control$idx==i])})    
-    
+    Ytemp <- sapply(control$uqidx,function(i){mean(Y[control$idx==i])})
+
     newy[control$uqidx] <- Ytemp
     return(newy)
 }
@@ -129,8 +147,8 @@ gridY <- function(Y,control){
 gridY_polygonal <- function(Y,control){
     newy <- rep(-var(Y)/2,control$n) #matrix(-var(Y)/2,control$fftgrid$Mext,control$fftgrid$Next)
 
-    Ytemp <- sapply(control$uqidx,function(i){mean(Y[control$idx==i])})    
-    
+    Ytemp <- sapply(control$uqidx,function(i){mean(Y[control$idx==i])})
+
     newy[control$uqidx] <- Ytemp
     return(newy)
 }
@@ -151,7 +169,7 @@ gridY_polygonal <- function(Y,control){
 GammafromY <- function(Y,rootQeigs,mu){
     nc <- dim(rootQeigs)[2]
     nb <- length(Y)
-    return((1/nb)*Re(fft(fft(Y-mu)*rootQeigs,inverse=TRUE)))    
+    return((1/nb)*Re(fft(fft(Y-mu)*rootQeigs,inverse=TRUE)))
 }
 
 
@@ -159,7 +177,7 @@ GammafromY <- function(Y,rootQeigs,mu){
 
 ##' YfromGamma function
 ##'
-##' A function to change Gammas (white noise) into Ys (spatially correlated noise). Used in the MALA algorithm. 
+##' A function to change Gammas (white noise) into Ys (spatially correlated noise). Used in the MALA algorithm.
 ##'
 ##' @param Gamma Gamma matrix
 ##' @param invrootQeigs inverse square root of the eigenvectors of the precision matrix
@@ -177,12 +195,12 @@ YfromGamma <- function(Gamma,invrootQeigs,mu){
 
 ##' getOptCellwidth function
 ##'
-##' A function to compute an optimal cellwidth close to an initial suggestion. This maximises the efficiency of the 
+##' A function to compute an optimal cellwidth close to an initial suggestion. This maximises the efficiency of the
 ##' MCMC algorithm when in the control argument of the function survspat, the option gridded is set to TRUE
 ##'
 ##' @param dat any spatial data object whose bounding box can be computed using the function bbox.
 ##' @param cellwidth an initial suggested cellwidth
-##' @param ext the extension parameter for the FFT transform, set to 2 by default 
+##' @param ext the extension parameter for the FFT transform, set to 2 by default
 ##' @param plot whether to plot the grid and data to illustrate the optimal grid
 ##' @param boundingbox optional bounding box over which to construct computational grid, supplied as an object on which the function 'bbox' returns the bounding box
 ##' @return the optimum cell width
@@ -196,7 +214,7 @@ getOptCellwidth <- function(dat,cellwidth,ext=2,plot=TRUE,boundingbox=NULL){
         del1 <- gridobj$del1
         del2 <- gridobj$del2
         mcens <- gridobj$mcens
-        ncens <- gridobj$ncens 
+        ncens <- gridobj$ncens
         xdiff <- diff(range(mcens)) + del1
         ydiff <- diff(range(ncens)) + del2
         gridArea <- xdiff * ydiff
@@ -210,7 +228,7 @@ getOptCellwidth <- function(dat,cellwidth,ext=2,plot=TRUE,boundingbox=NULL){
     Mext <- gridobj$Mext
     Next <- gridobj$Next
     mcens <- gridobj$mcens
-    ncens <- gridobj$ncens 
+    ncens <- gridobj$ncens
 
     cat("Suggest using cellwidth:",opt$minimum,"which gives an output grid size of",Mext/ext," by ",Next/ext," this should be rounded upwards, if at all.\n")
 
@@ -229,7 +247,7 @@ getOptCellwidth <- function(dat,cellwidth,ext=2,plot=TRUE,boundingbox=NULL){
 ##'
 ##' @param dat any spatial data object whose bounding box can be computed using the function bbox.
 ##' @param cellwidth an initial suggested cellwidth
-##' @param ext the extension parameter for the FFT transform, set to 2 by default 
+##' @param ext the extension parameter for the FFT transform, set to 2 by default
 ##' @param boundingbox optional bounding box over which to construct computational grid, supplied as an object on which the function 'bbox' returns the bounding box
 ##' @return a plot showing the grid and the data. Ideally the data should only just fit inside the grid.
 ##' @export
@@ -241,7 +259,7 @@ showGrid <- function(dat,cellwidth,ext=2,boundingbox=NULL){
     Mext <- gridobj$Mext
     Next <- gridobj$Next
     mcens <- gridobj$mcens
-    ncens <- gridobj$ncens 
+    ncens <- gridobj$ncens
 
     plot(expand.grid(mcens[1:(Mext/ext)],ncens[1:(Next/ext)]),pch="+",col="red",cex=0.5)
     sp::plot(dat,cex=0.5,add=TRUE,pch=19)
@@ -276,7 +294,7 @@ showGrid <- function(dat,cellwidth,ext=2,boundingbox=NULL){
 #    if(class(covParameters)!="CovParamaters"){
 #        stop("argument 'covParamaters' must be an object of class CovParamaters, see ?CovParamaters")
 #    }
-#    
+#
 #    Mext <- length(fftgrid$mcens)
 #    Next <- length(fftgrid$ncens)
 #    covbase <- covFunction(d=d,CovParameters=covParameters)
@@ -285,9 +303,9 @@ showGrid <- function(dat,cellwidth,ext=2,boundingbox=NULL){
 #
 #    gp <- list()
 #    gp$gamma <- gamma
-#    gp$CovFunction <- covFunction 
+#    gp$CovFunction <- covFunction
 #    gp$CovParameters <- covParameters
-#    gp$covbase <- covbase 
+#    gp$covbase <- covbase
 #    #gp$fftcovbase <- lapply(covbase,function(x){Re(fft(x))})
 #    gp$rootQeigs <- sqrt(1/Re(fft(covbase[[1]])))#sqrt(1/gp$fftcovbase$eval)
 #    gp$invrootQeigs <- 1/gp$rootQeigs
@@ -295,8 +313,8 @@ showGrid <- function(dat,cellwidth,ext=2,boundingbox=NULL){
 #    gp$expY <- exp(gp$Y) # for computational purposes
 #    gp$mcens <- fftgrid$mcens
 #    gp$ncens <- fftgrid$ncens
-#    
-#    class(gp) <- "GPrealisation"    
-#    return(gp)    
-#    
+#
+#    class(gp) <- "GPrealisation"
+#    return(gp)
+#
 #}
