@@ -30,7 +30,7 @@
 median, upper and lower confidence bands for the effect of varname over time; the funciton also produces a plot.
 }
 \description{
-When bs(varname) has been used in the formula of a coxph model, this function can be used to reconstruct the predicted relative risk of 
+When bs(varname) has been used in the formula of a coxph model, this function can be used to reconstruct the predicted relative risk of
 that parameter over time.
 }
 

@@ -39,6 +39,7 @@ maxlikparamPHsurv <- function(surv,X,control){
 
     #browser()
     cat("Initial optimisation via BFGS ...\n")
+    #browser()
     if(is.null(fix_some)){
         opt <- try(optim(par=c(betainit,omegainit),fn=likfun,gr=gradfun,method="BFGS",control=control$optimcontrol,hessian=control$hessian))
     }
@@ -149,6 +150,8 @@ NonSpatialLogLikelihood_or_gradient <- function(surv,X,beta,omega,control,loglik
     omegaorig <- omega # recall we are working with omega on the transformed scale
     omega <- control$omegaitrans(omega) # this is omega on the correct scale
 
+    #browser()
+
     haz <- setupHazard(dist=control$dist,pars=omega,grad=TRUE)
 
     n <- nrow(X)
@@ -204,6 +207,8 @@ NonSpatialLogLikelihood_or_gradient <- function(surv,X,beta,omega,control,loglik
         S1 <- exp(-J1)
         S2 <- exp(-J2)
     }
+
+
 
     if(censoringtype=="right" | censoringtype=="left"){
         h <- haz$h(surv[,"time"])

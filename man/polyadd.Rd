@@ -15,7 +15,7 @@ polyadd(poly1, poly2)
 the coefficients of the sum of poly1 and poly2
 }
 \description{
-A function to add two polynomials in the form of vectors of coefficients. The first 
+A function to add two polynomials in the form of vectors of coefficients. The first
 element of the vector being the constant (order 0) term
 }
 

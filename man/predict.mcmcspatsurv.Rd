@@ -33,11 +33,11 @@
 the required predictions
 }
 \description{
-A function to produce predictions from MCMC output. These could include quantiles of the individual density, survival or 
+A function to produce predictions from MCMC output. These could include quantiles of the individual density, survival or
 hazard functions or quantiles of the density function (if available analytically).
 }
 \seealso{
-\link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+\link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 \link{baselinehazard}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}

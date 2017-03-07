@@ -1,15 +1,15 @@
 ##' print.mcmcspatsurv function
 ##'
-##' A function to print summary tables from an MCMC run 
+##' A function to print summary tables from an MCMC run
 ##'
 ##' @method print mcmcspatsurv
-##' @param x an object inheriting class mcmcspatsurv 
+##' @param x an object inheriting class mcmcspatsurv
 ##' @param probs vector of quantiles to return
 ##' @param digits see help file ?format
 ##' @param scientific see help file ?format
-##' @param ... additional arguments, not used here 
+##' @param ... additional arguments, not used here
 ##' @return prints summary tables to the console
-##' @seealso \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -20,56 +20,56 @@ print.mcmcspatsurv <- function(x,probs=c(0.5,0.025,0.975),digits = 3, scientific
     quant <- quantile(x,probs)
 
     cat("\n")
-    cat("Fixed Effects:\n")    
+    cat("Fixed Effects:\n")
     print(quant$betaquant,digits=digits,scientific=scientific)
     cat("\n")
-    
+
     cat("Baseline Hazard Parameters:\n")
     print(quant$omegaquant,digits=digits,scientific=scientific)
     cat("\n")
 
-    cat("Spatial Covariance Parameters:\n")   
+    cat("Spatial Covariance Parameters:\n")
     print(quant$etaquant,digits=digits,scientific=scientific)
     cat("\n")
 
     if(x$control$nugget){
-        cat("Estimated standard deviation of nugget:\n")   
+        cat("Estimated standard deviation of nugget:\n")
         print(x$Usigma_mean,digits=digits,scientific=scientific)
-        cat("standard error:\n")   
+        cat("standard error:\n")
         print(sqrt(x$Usigma_var),digits=digits,scientific=scientific)
         cat("\n")
     }
-    
+
     cat("Deviance Information Criterion: ",x$DIC,"\n")
     cat("\n")
 
     cat("Watanabe-Akaike Information Criterion: ",x$WAIC,"\n")
     cat("\n")
-    
+
     cat("MCMC Details:\n")
     m <- matrix(c(x$mcmc.control$nits,x$mcmc.control$burn,x$mcmc.control$thin),3,1)
     rownames(m) <- c("Number of Iterations","Burnin length","Thining")
     colnames(m) <- ""
     print(m,digits=digits,scientific=scientific)
     cat("\n")
-    
+
     cat("Running Time:\n")
     print(x$time.taken)
-} 
+}
 
 
 ##' print.mlspatsurv function
 ##'
-##' A function to print summary tables from an MCMC run 
+##' A function to print summary tables from an MCMC run
 ##'
 ##' @method print mlspatsurv
-##' @param x an object inheriting class mcmcspatsurv 
+##' @param x an object inheriting class mcmcspatsurv
 ##' @param probs vector of quantiles to return
 ##' @param digits see help file ?format
 ##' @param scientific see help file ?format
-##' @param ... additional arguments, not used here 
+##' @param ... additional arguments, not used here
 ##' @return prints summary tables to the console
-##' @seealso \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -82,31 +82,31 @@ print.mlspatsurv <- function(x,probs=c(0.5,0.025,0.975),digits = 3, scientific =
     quant <- quantile(x,probs)
 
     cat("\n")
-    cat("Fixed Effects:\n")    
+    cat("Fixed Effects:\n")
     print(quant$betaquant,digits=digits,scientific=scientific)
     cat("\n")
-    
+
     cat("Baseline Hazard Parameters:\n")
     print(quant$omegaquant,digits=digits,scientific=scientific)
     cat("\n")
 
     cat("Likelihood: ",-x$mlmod$value,"\n")
     cat("\n")
-    
+
     cat("Running Time:\n")
     print(x$time.taken)
-} 
+}
 
 ##' quantile.mcmcspatsurv function
 ##'
 ##' A function to extract quantiles of the parameters from an mcmc run
 ##'
 ##' @method quantile mcmcspatsurv
-##' @param x an object inheriting class mcmcspatsurv 
+##' @param x an object inheriting class mcmcspatsurv
 ##' @param probs vector of probabilities
 ##' @param ... other arguments to be passed to the function, not used here
 ##' @return quantiles of model parameters
-##' @seealso \link{print.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -125,11 +125,11 @@ quantile.mcmcspatsurv <- function(x,probs=c(0.025,0.5,0.975),...){
 ##' A function to extract quantiles of the parameters from an mcmc run
 ##'
 ##' @method quantile mlspatsurv
-##' @param x an object inheriting class mcmcspatsurv 
+##' @param x an object inheriting class mcmcspatsurv
 ##' @param probs vector of probabilities
 ##' @param ... other arguments to be passed to the function, not used here
 ##' @return quantiles of model parameters
-##' @seealso \link{print.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -144,14 +144,14 @@ quantile.mlspatsurv <- function(x,probs=c(0.025,0.5,0.975),...){
 
 ##' summary.mcmcspatsurv function
 ##'
-##' A function to return summary tables from an MCMC run 
+##' A function to return summary tables from an MCMC run
 ##'
 ##' @method summary mcmcspatsurv
-##' @param object an object inheriting class mcmcspatsurv 
+##' @param object an object inheriting class mcmcspatsurv
 ##' @param probs vector of quantiles to return
-##' @param ... additional arguments 
+##' @param ... additional arguments
 ##' @return summary tables to the console
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -160,7 +160,7 @@ quantile.mlspatsurv <- function(x,probs=c(0.025,0.5,0.975),...){
 summary.mcmcspatsurv <- function(object,probs=c(0.5,0.025,0.975),...){
     quant <- quantile(object,probs)
     return(rbind(quant$betaquant,quant$omegaquant,quant$etaquant))
-} 
+}
 
 
 
@@ -169,10 +169,10 @@ summary.mcmcspatsurv <- function(object,probs=c(0.5,0.025,0.975),...){
 ##' A function to return the variance covariance matrix of the parameters beta, omega and eta
 ##'
 ##' @method vcov mcmcspatsurv
-##' @param object an object inheriting class mcmcspatsurv 
+##' @param object an object inheriting class mcmcspatsurv
 ##' @param ... other arguments, not used here
 ##' @return the variance covariance matrix of the parameters beta, omega and eta
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -180,17 +180,17 @@ summary.mcmcspatsurv <- function(object,probs=c(0.5,0.025,0.975),...){
 
 vcov.mcmcspatsurv <- function(object,...){
     return(cov(cbind(object$betasamp,object$omegasamp,object$etasamp)))
-} 
+}
 
 ##' vcov.mlspatsurv function
 ##'
 ##' A function to return the variance covariance matrix of the parameters beta, omega and eta
 ##'
 ##' @method vcov mlspatsurv
-##' @param object an object inheriting class mcmcspatsurv 
+##' @param object an object inheriting class mcmcspatsurv
 ##' @param ... other arguments, not used here
 ##' @return the variance covariance matrix of the parameters beta, omega and eta
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -201,7 +201,7 @@ vcov.mlspatsurv <- function(object,...){
     rownames(mat) <- c(colnames(object$betasamp),colnames(object$omegasamp))
     colnames(mat) <- c(colnames(object$betasamp),colnames(object$omegasamp))
     return(mat)
-} 
+}
 
 
 
@@ -209,15 +209,15 @@ vcov.mlspatsurv <- function(object,...){
 ##'
 ##' A function to produce a plot of, and return, the lag 1 (or higher, see argument 'lag') autocorrelation for each of the spatially correlated frailty chains
 ##'
-##' @param object an object inheriting class mcmcspatsurv 
+##' @param object an object inheriting class mcmcspatsurv
 ##' @param plot logical whether to plot the result, default is TRUE
 ##' @param lag the lag to plot, the default is 1
-##' @param ... other arguments to be passed to the plot function 
+##' @param ... other arguments to be passed to the plot function
 ##' @return the lag 1 autocorrelation for each of the spatially correlated frailty chains
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
-##' \link{hazardexceedance} 
+##' \link{hazardexceedance}
 ##' @export
 
 frailtylag1 <- function(object,plot=TRUE,lag=1,...){
@@ -237,7 +237,7 @@ frailtylag1 <- function(object,plot=TRUE,lag=1,...){
 ##'
 ##' @param x an object of class mcmcspatsurv
 ##' @return the eta mcmc chains
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -255,7 +255,7 @@ spatialpars <- function(x){
 ##'
 ##' @param x an object of class mcmcspatsurv
 ##' @return the omega mcmc chains
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -273,7 +273,7 @@ hazardpars <- function(x){
 ##'
 ##' @param x an object of class mcmcspatsurv
 ##' @return the beta mcmc chains
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -291,7 +291,7 @@ fixedpars <- function(x){
 ##'
 ##' @param x an object of class mcmcspatsurv
 ##' @return the Y mcmc chains
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -307,16 +307,16 @@ randompars <- function(x){
 ##'
 ##' A function to compute quantiles of the posterior baseline hazard or cumulative baseline hazard.
 ##'
-##' @param x an object inheriting class mcmcspatsurv 
-##' @param t optional vector of times at which to compute the quantiles, Defult is NULL, in which case a uniformly spaced vector of length n from 0 to the maximum time is used 
+##' @param x an object inheriting class mcmcspatsurv
+##' @param t optional vector of times at which to compute the quantiles, Defult is NULL, in which case a uniformly spaced vector of length n from 0 to the maximum time is used
 ##' @param n the number of points at which to compute the quantiles if t is NULL
-##' @param probs vector of probabilities 
-##' @param cumulative logical, whether to return the baseline hazard (default i.e. FALSE) or cumulative baseline hazard 
+##' @param probs vector of probabilities
+##' @param cumulative logical, whether to return the baseline hazard (default i.e. FALSE) or cumulative baseline hazard
 ##' @param plot whether to plot the result
 ##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
 ##' @param ... additional arguments to be passed to plot
 ##' @return the vector of times and quantiles of the baseline or cumulative baseline hazard at those times
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -324,8 +324,8 @@ randompars <- function(x){
 
 baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FALSE,plot=TRUE,bw=FALSE,...){
 
-    omegasamp <- x$omegasamp   
-    
+    omegasamp <- x$omegasamp
+
     if(is.null(t)){
         if(x$censoringtype=="left" | x$censoringtype=="right"){
             t <- seq(0,max(x$survivaldata[,"time"],na.rm=TRUE),length.out=n)
@@ -334,26 +334,26 @@ baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FA
             t <- seq(0,max(c(x$survivaldata[,"time1"],x$survivaldata[,"time2"]),na.rm=TRUE),length.out=n)
         }
     }
-    
+
     fun <- function(pars){
         f <- basehazard(x$dist)(pars)
         return(f(t))
     }
-    
+
     YLAB <- "Baseline Hazard"
-    if(cumulative){ 
+    if(cumulative){
         fun <- function(pars){
             f <- cumbasehazard(x$dist)(pars)
             return(f(t))
         }
         YLAB <- "Cumulative Baseline Hazard"
-    }    
-    samp <- t(apply(omegasamp,1,fun))   
+    }
+    samp <- t(apply(omegasamp,1,fun))
 
     toreturn <- t(apply(samp,2,quantile,probs=probs,na.rm=TRUE))
-    
-    rownames(toreturn) <- t 
-    
+
+    rownames(toreturn) <- t
+
     if(plot){
         if(length(probs)==3){
             if(bw){
@@ -363,13 +363,13 @@ baselinehazard <- function(x,t=NULL,n=100,probs=c(0.025,0.5,0.975),cumulative=FA
             else{
                 matplot(t,toreturn,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="time",ylab=YLAB,...)
                 legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
-            }            
+            }
         }
         else{
             matplot(t,toreturn,type="l",xlab="time",ylab="Baseline Hazard")
         }
-    }    
-    
+    }
+
     return(list(t=t,qts=toreturn))
 }
 
@@ -390,16 +390,16 @@ hazard_PP <- function(inputs){
     X <- inputs$X
     Y <- inputs$Y
     beta <- inputs$beta
-    
+
     Xbeta <- sum(X*beta)
     expXbeta <- exp(Xbeta)
     expXbeta_plus_Y <- expXbeta*exp(Y)
-    
+
     f <- function(t){
         h <- basehazard(inputs$dist)(inputs$omega)
         return(expXbeta_plus_Y*h(t))
     }
-    return(f)      
+    return(f)
 }
 
 
@@ -407,7 +407,7 @@ hazard_PP <- function(inputs){
 
 ##' survival_PP function
 ##'
-##' A function to compute an individual's survival function 
+##' A function to compute an individual's survival function
 ##'
 ##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
 ##' @return the survival function for the individual
@@ -416,23 +416,23 @@ survival_PP <- function(inputs){
     X <- inputs$X
     Y <- inputs$Y
     beta <- inputs$beta
-    
+
     Xbeta <- sum(X*beta)
     expXbeta <- exp(Xbeta)
     expXbeta_plus_Y <- expXbeta*exp(Y)
-    
+
     f <- function(t){
         H <- cumbasehazard(inputs$dist)(inputs$omega)
         return(exp(-expXbeta_plus_Y*H(t)))
     }
-    return(f)      
+    return(f)
 }
 
 
 
 ##' density_PP function
 ##'
-##' A function to compute an individual's density function 
+##' A function to compute an individual's density function
 ##'
 ##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
 ##' @return the density function for the individual
@@ -442,17 +442,17 @@ density_PP <- function(inputs){
     X <- inputs$X
     Y <- inputs$Y
     beta <- inputs$beta
-    
+
     Xbeta <- sum(X*beta)
     expXbeta <- exp(Xbeta)
     expXbeta_plus_Y <- expXbeta*exp(Y)
-    
+
     f <- function(t){
-        h <- basehazard(inputs$dist)(inputs$omega)    
+        h <- basehazard(inputs$dist)(inputs$omega)
         H <- cumbasehazard(inputs$dist)(inputs$omega)
         return(expXbeta_plus_Y*h(t)*exp(-expXbeta_plus_Y*H(t)))
     }
-    return(f)      
+    return(f)
 }
 
 
@@ -460,7 +460,7 @@ density_PP <- function(inputs){
 ##' Et_PP function
 ##'
 ##' A function to compute an individual's approximate expected survival time using numerical integration. Note this appears to be unstable; the
-##' function is based on R's integrate function. Not intended for general use (yet!).  
+##' function is based on R's integrate function. Not intended for general use (yet!).
 ##'
 ##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
 ##' @return the expected survival time for the individual, obtained by numerical integration of the density function.
@@ -477,14 +477,14 @@ Et_PP <- function(inputs){
     }
     else{
         return(int)
-    } 
+    }
 }
 
 
 
 ##' densityquantile_PP function
 ##'
-##' A function to compute quantiles of the density function 
+##' A function to compute quantiles of the density function
 ##'
 ##' @param inputs inputs for the function including the model matrix, frailties, fixed effects and the parameters of the baseline hazard derived from this model
 ##' @return quantiles of the density function for the individual
@@ -494,14 +494,14 @@ densityquantile_PP <- function(inputs){
     X <- inputs$X
     Y <- inputs$Y
     beta <- inputs$beta
-    
+
     Xbeta <- sum(X*beta)
     expXbeta <- exp(Xbeta)
     expXbeta_plus_Y <- expXbeta*exp(Y)
-    
-    dq <- densityquantile(inputs$dist)(inputs$omega,other=list(expXbetaplusY=expXbeta_plus_Y)) 
-    
-    return(dq)    
+
+    dq <- densityquantile(inputs$dist)(inputs$omega,other=list(expXbetaplusY=expXbeta_plus_Y))
+
+    return(dq)
 }
 
 
@@ -510,7 +510,7 @@ densityquantile_PP <- function(inputs){
 
 ##' predict.mcmcspatsurv function
 ##'
-##' A function to produce predictions from MCMC output. These could include quantiles of the individual density, survival or 
+##' A function to produce predictions from MCMC output. These could include quantiles of the individual density, survival or
 ##' hazard functions or quantiles of the density function (if available analytically).
 ##'
 ##' @method predict mcmcspatsurv
@@ -518,14 +518,14 @@ densityquantile_PP <- function(inputs){
 ##' @param type can be "density", "hazard", "survival" or "densityquantile". Default is "density". Note that "densityquantile" is not always analytically tractable for some choices of baseline hazard function.
 ##' @param t optional vector of times at which to compute the quantiles, Defult is NULL, in which case a uniformly spaced vector of length n from 0 to the maximum time is used
 ##' @param n the number of points at which to compute the quantiles if t is NULL
-##' @param indx the index number of a particular individual or vector of indices of individuals for which the quantiles should be produced 
+##' @param indx the index number of a particular individual or vector of indices of individuals for which the quantiles should be produced
 ##' @param probs vector of probabilities
 ##' @param plot whether to plot the result
 ##' @param pause logical whether to pause between plots, the default is TRUE
 ##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
-##' @param ... other arguments, not used here 
+##' @param ... other arguments, not used here
 ##' @return the required predictions
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -537,10 +537,10 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
 
     if(is.null(indx)){
         indx <- 1:nrow(newdata)
-    }    
-    
+    }
+
     nobs <- length(indx) # nrow(newdata)
-    
+
     if(is.null(t)){
         if(object$censoringtype=="left" | object$censoringtype=="right"){
             t <- seq(0,max(object$survivaldata[,"time"],na.rm=TRUE),length.out=n)
@@ -552,22 +552,22 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
 
     svdat <- as.matrix(object$survivaldata)
 
-    predictmat <- NULL    
+    predictmat <- NULL
     if(type=="densityquantile"){
         t <- probs
         n <- length(t)
         pb <- txtProgressBar(min = 0, max = nobs)
         predictmat <- matrix(NA,nobs,length(probs))
     }
-    
+
     if(type=="Et"){
         n <- nobs
         pb <- txtProgressBar(min = 0, max = nobs)
-    }    
-    
+    }
+
     nits <- nrow(object$Ysamp)
-    
-    omegasamp <- object$omegasamp    
+
+    omegasamp <- object$omegasamp
     dat <- matrix(NA,nits,n)
     for(i in indx){
         if(type!="Et"){
@@ -587,22 +587,22 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
                 }
             }
             else{
-                inputs$Y <- object$Ysamp[j,i]    
+                inputs$Y <- object$Ysamp[j,i]
             }
-            
+
             inputs$beta <- object$betasamp[j,]
             inputs$omega <- omegasamp[j,]
             fun <- get(paste(type,"_PP",sep=""))(inputs)
             if(type=="Et"){
                 dat[j,i] <- fun
             }
-            else{   
-                dat[j,] <- fun(t)                
-            }      
+            else{
+                dat[j,] <- fun(t)
+            }
         }
 
-        if(type!="densityquantile" & type!="Et"){        
-            toplot <- t(apply(dat,2,quantile,probs=probs,na.rm=TRUE)) 
+        if(type!="densityquantile" & type!="Et"){
+            toplot <- t(apply(dat,2,quantile,probs=probs,na.rm=TRUE))
             if(bw){
                 matplot(t,toplot,type="l",col=c("black","black","black"),lty=c("dotted","solid","dashed"),xlab="time",ylab=type,main=paste("Individual",i))
                 legend("topright",lty=c("dashed","solid","dotted"),col=rev(c("black","black","black")),legend=rev(probs))
@@ -610,43 +610,43 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
             else{
                 matplot(t,toplot,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="time",ylab=type,main=paste("Individual",i))
                 legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
-            }       
-            
+            }
+
             if(pause){
                 cat("[press [enter] to continue]")
                 ob <- scan(n=1,quiet=TRUE)
             }
         }
-        else{        
+        else{
             setTxtProgressBar(pb,i)
         }
-        
+
         if(!is.null(predictmat)){
             if(type!="Et"){
                 predictmat[i,] <- colMeans(dat)
             }
-        }     
+        }
     }
-    
+
     if(type=="densityquantile" & type=="Et"){
         close(pb)
-    }    
-    
+    }
+
     if(type=="Et"){
         if(any(is.na(dat))){
             warning("Warning: expectation could not be computed in all cases, see attr( . ,'empirical') to evaluate the scope of this problem",immediate.=TRUE)
         }
         predictmat <- colMeans(dat,na.rm=TRUE)
-        attr(predictmat,"empirical") <- t(dat)  
+        attr(predictmat,"empirical") <- t(dat)
     }
-    
+
     if(length(indx==1)&(type=="hazard"|type=="survival"|type=="density")){
         predictmat <- toplot
     }
-       
-    
+
+
     return(list(t=t,predict=predictmat))
-    
+
 }
 
 
@@ -656,15 +656,15 @@ predict.mcmcspatsurv <- function(object,type="density",t=NULL,n=110,indx=NULL,pr
 ##'
 ##' A function to produce plots of the prior (which shows as a red line) and posterior (showing as a histogram)
 ##'
-##' @param x an object inheriting class mcmcspatsurv 
-##' @param breaks see ?hist 
-##' @param ylab optional y label 
-##' @param main optional title 
+##' @param x an object inheriting class mcmcspatsurv
+##' @param breaks see ?hist
+##' @param ylab optional y label
+##' @param main optional title
 ##' @param pause logical whether to pause between plots, the default is TRUE
 ##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
 ##' @param ... other arguments passed to the hist function
 ##' @return plots of the prior (red line) and posterior (histogram).
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{posteriorcov}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -674,10 +674,10 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
     nbeta <- ncol(x$betasamp)
     nomega <- ncol(x$omegasamp)
     neta <- ncol(x$etasamp)
-    
+
     ######################
     # beta
-    
+
     pmean <- x$priors$betaprior$mean
     psd <- x$priors$betaprior$sd
     if(length(pmean)==1){
@@ -685,14 +685,14 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
     }
     if(length(psd)==1){
         psd <- rep(psd,ncol(x$betasamp))
-    }     
-    
+    }
+
     for(i in 1:nbeta){
         h <- hist(x$betasamp[,i],ylab=ylab,xlab=colnames(x$betasamp)[i],breaks=breaks,freq=FALSE,main=main,...)
         xrg <- range(h$breaks)
-        r <- seq(xrg[1],xrg[2],length.out=1000)               
-        if(bw){
-            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)       
+        r <- seq(xrg[1],xrg[2],length.out=1000)
+        if(!bw){
+            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)
         }
         else{
             lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),lwd=2)
@@ -702,11 +702,11 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
             scan(n=1,quiet=TRUE)
         }
     }
-    
-    
+
+
     ######################
     # omega
-    
+
     pmean <- x$priors$omegaprior$mean
     psd <- x$priors$omegaprior$sd
     if(length(pmean)==1){
@@ -714,8 +714,8 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
     }
     if(length(psd)==1){
         psd <- rep(psd,ncol(x$omegasamp))
-    }    
-      
+    }
+
     samp <- x$omegasamp
     if(ncol(samp)>1){
         samp <- t(apply(samp,1,x$control$omegatrans))
@@ -724,25 +724,25 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
         samp <- t(t(apply(samp,1,x$control$omegatrans)))
     }
     colnames(samp) <- distinfo(x$dist)()$parnames
-    for(i in 1:nomega){        
+    for(i in 1:nomega){
         h <- hist(samp[,i],ylab=ylab,xlab=paste("Transformed",colnames(x$omegasamp)[i]),breaks=breaks,freq=FALSE,main=main,...)
         xrg <- range(h$breaks)
         r <- seq(xrg[1],xrg[2],length.out=1000)
-        if(bw){
-            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)       
+        if(!bw){
+            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)
         }
         else{
             lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),lwd=2)
-        }      
+        }
         if(pause){
             cat("[press [enter] to continue]")
             scan(n=1,quiet=TRUE)
         }
     }
-    
+
     ######################
-    # eta 
-    
+    # eta
+
     pmean <- x$priors$etaprior$mean
     psd <- x$priors$etaprior$sd
     if(length(pmean)==1){
@@ -750,8 +750,8 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
     }
     if(length(psd)==1){
         psd <- rep(psd,ncol(x$etasamp))
-    }       
-    
+    }
+
     samp <- x$etasamp
      if(ncol(samp)>1){
         samp <- t(apply(samp,1,x$cov.model$trans))
@@ -764,8 +764,8 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
         h <- hist(samp[,i],ylab=ylab,xlab=paste("Transformed",colnames(x$etasamp)[i]),breaks=breaks,freq=FALSE,main=main,...)
         xrg <- range(h$breaks)
         r <- seq(xrg[1],xrg[2],length.out=1000)
-        if(bw){
-            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)       
+        if(!bw){
+            lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),col="red",lwd=2)
         }
         else{
             lines(r,dnorm(r,mean=pmean[i],sd=psd[i]),lwd=2)
@@ -783,16 +783,16 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
 ##'
 ##' A function to produce a plot of the posterior covariance function with upper and lower quantiles.
 ##'
-##' @param x an object of class mcmcspatsurv 
-##' @param probs vector of probabilities to be fed to quantile function  
+##' @param x an object of class mcmcspatsurv
+##' @param probs vector of probabilities to be fed to quantile function
 ##' @param rmax  maximum distance in space to compute this distance up to
 ##' @param n the number of points at which to evaluate the posterior covariance.
 ##' @param plot whether to plot the result
 ##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
 ##' @param corr logical whether to return the correlation function, default is FALSE i.e. returns the covariance function
-##' @param ... other arguments to be passed to matplot function 
+##' @param ... other arguments to be passed to matplot function
 ##' @return produces a plot of the posterior spatial covariance function.
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{MCE},
 ##' \link{hazardexceedance}
@@ -801,7 +801,7 @@ priorposterior <- function(x,breaks=30,ylab="Density",main="",pause=TRUE,bw=FALS
 posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,bw=FALSE,corr=FALSE,...){
     nr <- nrow(x$etasamp)
     nc <- ncol(x$etasamp)
-    
+
     if(!is.null(rmax)){
         rmaxx <- rmax
     }
@@ -813,9 +813,9 @@ posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,bw
             rmaxx <- 0.25*sum(apply(bbox(x$shape),1,diff))/2 # approx 1/4 of mean length of observation window
         }
     }
-    
+
     r <- seq(0,rmaxx,length.out=n)
-    #covs <- t(apply(x$etasamp,1,function(pp){x$cov.model$eval(r,pars=pp)})) 
+    #covs <- t(apply(x$etasamp,1,function(pp){x$cov.model$eval(r,pars=pp)}))
     covs <- t(apply(x$etasamp,1,function(pp){EvalCov(x$cov.model,u=r,parameters=pp)}))
 
     sig2 <- x$etasamp[,which(colnames(x$etasamp)=="sigma")]^2
@@ -825,11 +825,11 @@ posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,bw
         covs <- covs / sig2
         LAB <- "Correlation"
     }
-    
+
     qts <- t(apply(covs,2,quantile,probs=probs))
-    
+
     rownames(qts) <- r
-    
+
     if(plot){
         if(length(probs)==3){
             if(bw){
@@ -840,14 +840,14 @@ posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,bw
                 matplot(r,qts,type="l",col=c("purple","black","blue"),lty=c("dashed","solid","dashed"),xlab="Distance",ylab=LAB)
                 legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=rev(probs))
             }
-            
+
         }
         else{
             matplot(r,qts,type="l",xlab="Distance",ylab=LAB)
         }
     }
-    
-    return(list(r=r,qts=qts)) 
+
+    return(list(r=r,qts=qts))
 }
 
 
@@ -855,22 +855,22 @@ posteriorcov <- function(x,probs=c(0.025,0.5,0.975),rmax=NULL,n=100,plot=TRUE,bw
 
 ##' MCE function
 ##'
-##' A function to compute Monte Carlo expectations from an object inheriting class mcmcspatsurv 
+##' A function to compute Monte Carlo expectations from an object inheriting class mcmcspatsurv
 ##'
-##' @param object an object inheriting class mcmcspatsurv 
-##' @param fun a function with arguments beta, omega, eta and Y 
+##' @param object an object inheriting class mcmcspatsurv
+##' @param fun a function with arguments beta, omega, eta and Y
 ##' @return the Monte Carlo mean of the function over the posterior.
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
-##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, 
+##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov},
 ##' \link{hazardexceedance}
 ##' @export
 
 MCE <- function(object,fun){
     nits <- nrow(object$betasamp)
-    
+
     result <- lapply(1:nits,function(i){fun(beta=object$betasamp[i,],omega=object$omegasamp[i,],eta=object$etasamp[i,],Y=object$Ysamp[i,])})
-    
+
     return((1/nits)*Reduce('+',result))
 }
 
@@ -881,10 +881,10 @@ MCE <- function(object,fun){
 ##'
 ##' A function to compute exceedance probabilities for the spatially correlated frailties.
 ##'
-##' @param threshold vector of thresholds 
+##' @param threshold vector of thresholds
 ##' @param direction default is "upper" which will calculate P(Y>threshold), alternative is "lower", which will calculate P(Y<threshold)
 ##' @return a function that can be passed to the function MCE in order to compute the exceedance probabilities
-##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+##' @seealso \link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 ##' \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 ##' \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 ##' @export
@@ -895,7 +895,7 @@ hazardexceedance <- function(threshold,direction="upper"){
         d <- length(Y)
         len <- length(threshold)
         A <- matrix(NA,len,d)
-        
+
         for(i in 1:len){
             if(direction=="upper"){
                 A[i,] <- as.numeric(EY>threshold[i])
@@ -904,7 +904,7 @@ hazardexceedance <- function(threshold,direction="upper"){
                 A[i,] <- as.numeric(EY<threshold[i])
             }
         }
-        return(A)        
+        return(A)
     }
     attr(fun,"threshold") <- threshold
     attr(fun,"direction") <- direction
@@ -927,10 +927,10 @@ reconstruct.bs <- function(mod,...){
 
 ##' reconstruct.bs.mcmcspatsurv function
 ##'
-##' When bs(varname) has been used in the formula of a model, this function can be used to reconstruct the posterior relative risk of 
+##' When bs(varname) has been used in the formula of a model, this function can be used to reconstruct the posterior relative risk of
 ##' that parameter over time.
 ##'
-##' @param mod model output, created by function survspat 
+##' @param mod model output, created by function survspat
 ##' @param varname name of the variable modelled by a B-spline
 ##' @param probs upper and lower quantiles for confidence regions to plot> The default is c(0.025,0.975).
 ##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
@@ -979,7 +979,7 @@ reconstruct.bs.mcmcspatsurv <- function(mod,varname,probs=c(0.025,0.975),bw=FALS
         else{
             lines(xx,low,col="purple",lty="dashed")
             lines(xx,upp,col="blue",lty="dashed")
-            legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=c(probs[2],0.5,probs[1])) 
+            legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=c(probs[2],0.5,probs[1]))
         }
     }
     retlist <- list()
@@ -992,10 +992,10 @@ reconstruct.bs.mcmcspatsurv <- function(mod,varname,probs=c(0.025,0.975),bw=FALS
 
 ##' reconstruct.bs.coxph function
 ##'
-##' When bs(varname) has been used in the formula of a coxph model, this function can be used to reconstruct the predicted relative risk of 
+##' When bs(varname) has been used in the formula of a coxph model, this function can be used to reconstruct the predicted relative risk of
 ##' that parameter over time.
 ##'
-##' @param mod model output, created by function survspat 
+##' @param mod model output, created by function survspat
 ##' @param varname name of the variable modelled by a B-spline
 ##' @param fun optional function to feed in. Default is to plot relative risk against the covariate of interest. Useful choices include "identity" (but with no quotes), which plots the non-linear effect on the scale of the linear predictor.
 ##' @param probs upper and lower quantiles for confidence regions to plot> The default is c(0.025,0.975).
@@ -1025,7 +1025,7 @@ reconstruct.bs.coxph <- function(mod,varname,fun=NULL,probs=c(0.025,0.975),bw=FA
     ca[2] <- as.call(parse(text=mm))
     ev <- eval(ca)
     xx <- model.matrix(ev)[,varname]
-    
+
     ord <- order(xx)
     xx <- xx[ord]
     if(is.null(fun)){
@@ -1064,7 +1064,7 @@ reconstruct.bs.coxph <- function(mod,varname,fun=NULL,probs=c(0.025,0.975),bw=FA
         else{
             lines(xx,low,col="purple",lty="dashed")
             lines(xx,upp,col="blue",lty="dashed")
-            legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=c(probs[2],0.5,probs[1])) 
+            legend("topright",lty=c("dashed","solid","dashed"),col=rev(c("purple","black","blue")),legend=c(probs[2],0.5,probs[1]))
         }
     }
     retlist <- list()
@@ -1093,7 +1093,7 @@ residuals.mcmcspatsurv <- function(object,type="Cox-Snell",...){
     betahat <- colMeans(object$beta)
     omegahat <- colMeans(object$omegasamp)
     Yhat <- colMeans(object$Ysamp[,object$cellidx])
-    
+
     Xbeta <- colSums(betahat*t(object$X))
     expXbeta <- exp(Xbeta)
     expXbeta_plus_Y <- expXbeta*exp(Yhat)
@@ -1121,7 +1121,7 @@ residuals.mcmcspatsurv <- function(object,type="Cox-Snell",...){
         stop("Unknown residual type.")
     }
 
-    return(toreturn)      
+    return(toreturn)
 }
 
 
@@ -1132,7 +1132,7 @@ residuals.mcmcspatsurv <- function(object,type="Cox-Snell",...){
 ##'
 ##' A function to produce a diagnostic plot for model fit using the Cox-Snell residuals.
 ##'
-##' @param mod an object produced by the function survspat 
+##' @param mod an object produced by the function survspat
 ##' @param plot whether to plot the result, default is TRUE
 ##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
 ##' @param ... other arguments to pass to plot
@@ -1153,7 +1153,7 @@ CSplot <- function(mod,plot=TRUE,bw=FALSE,...){
         }
         else{
             abline(0,-1,col="red")
-        }        
+        }
     }
     return(list(x=x,y=y))
 }
@@ -1164,7 +1164,7 @@ CSplot <- function(mod,plot=TRUE,bw=FALSE,...){
 ##'
 ##' A function to extract and return the computational grid from a gridded analysis.
 ##'
-##' @param mod an object of class mcmcspatsurv, returned by the function survspat 
+##' @param mod an object of class mcmcspatsurv, returned by the function survspat
 ##' @param returnclass the class of object to return, default is a'SpatialPolygonsDataFrame'. Other options are 'raster', which returns a raster brick; or 'SpatialPixelsDataFrame'
 ##' @return a SpatialPolygonsDataFrame in which Monte Carlo expectations can be stored and later plotted.
 ##' @export
@@ -1192,7 +1192,7 @@ getGrid <- function(mod,returnclass="SpatialPolygonsDataFrame"){
         polys <- SpatialPixels(SpatialPoints(coordinates(polys)),proj4string=CRS(proj4string(mod$data)))
         polys <- SpatialPixelsDataFrame(polys,data=data.frame(ID_from_grid=1:length(polys)))
         if(returnclass=="raster"){
-            polys <- brick(polys)            
+            polys <- brick(polys)
         }
     }
 

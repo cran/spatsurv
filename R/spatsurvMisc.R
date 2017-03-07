@@ -220,6 +220,8 @@ plotsurv <- function(spp,ss,maxcex=1,transform=identity,background=NULL,eventpt=
 ##' @param split how to split the spatial and nugget proposal variance as a the proportion of variance assigned to the spatial effect apriori. Default is 0.5
 ##' @param logUsigma_priormean prior mean for log standard deviation of nugget effect
 ##' @param logUsigma_priorsd prior sd for log standard deviation of nugget effect
+##' @param nis list of cell counts, each element being a matrix, with attributes "x" and "y" giving grid centroids in x and y directions. Used to impute locations of aggregated data:.
+##' @param olinfo to be supplied with nis, if continuous inference from aggregated data is required
 ##' @return returns parameters to be used in the function survspat
 ##' @seealso \link{survspat}
 ##' @export
@@ -236,7 +238,9 @@ inference.control <- function(  gridded=FALSE,
                                 savenugget=FALSE,
                                 split=0.5,
                                 logUsigma_priormean=0,
-                                logUsigma_priorsd=0.5){
+                                logUsigma_priorsd=0.5,
+                                nis=NULL,
+                                olinfo=NULL){
     ans <- list()
     ans$gridded <- gridded
     ans$cellwidth <- cellwidth
@@ -251,6 +255,8 @@ inference.control <- function(  gridded=FALSE,
     ans$split <- split
     ans$logUsigma_priormean <- logUsigma_priormean
     ans$logUsigma_priorsd <- logUsigma_priorsd
+    ans$nis <- nis
+    ans$olinfo <- olinfo
     class(ans) <- c("inference.control","list")
     return(ans)
 }
@@ -456,4 +462,46 @@ allocate <- function(poly,popden,survdat,pid,sid,n=2,wid=2000){
         }
     }
     return(list(x=X,y=Y))
+}
+
+
+dat2coords <- function(nis,olinfo,dataidx){
+    nalloc <- as.vector(nis[[sample(1:length(nis),1)]])
+    x <- olinfo$mcens[1:olinfo$M]
+    y <- olinfo$ncens[1:olinfo$N]
+    gr <- as.matrix(expand.grid(x,y))
+    out <- matrix(NA,length(dataidx),2)
+
+    uqdataidx <- unique(dataidx)
+    olstuff <- c()
+    for(i in 1:length(uqdataidx)){
+        grididx <- unique(olinfo$ol[[1]]$grididx[olinfo$ol[[1]]$polyidx==uqdataidx[i]])
+        gridn <- nalloc[grididx]
+        olstuff <- rbind(olstuff,cbind(uqdataidx[i],sum(dataidx==uqdataidx[i]),sum(gridn),grididx,gridn))
+    }
+    uqolstuff <- unique(olstuff[,1:3])
+    uqolstuff <- cbind(uqolstuff, uqolstuff[,2]/uqolstuff[,3])
+    ord <- order(uqolstuff[,4],uqolstuff[,2],decreasing=TRUE)
+    uqolstuff <- uqolstuff[ord,]
+
+    notalloc <- c()
+    for(j in 1:nrow(uqolstuff)){
+        ID <- which(dataidx==uqolstuff[j,1])
+        for(i in ID){
+            grididx <- unique(olinfo$ol[[1]]$grididx[olinfo$ol[[1]]$polyidx==dataidx[i]])
+            gridn <- nalloc[grididx]
+            wt <- gridn * olinfo$ol[[1]]$area[olinfo$ol[[1]]$polyidx==dataidx[i]]
+            ind <- try(sample(1:length(grididx),1,prob=wt),silent=TRUE)
+            if(inherits(ind,"try-error")){
+                notalloc <- c(notalloc,dataidx[i])
+                next
+            }
+            ch <- grididx[ind]
+            out[i,] <- gr[ch,]
+            #nalloc[ch] <- nalloc[ch] - 1
+        }
+    }
+    out[,1] <- out[,1] + runif(length(out[,1]),-olinfo$dx/2,olinfo$dx/2)
+    out[,2] <- out[,2] + runif(length(out[,1]),-olinfo$dy/2,olinfo$dy/2)
+    return(out)
 }

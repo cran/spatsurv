@@ -16,7 +16,7 @@ the beta mcmc chains
 A function to return the mcmc chains for the covariate effects
 }
 \seealso{
-\link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+\link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{randompars},
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}

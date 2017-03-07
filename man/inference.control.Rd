@@ -8,7 +8,7 @@ inference.control(gridded = FALSE, cellwidth = NULL, ext = 2,
   imputation = NULL, optimcontrol = NULL, hessian = FALSE,
   plotcal = FALSE, timeonlyMCMC = FALSE, nugget = FALSE,
   savenugget = FALSE, split = 0.5, logUsigma_priormean = 0,
-  logUsigma_priorsd = 0.5)
+  logUsigma_priorsd = 0.5, nis = NULL, olinfo = NULL)
 }
 \arguments{
 \item{gridded}{logical. Whether to perform compuation on a grid. Default is FALSE.}
@@ -38,6 +38,10 @@ to TRUE if poor mixing is evident (the printed h is low), then it is also useful
 \item{logUsigma_priormean}{prior mean for log standard deviation of nugget effect}
 
 \item{logUsigma_priorsd}{prior sd for log standard deviation of nugget effect}
+
+\item{nis}{list of cell counts, each element being a matrix, with attributes "x" and "y" giving grid centroids in x and y directions. Used to impute locations of aggregated data:.}
+
+\item{olinfo}{to be supplied with nis, if continuous inference from aggregated data is required}
 }
 \value{
 returns parameters to be used in the function survspat

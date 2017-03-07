@@ -29,7 +29,7 @@ plots of the prior (red line) and posterior (histogram).
 A function to produce plots of the prior (which shows as a red line) and posterior (showing as a histogram)
 }
 \seealso{
-\link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+\link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}

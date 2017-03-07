@@ -68,6 +68,7 @@ QuadApprox <- function(fun,npts,argRanges,plot=FALSE,...){
 
     form <- paste("funvals ~",paste(parnames,collapse=" + "))
 
+    #browser()
     mod <- lm(form,data=dataf)
     co <- coefficients(mod)
 
@@ -608,7 +609,9 @@ estimateY <- function(X,betahat,omegahat,surv,control){
 
     haz <- setupHazard(dist=control$dist,pars=omega,grad=FALSE,hess=FALSE)
 
+
     tsubs <- guess_t(surv)
+    #browser()
 
     Y <- -X%*%betahat - log(haz$H(tsubs)) # greedy estimate of Y (maximise individual contributions to log-likelihood) ... note log(delta) is now omitted
 

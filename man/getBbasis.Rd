@@ -4,7 +4,7 @@
 \alias{getBbasis}
 \title{getBbasis function}
 \usage{
-getBbasis(x, knots, degree)
+getBbasis(x, knots, degree, force = FALSE)
 }
 \arguments{
 \item{x}{a vector of data}
@@ -12,6 +12,8 @@ getBbasis(x, knots, degree)
 \item{knots}{a vector of knots in ascending order. The first and last knots must be respectively the minimum and maximum of x.}
 
 \item{degree}{the degree of the spline}
+
+\item{force}{logical: skip check on knots? (not recommended!)}
 }
 \value{
 the knots and the piecewise polynomial coefficients for a B-spline basis function i.e. the basis functions.

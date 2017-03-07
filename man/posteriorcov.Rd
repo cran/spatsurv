@@ -31,7 +31,7 @@ produces a plot of the posterior spatial covariance function.
 A function to produce a plot of the posterior covariance function with upper and lower quantiles.
 }
 \seealso{
-\link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv}, 
+\link{print.mcmcspatsurv}, \link{quantile.mcmcspatsurv}, \link{summary.mcmcspatsurv}, \link{vcov.mcmcspatsurv},
 \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{MCE},
 \link{hazardexceedance}
