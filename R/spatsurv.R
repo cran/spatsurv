@@ -18,9 +18,9 @@
 ##'
 ##' section{Citation}{
 ##' To cite use of \code{spatsurv}, the user may refer to the following work:\cr\cr
-##' spatsurv: an \code{R} Package for Bayesian Inference with Spatial Survival Models.\cr
-##' Benjamin M. Taylor and Barry S. Rowlingson. \cr
-##' Submitted to The Journal Of Statistical Software.
+##' Benjamin M. Taylor and Barry S. Rowlingson (2017).\cr
+##' spatsurv: An R Package for Bayesian Inference with Spatial Survival Models.\cr
+##' Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 ##' }
 ##'
 ##' references{
@@ -46,7 +46,7 @@
 ##' @importFrom RandomFields CovarianceFct
 ##' @importFrom rgeos gBuffer
 ##' @importFrom iterators icount iter nextElem
-##' @importFrom sp coordinates<- bbox proj4string<- proj4string SpatialPixelsDataFrame SpatialGridDataFrame Polygon Polygons SpatialPolygons coordinates CRS geometry GridTopology over proj4string SpatialGrid SpatialPixels SpatialPoints SpatialPolygonsDataFrame split spTransform 
+##' @importFrom sp coordinates<- bbox proj4string<- proj4string SpatialPixelsDataFrame SpatialGridDataFrame Polygon Polygons SpatialPolygons coordinates CRS geometry GridTopology over proj4string SpatialGrid SpatialPixels SpatialPoints SpatialPolygonsDataFrame split spTransform
 ##' @importFrom spatstat rpoint progressreport inside.owin
 ##' @importFrom survival Surv survfit
 ##' @importFrom geostatsp asImRaster

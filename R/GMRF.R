@@ -26,12 +26,12 @@ getbb <- function(obj){
 ##' A function to create a regular grid over an observation window in order to model the spatial randome effects as a Gaussian
 ##' Markov random field.
 ##'
-##' @param shape an object of class SpatialPolygons or SpatialPolygonsDataFrame 
+##' @param shape an object of class SpatialPolygons or SpatialPolygonsDataFrame
 ##' @param cellwidth a scalar, the width of the grid cells
 ##' @return a SpatialPolygons object: the grid on which prediction of the spatial effects will occur
 ##' @references 
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
+##'     \item Benjamin M. Taylor and Barry S. Rowlingson (2017). spatsurv: An R Package for Bayesian Inference with Spatial Survival Models. Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 ##'     \item Finn Lindgren, Havard Rue, Johan Lindstrom. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach. Journal of the Royal Statistical Society: Series B 73(4)
 ##' }
 ##' @export
@@ -68,9 +68,9 @@ getgrd <- function(shape,cellwidth){
 ##' @param cellwidth a scalar, the width of the grid cells
 ##' @param order the order of the SPDE approximation: see Lindgren et al 2011 for details
 ##' @return coordinates of centroids of neighbours
-##' @references 
+##' @references
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
+##'     \item Benjamin M. Taylor and Barry S. Rowlingson (2017). spatsurv: An R Package for Bayesian Inference with Spatial Survival Models. Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 ##'     \item Finn Lindgren, Havard Rue, Johan Lindstrom. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach. Journal of the Royal Statistical Society: Series B 73(4)
 ##' }
 ##' @export
@@ -91,9 +91,9 @@ neighLocs <- function(coord,cellwidth,order){
 ##'
 ##' @param neighlocs an object created by the function neighLocs
 ##' @return the neighbour orders
-##' @references 
+##' @references
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
+##'     \item Benjamin M. Taylor and Barry S. Rowlingson (2017). spatsurv: An R Package for Bayesian Inference with Spatial Survival Models. Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 ##'     \item Finn Lindgren, Havard Rue, Johan Lindstrom. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach. Journal of the Royal Statistical Society: Series B 73(4)
 ##' }
 ##' @export
@@ -111,7 +111,7 @@ neighOrder <- function(neighlocs){
 	tb <- table(rk)
 	ds <- as.numeric(names(tb))
 	ord <- 0:(length(tb)-1)
-	
+
 	return(sapply(rk,function(x){ord[which(ds==x)]}))
 }
 
@@ -120,13 +120,13 @@ neighOrder <- function(neighlocs){
 ##'
 ##' A function to set up the computational grid and precision matrix structure for SPDE models.
 ##'
-##' @param shape an object of class SpatialPolygons or SpatialPolygonsDataFrame 
-##' @param cellwidth a scalar, the width of the grid cells 
-##' @param no the order of the SPDE approximation: see Lindgren et al 2011 for details 
+##' @param shape an object of class SpatialPolygons or SpatialPolygonsDataFrame
+##' @param cellwidth a scalar, the width of the grid cells
+##' @param no the order of the SPDE approximation: see Lindgren et al 2011 for details
 ##' @return the computational grid and a function for constructing the precision matrix
-##' @references 
+##' @references
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
+##'     \item Benjamin M. Taylor and Barry S. Rowlingson (2017). spatsurv: An R Package for Bayesian Inference with Spatial Survival Models. Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 ##'     \item Finn Lindgren, Havard Rue, Johan Lindstrom. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach. Journal of the Royal Statistical Society: Series B 73(4)
 ##' }
 ##' @export
@@ -154,11 +154,11 @@ setupPrecMatStruct <- function(shape,cellwidth,no){
 	close(pb)
 	idx <- over(SpatialPoints(ng,CRS(proj4string(gr))),geometry(gr))
 	ind <- which(!is.na(idx))
-	
+
 	index <- cbind(rep(1:npoly,each=nneigh),idx,rep(nord,npoly))
 	index <- index[ind,]
 	index <- index[-which(index[,2]>index[,1]),]
-	
+
 	ord <- order(index[,3])
 	index <- index[ord,]
 	idxls <- lapply(0:maxord,function(x){which(index[,3]==x)})
@@ -182,11 +182,11 @@ setupPrecMatStruct <- function(shape,cellwidth,no){
 
 
 
-## GMRFprec function : PROBLEM: THIS CAN LEAD TO NON-POSITIVE DEFINITE MATRICES	
+## GMRFprec function : PROBLEM: THIS CAN LEAD TO NON-POSITIVE DEFINITE MATRICES
 ##
-## A function to 
+## A function to
 ##
-## @param par X 
+## @param par X
 ## @return ...
 ## @export
 # GMRFprec <- function(par){
@@ -205,9 +205,9 @@ setupPrecMatStruct <- function(shape,cellwidth,no){
 ##' @param a parameter a, see Lindgren et al 2011.
 ##' @param ord the order of the SPDE model, see Lindgren et al 2011.
 ##' @return a function used for creating the precision matrix
-##' @references 
+##' @references
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
+##'     \item Benjamin M. Taylor and Barry S. Rowlingson (2017). spatsurv: An R Package for Bayesian Inference with Spatial Survival Models. Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 ##'     \item Finn Lindgren, Havard Rue, Johan Lindstrom. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach. Journal of the Royal Statistical Society: Series B 73(4)
 ##' }
 ##' @export
@@ -223,7 +223,7 @@ SPDEprec <- function(a,ord){
 			}
 			else{
 				stop("error in function SPDEprec")
-			}			
+			}
 		}
 	}
 	else if(ord==2){
@@ -243,7 +243,7 @@ SPDEprec <- function(a,ord){
 			else{
 				stop("error in function SPDEprec")
 			}
-		}	
+		}
 	}
 	else if(ord==3){
 		f <- function(i){
@@ -285,9 +285,9 @@ SPDEprec <- function(a,ord){
 ##' @param U upper Cholesky matrix
 ##' @param mu the mean
 ##' @return the value of Y for the given Gamma
-##' @references 
+##' @references
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
+##'     \item Benjamin M. Taylor and Barry S. Rowlingson (2017). spatsurv: An R Package for Bayesian Inference with Spatial Survival Models. Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 ##'     \item Finn Lindgren, Havard Rue, Johan Lindstrom. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach. Journal of the Royal Statistical Society: Series B 73(4)
 ##' }
 ##' @export
@@ -301,12 +301,12 @@ YFromGamma_SPDE <- function(gamma,U,mu){ # U= L^T
 ##' A function to go from Y to Gamma
 ##'
 ##' @param Y Y
-##' @param U upper Cholesky matrix 
-##' @param mu the mean 
+##' @param U upper Cholesky matrix
+##' @param mu the mean
 ##' @return the value of Gamma for the given Y
-##' @references 
+##' @references
 ##' \enumerate{
-##'     \item Benjamin M. Taylor. Auxiliary Variable Markov Chain Monte Carlo for Spatial Survival and Geostatistical Models. Benjamin M. Taylor. Submitted. \url{http://arxiv.org/abs/1501.01665}
+##'     \item Benjamin M. Taylor and Barry S. Rowlingson (2017). spatsurv: An R Package for Bayesian Inference with Spatial Survival Models. Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 ##'     \item Finn Lindgren, Havard Rue, Johan Lindstrom. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach. Journal of the Royal Statistical Society: Series B 73(4)
 ##' }
 ##' @export
@@ -314,4 +314,3 @@ YFromGamma_SPDE <- function(gamma,U,mu){ # U= L^T
 GammaFromY_SPDE <- function(Y,U,mu){ # U= L^T
 	return(as.numeric(U%*%(Y-mu)))
 }
-

@@ -29,9 +29,9 @@ The package \code{spatsurv} depends upon some other important contributions to C
 
 section{Citation}{
 To cite use of \code{spatsurv}, the user may refer to the following work:\cr\cr
-spatsurv: an \code{R} Package for Bayesian Inference with Spatial Survival Models.\cr
-Benjamin M. Taylor and Barry S. Rowlingson. \cr
-Submitted to The Journal Of Statistical Software.
+Benjamin M. Taylor and Barry S. Rowlingson (2017).\cr
+spatsurv: An R Package for Bayesian Inference with Spatial Survival Models.\cr
+Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 }
 
 references{

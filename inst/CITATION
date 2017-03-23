@@ -1,19 +1,23 @@
-citHeader("To cite spatsurv in publications use:")
+bibentry(bibtype = "Article",
+  title        = "{spatsurv}: An {R} Package for Bayesian Inference with Spatial Survival Models",
+  author       = c(person(given = c("Benjamin", "M."),
+                          family = "Taylor",
+                          email = "b.taylor1@lancaster.ac.uk"),
+                   person(given = c("Barry", "S."),
+                          family = "Rowlingson",
+                          email = "b.rowlingson@lancaster.ac.uk")),
+  journal      = "Journal of Statistical Software",
+  year         = "2017",
+  volume       = "77",
+  number       = "4",
+  pages        = "1--32",
+  doi          = "10.18637/jss.v077.i04",
 
-
-citEntry(entry = "Article",
-  title        = "spatsurv: an {R} Package for {B}ayesian Inference with Spatial Survival Models",
-  author       = personList(as.person("Benjamin M. Taylor"),
-                   as.person("Barry S. Rowlingson")),
-  journal      = "to appear in the Journal of Statistical Software",
-  year         = "X",
-  volume       = "X",
-  number       = "X",
-  pages        = "X",
-  url          = "X",
-
+  header       = "To cite spatsurv in publications use:",
   textVersion  =
-  paste("Benjamin M. Taylor and Barry S. Rowlingson (2014).",
-        "spatsurv: an R Package for Bayesian Inference with Spatial Survival Models",
-        "Submitted")
+  paste("Benjamin M. Taylor, Barry S. Rowlingson (2017).",
+        "spatsurv: An R Package for Bayesian Inference with Spatial Survival Models.",
+        "Journal of Statistical Software, 77(4), 1-32.",
+        "doi:10.18637/jss.v077.i04")
 )
+
