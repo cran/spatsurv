@@ -37,7 +37,6 @@ spplot_compare(x, y, what, what1 = what, palette = brewer.pal(9, "Oranges"),
 produces a plot comparing x[[what]] and y[[what1]]
 }
 \description{
-A function to compare two SpatialPolgonsDataFrame or SpatialPointsDataFrame objects using a unified legend for the variable 
+A function to compare two SpatialPolgonsDataFrame or SpatialPointsDataFrame objects using a unified legend for the variable
 of interest in both
 }
-

@@ -17,4 +17,3 @@ method circulant
 \description{
 generic function for constructing circulant matrices
 }
-

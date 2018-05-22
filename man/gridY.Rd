@@ -17,4 +17,3 @@ gridY(Y, control)
 \description{
 A function to put estimated individual Y's onto a grid
 }
-

@@ -20,4 +20,3 @@ A function to define Gaussian priors for eta. This function simply stores a vect
 \seealso{
 \link{survspat}, \link{betapriorGauss}, \link{omegapriorGauss}, \link{etapriorGauss}, \link{indepGaussianprior}, \link{derivindepGaussianprior}
 }
-

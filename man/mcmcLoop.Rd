@@ -20,4 +20,3 @@ mcmcLoop(N, burnin, thin, trim = TRUE, progressor = mcmcProgressPrint)
 \description{
 control an MCMC loop with this iterator
 }
-

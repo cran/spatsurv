@@ -52,4 +52,3 @@ http://creativecommons.org/licenses/by-sa/3.0/
 
 and must retain the text: "Originally written by Barry Rowlingson" in comments.
 }
-

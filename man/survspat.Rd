@@ -46,4 +46,3 @@ Langevin algorithm.
 \link{covmodel}, link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
 \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control}
 }
-

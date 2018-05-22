@@ -28,4 +28,3 @@ txtProgressBar2(min = 0, max = 1, initial = 0, char = "=", width = NA,
 This is the base txtProgressBar but with a little modification to
 implement the label parameter for style=3. For full info see txtProgressBar
 }
-

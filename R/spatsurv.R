@@ -2,13 +2,8 @@
 ##'
 ##' An R package for spatially correlated parametric proportional hazards survial analysis.
 ##'
-##' \tabular{ll}{
-##' Package: \tab spatsurv\cr
-##' Version: \tab 0.9-11\cr
-##' Date: \tab 2015-06-24\cr
-##' License: \tab GPL-3 \cr
-##' }
-##'
+##' \packageDESCRIPTION{spatsurv}
+##' \packageIndices{spatsurv}
 ##'
 ##'
 ##' section{Dependencies}{

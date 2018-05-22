@@ -17,4 +17,3 @@ a circulant matrix with base x
 \description{
 returns a circulant matrix with base x
 }
-

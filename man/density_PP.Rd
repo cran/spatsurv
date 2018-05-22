@@ -15,4 +15,3 @@ the density function for the individual
 \description{
 A function to compute an individual's density function
 }
-

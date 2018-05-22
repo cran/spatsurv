@@ -21,4 +21,3 @@ the x and y values used in the plot
 \description{
 A function to produce a diagnostic plot for model fit using the Cox-Snell residuals.
 }
-

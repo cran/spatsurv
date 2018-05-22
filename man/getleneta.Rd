@@ -15,4 +15,3 @@ the length of eta
 \description{
 A function to compute the length of eta
 }
-

@@ -26,4 +26,3 @@ A text summary, that can be pasted into a LaTeX document and later edited.
 \description{
 A function to print a text description of the inferred paramerers beta and eta from a call to the function lgcpPredictSpatialPlusPars, lgcpPredictAggregateSpatialPlusPars, lgcpPredictSpatioTemporalPlusPars or lgcpPredictMultitypeSpatialPlusPars
 }
-

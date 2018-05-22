@@ -19,4 +19,3 @@ method EvalCov
 \description{
 This function is used to evaluate the covariance function within the MCMC run. Not intended for general use.
 }
-

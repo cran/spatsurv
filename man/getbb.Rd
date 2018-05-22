@@ -15,4 +15,3 @@ a SpatialPolygons object: the bounding box
 \description{
 A function to get the bounding box of a Spatial object
 }
-

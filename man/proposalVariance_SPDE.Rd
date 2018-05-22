@@ -32,4 +32,3 @@ an estimate of eta and also an approximate scaling matrix for the MCMC
 \description{
 A function to compute an approximate scaling matrix for the MCMC algorithm. Not intended for general use.
 }
-

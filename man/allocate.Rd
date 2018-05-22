@@ -27,4 +27,3 @@ matrices x and y, both of size (number of observations in survdat x n) giving n 
 \description{
 A function to allocate coordinates to an observation whose spatial location is known to the regional level
 }
-

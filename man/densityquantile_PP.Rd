@@ -15,4 +15,3 @@ quantiles of the density function for the individual
 \description{
 A function to compute quantiles of the density function
 }
-

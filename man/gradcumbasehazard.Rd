@@ -20,4 +20,3 @@ Generic function for computing the gradient of the cumulative baseline hazard
 \seealso{
 \link{gradcumbasehazard.basehazardspec}, \link{exponentialHaz}, \link{weibullHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
 }
-

@@ -21,4 +21,3 @@ derivindepGaussianpriorST(beta = NULL, omega = NULL, eta = NULL, priors)
 \description{
 A function to
 }
-

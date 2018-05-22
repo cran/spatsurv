@@ -34,4 +34,3 @@ A function to produce plots of the prior (which shows as a red line) and posteri
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}
 }
-

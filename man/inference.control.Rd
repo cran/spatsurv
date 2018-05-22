@@ -52,4 +52,3 @@ A function to control inferential settings. This function is used to set paramet
 \seealso{
 \link{survspat}
 }
-

@@ -28,4 +28,3 @@ A text summary, that can be pasted into a LaTeX document and later edited.
 \description{
 A function to completely summarise the output of an object of class mcmcspatsurv.
 }
-

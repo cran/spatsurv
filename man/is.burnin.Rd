@@ -15,4 +15,3 @@ TRUE or FALSE
 \description{
 if this mcmc iteration is in the burn-in period, return TRUE
 }
-

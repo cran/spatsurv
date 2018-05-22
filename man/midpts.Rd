@@ -15,4 +15,3 @@ the midpoints, a vector of length length(x)-1
 \description{
 A function to compute the midpoints of a vector
 }
-

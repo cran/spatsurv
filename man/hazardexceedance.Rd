@@ -22,4 +22,3 @@ A function to compute exceedance probabilities for the spatially correlated frai
 \link{frailtylag1}, \link{spatialpars}, \link{hazardpars}, \link{fixedpars}, \link{randompars},
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 }
-

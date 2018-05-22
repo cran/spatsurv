@@ -19,4 +19,3 @@ fixParHaz(bh, idx, fixval)
 \description{
 A function to
 }
-

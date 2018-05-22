@@ -15,4 +15,3 @@
 print method
 print an mcmc iterator's details
 }
-

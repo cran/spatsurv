@@ -21,4 +21,3 @@ a plot showing the grid and the data. Ideally the data should only just fit insi
 \description{
 A function to show the grid that will be used for a given cellwidth
 }
-

@@ -20,4 +20,3 @@ Generic function for computing the Hessian of the cumulative baseline hazard
 \seealso{
 \link{hesscumbasehazard.basehazardspec}, \link{exponentialHaz}, \link{weibullHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
 }
-

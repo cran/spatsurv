@@ -17,4 +17,3 @@ prints a text summary of 'x' to the console
 \description{
 A function to print summary tables from an MCMC run
 }
-

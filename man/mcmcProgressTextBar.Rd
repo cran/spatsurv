@@ -15,4 +15,3 @@ a progress monitor
 \description{
 a progress monitor that uses a text progress bar
 }
-

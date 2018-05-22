@@ -22,4 +22,3 @@ see the spatsurv vignette.
 \seealso{
 CovarianceFct
 }
-

@@ -20,4 +20,3 @@ A function to retrieve the Hessian of the baseline hazard function
 \seealso{
 \link{exponentialHaz}, \link{weibullHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
 }
-

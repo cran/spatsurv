@@ -19,4 +19,3 @@ Gamma
 \description{
 A function to change Ys (spatially correlated noise) into Gammas (white noise). Used in the MALA algorithm.
 }
-

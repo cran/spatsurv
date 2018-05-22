@@ -23,4 +23,3 @@ mcmc parameters
 \description{
 A function for setting MCMC options.
 }
-

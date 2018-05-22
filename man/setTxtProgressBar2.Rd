@@ -18,4 +18,3 @@ setTxtProgressBar2(pb, value, title = NULL, label = NULL)
 \description{
 update a text progress bar. See help(txtProgressBar) for more info.
 }
-

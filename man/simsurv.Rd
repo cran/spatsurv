@@ -42,4 +42,3 @@ parameter effects, beta.
 \seealso{
 \link{covmodel}, \link{survspat}, \link{tpowHaz}, \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{weibullHaz}
 }
-

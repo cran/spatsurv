@@ -15,4 +15,3 @@ blockDiag(matlist)
 \description{
 A function to
 }
-

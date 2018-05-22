@@ -15,4 +15,3 @@ a guess at the failure times
 \description{
 A function to get an initial guess of the failure time t, to be used in calibrating the MCMC. Not for general use
 }
-

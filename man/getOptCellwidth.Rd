@@ -24,4 +24,3 @@ the optimum cell width
 A function to compute an optimal cellwidth close to an initial suggestion. This maximises the efficiency of the
 MCMC algorithm when in the control argument of the function survspat, the option gridded is set to TRUE
 }
-

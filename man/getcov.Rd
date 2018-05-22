@@ -23,4 +23,3 @@ this is just a wrapper for CovarianceFct
 \description{
 A function to return the covariance from a model based on the randomFields covariance functions. Not intended for general use.
 }
-

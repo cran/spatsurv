@@ -22,4 +22,3 @@ a list
 A function to generate an FFT grid and associated quantities including cell dimensions,
 size of extended grid, centroids,
 }
-

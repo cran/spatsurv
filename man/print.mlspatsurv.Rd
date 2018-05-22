@@ -30,4 +30,3 @@ A function to print summary tables from an MCMC run
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}
 }
-

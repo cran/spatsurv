@@ -27,4 +27,3 @@ A function to produce a plot of, and return, the lag 1 (or higher, see argument 
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}
 }
-

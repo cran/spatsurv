@@ -21,4 +21,3 @@ a vector
 \description{
 A function used in calculating the coefficients of a B-spline curve
 }
-

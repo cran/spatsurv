@@ -2,8 +2,8 @@
 % Please edit documentation in R/spatsurv.R
 \docType{package}
 \name{spatsurv-package}
-\alias{spatsurv}
 \alias{spatsurv-package}
+\alias{spatsurv}
 \title{spatsurv}
 \format{An object of class \code{logical} of length 1.}
 \usage{
@@ -13,14 +13,8 @@ spatsurv
 An R package for spatially correlated parametric proportional hazards survial analysis.
 }
 \details{
-\tabular{ll}{
-Package: \tab spatsurv\cr
-Version: \tab 0.9-11\cr
-Date: \tab 2015-06-24\cr
-License: \tab GPL-3 \cr
-}
-
-
+\packageDESCRIPTION{spatsurv}
+\packageIndices{spatsurv}
 
 section{Dependencies}{
 The package \code{spatsurv} depends upon some other important contributions to CRAN in order to operate; their uses here are indicated:\cr\cr
@@ -43,4 +37,3 @@ Benjamin Taylor, Health and Medicine, Lancaster University,
  Barry Rowlingson, Health and Medicine, Lancaster University
 }
 \keyword{package}
-

@@ -12,4 +12,3 @@ displays the vignette by calling browseURL
 \description{
 Display the introductory vignette for the spatsurv package.
 }
-

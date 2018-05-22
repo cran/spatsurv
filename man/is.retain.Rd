@@ -15,4 +15,3 @@ TRUE or FALSE
 \description{
 if this mcmc iteration is one not thinned out, this is true
 }
-

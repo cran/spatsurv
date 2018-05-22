@@ -31,4 +31,3 @@ median, upper and lower confidence bands for the effect of varname over time; th
 When bs(varname) has been used in the formula of a model, this function can be used to reconstruct the posterior relative risk of
 that parameter over time.
 }
-

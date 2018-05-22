@@ -24,4 +24,3 @@ A function to get initial estimates of model parameters using maximum likelihood
     \item Benjamin M. Taylor and Barry S. Rowlingson (2017). spatsurv: An R Package for Bayesian Inference with Spatial Survival Models. Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 }
 }
-

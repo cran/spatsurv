@@ -22,4 +22,3 @@ event is uncensored and 0 otherwise for right/left censored data, or for interva
 A function to generate observed times given a vector of true survival times and a vector of censoring times. Used in the simulation of
 survival data.
 }
-

@@ -18,4 +18,3 @@ If x is a matrix whose columns are the bases of the sub-blocks of a block circul
 If x is a matrix whose columns are the bases of the sub-blocks of a block circulant matrix, then this function returns the
 block circulant matrix of interest.
 }
-

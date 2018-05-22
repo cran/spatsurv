@@ -18,4 +18,3 @@ the fixed matrix
 \details{
 A function to fix up an estimated covariance matrix using a VERY ad-hoc method.
 }
-

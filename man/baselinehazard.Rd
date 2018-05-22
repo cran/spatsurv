@@ -36,4 +36,3 @@ A function to compute quantiles of the posterior baseline hazard or cumulative b
 \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}
 }
-

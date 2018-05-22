@@ -16,4 +16,3 @@ the expected survival time for the individual, obtained by numerical integration
 A function to compute an individual's approximate expected survival time using numerical integration. Note this appears to be unstable; the
 function is based on R's integrate function. Not intended for general use (yet!).
 }
-

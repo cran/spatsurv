@@ -17,4 +17,3 @@ getBackground(poly, type = "stamen-toner")
 \description{
 A function to
 }
-

@@ -14,4 +14,3 @@ loop.mcmc(object, sleep = 1)
 \description{
 useful for testing progress bars
 }
-

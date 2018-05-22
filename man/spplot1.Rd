@@ -9,7 +9,7 @@ spplot1(x, what, palette = brewer.pal(5, "Oranges"), breaks = NULL,
   bg = NULL, printlegend = TRUE, bw = FALSE, useLeaflet = FALSE,
   urltemplate = urlTemplate("Stamen_Toner"), fillOpacity = 0.5,
   legendOpacity = 0.5, OSMbg = NULL, leafletLegend = TRUE,
-  alpha.f = 0.5, ...)
+  alpha.f = 0.5, plotinorder = FALSE, ...)
 }
 \arguments{
 \item{x}{a SpatialPolgonsDataFrame or a SpatialPointsDataFrame}
@@ -48,6 +48,8 @@ spplot1(x, what, palette = brewer.pal(5, "Oranges"), breaks = NULL,
 
 \item{alpha.f}{point transparency, see ?adjustcolor, default is 0.5}
 
+\item{plotinorder}{whether to plot in order of the size of the variable being plotted, useful for overlapping windows where small counts may obscure big counts}
+
 \item{...}{other arguments to be passed to plot}
 }
 \value{
@@ -66,4 +68,3 @@ Instructions on installing the leaflet R package are available from  \url{https:
 \seealso{
 \link{urlTemplate}, \link{getBackground}, brewer.pal
 }
-

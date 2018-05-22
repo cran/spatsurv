@@ -20,4 +20,3 @@ A function to retrieve the cumulative baseline hazard function
 \seealso{
 \link{exponentialHaz}, \link{weibullHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
 }
-

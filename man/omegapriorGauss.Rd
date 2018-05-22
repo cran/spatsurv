@@ -20,4 +20,3 @@ A function to define Gaussian priors for omega. This function simply stores a ve
 \seealso{
 \link{survspat}, \link{betapriorGauss}, \link{omegapriorGauss}, \link{etapriorGauss}, \link{indepGaussianprior}, \link{derivindepGaussianprior}
 }
-

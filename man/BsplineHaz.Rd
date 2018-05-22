@@ -57,4 +57,3 @@ model for the baseline hazard, it can be shown that the q-th quantile is:
 \seealso{
 \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{weibullHaz}
 }
-

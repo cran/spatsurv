@@ -30,4 +30,3 @@ timevaryingPL(formula, t0, t, delta, dist, data, ties = "Efron",
 \description{
 A function to
 }
-

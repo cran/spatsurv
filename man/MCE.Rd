@@ -23,4 +23,3 @@ A function to compute Monte Carlo expectations from an object inheriting class m
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov},
 \link{hazardexceedance}
 }
-

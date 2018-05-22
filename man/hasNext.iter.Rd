@@ -13,4 +13,3 @@
 method for iter objects
 test if an iterator has any more values to go
 }
-

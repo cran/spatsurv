@@ -35,4 +35,3 @@ The user interested in using other priors is encouraged to look at the structure
 \seealso{
 \link{survspat}, \link{betapriorGauss}, \link{omegapriorGauss}, \link{etapriorGauss}, \link{indepGaussianprior}, \link{derivindepGaussianprior}
 }
-

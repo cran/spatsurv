@@ -36,4 +36,3 @@ A function to produce a plot of the posterior covariance function with upper and
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{MCE},
 \link{hazardexceedance}
 }
-

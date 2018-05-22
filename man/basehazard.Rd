@@ -20,4 +20,3 @@ Generic function for computing the baseline hazard
 \seealso{
 \link{basehazard.basehazardspec}, \link{exponentialHaz}, \link{weibullHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
 }
-

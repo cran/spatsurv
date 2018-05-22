@@ -27,4 +27,3 @@ omegapriorGaussST(basehaz, fmean, fsd, taumean, tausd, thetamean, thetasd)
 \description{
 A function to
 }
-

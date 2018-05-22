@@ -15,4 +15,3 @@ gamma2risk(mod)
 \description{
 A function to
 }
-

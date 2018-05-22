@@ -26,4 +26,3 @@ baseHazST(bh1 = NULL, survobj, t0, nbreaks = 5, breakmethod = "quantile",
 \description{
 A function to
 }
-

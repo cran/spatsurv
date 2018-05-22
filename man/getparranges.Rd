@@ -20,4 +20,3 @@ an appropriate range used to calibrate the MCMC: the mean of the prior for eta p
 A function to extract parameter ranges for creating a grid on which to evaluate the log-posterior, used in calibrating the MCMC. This function
 is not intended for general use.
 }
-

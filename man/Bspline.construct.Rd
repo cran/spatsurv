@@ -17,4 +17,3 @@ a basis matrix
 \description{
 A function to construct a B-spline basis matrix for given data and basis coefficients. Used in evaluating the baseline hazard.
 }
-

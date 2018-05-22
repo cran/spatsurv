@@ -31,4 +31,3 @@ A function to perform maximun likelihood inference for non-spatial survival data
 \link{covmodel}, link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
 \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control}
 }
-

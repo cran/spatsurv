@@ -12,4 +12,3 @@ hasNext(obj)
 \description{
 test if an iterator has any more values to go
 }
-

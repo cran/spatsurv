@@ -20,4 +20,3 @@ A function to retrieve the quantiles of the density function
 \seealso{
 \link{exponentialHaz}, \link{weibullHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
 }
-

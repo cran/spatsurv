@@ -22,4 +22,3 @@ a list of functions used in evaluating the log posterior
 A function to set up the baseline hazard, cumulative hazard and derivative functions for use in evaluating the log posterior.
 This fucntion is not intended for general use.
 }
-

@@ -21,4 +21,3 @@ A function to compute the order of a set of neighbours. Not intended for general
     \item Finn Lindgren, Havard Rue, Johan Lindstrom. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach. Journal of the Royal Statistical Society: Series B 73(4)
 }
 }
-

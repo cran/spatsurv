@@ -20,4 +20,3 @@ A function to define Gaussian priors for beta. This function simply stores a vec
 \seealso{
 \link{survspat}, \link{betapriorGauss}, \link{omegapriorGauss}, \link{etapriorGauss}, \link{indepGaussianprior}, \link{derivindepGaussianprior}
 }
-

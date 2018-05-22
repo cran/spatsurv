@@ -24,4 +24,3 @@ A function for evaluating the log of an independent Gaussian prior for a given s
 \seealso{
 \link{survspat}, \link{betapriorGauss}, \link{omegapriorGauss}, \link{etapriorGauss}, \link{indepGaussianprior}, \link{derivindepGaussianprior}
 }
-

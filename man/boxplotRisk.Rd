@@ -15,4 +15,3 @@ boxplotRisk(g2r)
 \description{
 A function to
 }
-

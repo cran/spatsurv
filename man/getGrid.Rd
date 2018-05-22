@@ -17,4 +17,3 @@ a SpatialPolygonsDataFrame in which Monte Carlo expectations can be stored and l
 \description{
 A function to extract and return the computational grid from a gridded analysis.
 }
-

@@ -27,4 +27,3 @@ HERE_hybridDayMobile, HERE_hybridDay
 
 See \url{http://leaflet-extras.github.io/leaflet-providers/preview/} for other leaflet templates
 }
-

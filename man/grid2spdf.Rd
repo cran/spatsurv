@@ -19,4 +19,3 @@ a SpatialPolygonsDataFrame
 \description{
 A function to convert a regular (x,y) grid of centroids into a SpatialPoints object
 }
-

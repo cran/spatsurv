@@ -17,4 +17,3 @@ an object that allows the integral of a given B-spline curve to be computed
 \description{
 A function to construct the integral of a B-spline curve given data and basis coefficients. Used in evaluating the cumulative baseline hazard.
 }
-

@@ -46,4 +46,3 @@ Plots the survival data non-censored observations appear as dots and censored ob
 \description{
 A function to produce a 2-D plot of right censored spatial survival data.
 }
-

@@ -16,4 +16,3 @@ the transformed parameters. For the weibull model, this transforms 'shape' 'scal
 A function to transform estimates of the (alpha, lambda) parameters of the weibull baseline hazard function, so they are commensurate
 with R's inbuilt density functions, (shape, scale).
 }
-

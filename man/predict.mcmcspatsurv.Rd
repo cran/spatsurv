@@ -42,4 +42,3 @@ hazard functions or quantiles of the density function (if available analytically
 \link{baselinehazard}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}
 }
-

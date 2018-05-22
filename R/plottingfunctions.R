@@ -8,7 +8,7 @@
 ##'
 ##' Instructions on installing the leaflet R package are available from  \url{https://rstudio.github.io/leaflet/}
 ##'
-##' @param x a SpatialPolgonsDataFrame or a SpatialPointsDataFrame 
+##' @param x a SpatialPolgonsDataFrame or a SpatialPointsDataFrame
 ##' @param what the name of the variable to plot
 ##' @param palette the palette, can either be a vector of names of colours, or a vector of colours produced for example by the brewer.pal function.
 ##' @param breaks optional breaks for the legend, a vector of length 1 + length(palette)
@@ -26,6 +26,7 @@
 ##' @param OSMbg optional OpenStreetMap background to add to plot, obtain this using the function getBackground
 ##' @param leafletLegend logical, display the leaflet legend?
 ##' @param alpha.f point transparency, see ?adjustcolor, default is 0.5
+##' @param plotinorder whether to plot in order of the size of the variable being plotted, useful for overlapping windows where small counts may obscure big counts
 ##' @param ... other arguments to be passed to plot
 ##' @return either produces a plot or if useLeaflet is TRUE, returns a leaflet map widget to which further layers can be added
 ##' @seealso \link{urlTemplate}, \link{getBackground}, brewer.pal
@@ -49,10 +50,15 @@ spplot1 <- function(x,
 					OSMbg=NULL,
 					leafletLegend=TRUE,
 					alpha.f=0.5,
+                    plotinorder=FALSE,
 					...){
 
+    if(plotinorder){
+        x@plotOrder <- order(x@data[[what]])
+    }
+
 	if(bw){
-		palette <- brewer.pal(5,"Greys")	
+		palette <- brewer.pal(5,"Greys")
 	}
 	n <- length(palette)
 	if(!is.null(breaks)){
@@ -67,7 +73,7 @@ spplot1 <- function(x,
 			cutt <- cut(tp,n,include.lowest=include.lowest)
 		}
 		else{
-			cutt <- cut(tp,breaks,include.lowest=include.lowest)	
+			cutt <- cut(tp,breaks,include.lowest=include.lowest)
 		}
 		lvls <- levels(cutt)
 		cols <- palette[as.numeric(cutt)]
@@ -84,8 +90,8 @@ spplot1 <- function(x,
 		stop("Plotting variable must either be of class numeric, integer or factor.")
 	}
 
-	
-	
+
+
 	if(!useLeaflet){
 		if(is.null(OSMbg)){
 			sp::plot(x,col=cols,...)
@@ -137,13 +143,13 @@ spplot1 <- function(x,
 					ns <- spTransform(x,CRS('+init=epsg:4326'))
 					m <- leaflet() %>%
 					addTiles(urlTemplate=urltemplate) %>%
-					addPolygons(data=ns,color=cols,fillColor=cols,weight=0,fillOpacity = fillOpacity,stroke=FALSE) 
+					addPolygons(data=ns,color=cols,fillColor=cols,weight=0,fillOpacity = fillOpacity,stroke=FALSE)
 				}
 				else if(inherits(x,'SpatialPointsDataFrame')){
 					ns <- spTransform(x,CRS('+init=epsg:4326'))
 					m <- leaflet() %>%
 					addTiles(urlTemplate=urltemplate) %>%
-					addCircleMarkers(data=ns,color=cols,stroke=FALSE) 
+					addCircleMarkers(data=ns,color=cols,stroke=FALSE)
 				}
 				else{
 					stop('Leaflet mapping for this kind of object not supported at present')
@@ -156,24 +162,24 @@ spplot1 <- function(x,
 
 		return(m)
 
-		
+
 	}
 }
 
 ##' spplot_compare function
 ##'
-##' A function to compare two SpatialPolgonsDataFrame or SpatialPointsDataFrame objects using a unified legend for the variable 
+##' A function to compare two SpatialPolgonsDataFrame or SpatialPointsDataFrame objects using a unified legend for the variable
 ##' of interest in both
 ##'
-##' @param x a SpatialPolgonsDataFrame or a SpatialPointsDataFrame 
-##' @param y a SpatialPolgonsDataFrame or a SpatialPointsDataFrame 
-##' @param what the name of the variable from x to plot 
+##' @param x a SpatialPolgonsDataFrame or a SpatialPointsDataFrame
+##' @param y a SpatialPolgonsDataFrame or a SpatialPointsDataFrame
+##' @param what the name of the variable from x to plot
 ##' @param what1 the name of the variable from y to plot. default is to plot the variable of the same name
-##' @param palette the palette, can either be a vector of names of colours, or a vector of colours produced for example by the brewer.pal function. 
-##' @param legpos the position of the legend, options are 'topleft', 'topright', 'bottomleft', 'bottomright' 
-##' @param border see ?spplot 
-##' @param fun an optional function of the data to plot, default is the identity function 
-##' @param t1 title for the plot of x 
+##' @param palette the palette, can either be a vector of names of colours, or a vector of colours produced for example by the brewer.pal function.
+##' @param legpos the position of the legend, options are 'topleft', 'topright', 'bottomleft', 'bottomright'
+##' @param border see ?spplot
+##' @param fun an optional function of the data to plot, default is the identity function
+##' @param t1 title for the plot of x
 ##' @param t2 title for the plot of y
 ##' @param bw Logical. Plot in black/white/greyscale? Default is to produce a colour plot. Useful for producing plots for journals that do not accept colour plots.
 ##' @param ... other arguments to be passed to the plot function
@@ -182,7 +188,7 @@ spplot1 <- function(x,
 
 spplot_compare <- function(x,y,what,what1=what,palette=brewer.pal(9,"Oranges"),legpos="topleft",border=NA,fun=identity,t1="",t2="",bw=FALSE,...){
 	if(bw){
-		palette <- brewer.pal(5,"Greys")	
+		palette <- brewer.pal(5,"Greys")
 	}
 	n <- length(palette)
 	tpx <- fun(x[[what]])
@@ -211,7 +217,7 @@ spplot_compare <- function(x,y,what,what1=what,palette=brewer.pal(9,"Oranges"),l
 
 ##' getBackground function
 ##'
-##' A function to 
+##' A function to
 ##'
 ##' @param poly a spatial object that can be transformed and the extent obtained using the bbox function.
 ##' @param type see ?openmap
@@ -224,4 +230,3 @@ getBackground <- function(poly,type="stamen-toner"){
 	map <- openmap(upperLeft=c(lat=bb[2,2],lon=bb[1,1]), lowerRight=c(lat=bb[2,1],lon=bb[1,2]),type=type)
 	return(map)
 }
-

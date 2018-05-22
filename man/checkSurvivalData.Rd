@@ -15,4 +15,3 @@ if there are any issues with data format, these are returned with the data an er
 \description{
 A function to check whether the survival data to be passed to survspat is in the correct format
 }
-

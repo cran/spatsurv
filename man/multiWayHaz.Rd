@@ -21,4 +21,3 @@ multiWayHaz(bhlist, bhtime, bhfix, MLinits = NULL)
 \description{
 A function to
 }
-

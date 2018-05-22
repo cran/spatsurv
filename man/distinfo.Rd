@@ -20,4 +20,3 @@ Generic function for returning information about the class of baseline hazard fu
 \seealso{
 \link{distinfo.basehazardspec}, \link{exponentialHaz}, \link{weibullHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
 }
-

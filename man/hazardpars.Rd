@@ -21,4 +21,3 @@ A function to return the mcmc chains for the hazard function parameters
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}
 }
-

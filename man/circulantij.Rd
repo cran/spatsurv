@@ -17,4 +17,3 @@ the ij element of the full circulant
 \description{
 A function to return the "idx" i.e. c(i,j) element of a circulant matrix with base "base".
 }
-

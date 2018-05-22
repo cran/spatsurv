@@ -12,4 +12,3 @@ nextStep(object)
 \description{
 just a wrapper for nextElem really.
 }
-

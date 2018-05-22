@@ -15,4 +15,3 @@ a progress monitor
 \description{
 a progress monitor that does nothing
 }
-

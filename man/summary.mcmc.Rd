@@ -16,4 +16,3 @@ summary of an mcmc iterator
 print out values of an iterator and reset it. DONT call this
 in a loop that uses this iterator - it will reset it. And break.
 }
-

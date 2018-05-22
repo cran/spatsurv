@@ -19,4 +19,3 @@ the residuals
 \description{
 A function to compute Cox-Snell / modeified Cox-Snell / Martingale or Deviance residuals
 }
-

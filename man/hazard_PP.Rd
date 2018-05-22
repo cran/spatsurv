@@ -15,4 +15,3 @@ the hazard function for the individual
 \description{
 A function to compute an individual's hazard function.
 }
-

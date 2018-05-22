@@ -15,4 +15,3 @@ A function to declare and also evaluate a spiked exponential covariance function
 \seealso{
 \link{ExponentialCovFct}, \link{covmodel}, CovarianceFct
 }
-

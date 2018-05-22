@@ -21,4 +21,3 @@ a vector of polynomial coefficients
 \description{
 A recursive function used in calculating the coefficients of a B-spline curve
 }
-

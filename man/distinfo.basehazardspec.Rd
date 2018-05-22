@@ -20,4 +20,3 @@ A function to retrive information on the baseline hazard distribution of choice
 \seealso{
 \link{exponentialHaz}, \link{weibullHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{tpowHaz}
 }
-

@@ -23,4 +23,3 @@ A function to return the variance covariance matrix of the parameters beta, omeg
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}
 }
-

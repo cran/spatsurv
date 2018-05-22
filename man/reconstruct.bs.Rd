@@ -17,4 +17,3 @@ method reconstruct.bs
 \description{
 Generic function for reconstructing B-spline covariate effects. See ?reconstruct.bs.mcmcspatsurv and ?reconstruct.bs.coxph
 }
-

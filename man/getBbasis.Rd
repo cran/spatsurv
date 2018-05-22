@@ -21,4 +21,3 @@ the knots and the piecewise polynomial coefficients for a B-spline basis functio
 \description{
 A function returning the piecewise polynomial coefficients for a B-spline basis function i.e. the basis functions.
 }
-

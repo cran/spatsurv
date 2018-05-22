@@ -23,4 +23,3 @@ an estimate of Y, to be used in calibrating the MCMC
 \description{
 A function to get an initial estimate of Y, to be used in calibrating the MCMC. Not for general use
 }
-

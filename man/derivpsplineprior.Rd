@@ -24,4 +24,3 @@ A function for evaluating the first and second derivatives of the log of an inde
 \seealso{
 \link{survspat}, \link{betapriorGauss}, \link{omegapriorGauss}, \link{etapriorGauss}, \link{indepGaussianprior}, \link{derivindepGaussianprior}
 }
-

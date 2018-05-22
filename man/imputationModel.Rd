@@ -21,4 +21,3 @@ imputationModel(formula, offset, covariateData, priors)
 \description{
 A function to
 }
-

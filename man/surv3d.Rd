@@ -64,4 +64,3 @@ clear3d();surv3d(d,d$surv,baseplane=TRUE,basegrid=TRUE,pstyle="t",lalpha=0.5,lwd
 \author{
 Barry S Rowlingson
 }
-

@@ -25,4 +25,3 @@ A function to extract quantiles of the parameters from an mcmc run
 \link{baselinehazard}, \link{predict.mcmcspatsurv}, \link{priorposterior}, \link{posteriorcov}, \link{MCE},
 \link{hazardexceedance}
 }
-

@@ -12,4 +12,3 @@ resetLoop(obj)
 \description{
 call this to reset an iterator's state to the initial
 }
-
