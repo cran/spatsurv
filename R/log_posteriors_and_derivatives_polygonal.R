@@ -15,7 +15,7 @@
 ##' @param gradient logical whether to evaluate the gradient
 ##' @param hessian logical whether to evaluate the Hessian
 ##' @return evaluates the log-posterior and the gradient and hessian, if required.
-##' @references 
+##' @references
 ##' \enumerate{
 ##'     \item Benjamin M. Taylor and Barry S. Rowlingson (2017). spatsurv: An R Package for Bayesian Inference with Spatial Survival Models. Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
 ##' }
@@ -109,6 +109,8 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
 
         logpost <- loglik + priorcontrib
 
+        #browser()
+
         indiv_loglik <- c(Uterm,Cterm)
     }
     else if(censoringtype=="left"){
@@ -121,6 +123,8 @@ logPosterior_polygonal <- function(surv,X,beta,omega,eta,gamma,priors,cov.model,
                     (if(Ctest){Cterm <- log(1-S[censored]);sum(Cterm)}else{0})
 
         indiv_loglik <- c(Uterm,Cterm)
+
+        browser()
 
         logpost <- loglik + priorcontrib
     }

@@ -4,8 +4,8 @@
 \alias{logPosterior_gridded}
 \title{logPosterior_gridded function}
 \usage{
-logPosterior_gridded(surv, X, beta, omega, eta, gamma, priors, cov.model, u,
-  control, gradient = FALSE, hessian = FALSE)
+logPosterior_gridded(surv, X, beta, omega, eta, gamma, priors, cov.model,
+  u, control, gradient = FALSE, hessian = FALSE)
 }
 \arguments{
 \item{surv}{an object of class Surv}

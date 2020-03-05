@@ -4,8 +4,8 @@
 \alias{survspat}
 \title{survspat function}
 \usage{
-survspat(formula, data, dist, cov.model, mcmc.control, priors, shape = NULL,
-  ids = list(shpid = NULL, dataid = NULL),
+survspat(formula, data, dist, cov.model, mcmc.control, priors,
+  shape = NULL, ids = list(shpid = NULL, dataid = NULL),
   control = inference.control(gridded = FALSE), boundingbox = NULL)
 }
 \arguments{

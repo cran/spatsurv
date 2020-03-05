@@ -4,8 +4,8 @@
 \alias{proposalVariance_polygonal}
 \title{proposalVariance_polygonal function}
 \usage{
-proposalVariance_polygonal(X, surv, betahat, omegahat, Yhat, priors, cov.model,
-  u, control)
+proposalVariance_polygonal(X, surv, betahat, omegahat, Yhat, priors,
+  cov.model, u, control)
 }
 \arguments{
 \item{X}{the design matrix, containing covariate information}

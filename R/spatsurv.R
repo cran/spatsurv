@@ -32,11 +32,11 @@
 
 
 
-##' @importFrom OpenStreetMap openmap
+## @importFrom OpenStreetMap openmap
 ##' @importFrom RColorBrewer brewer.pal
 ##' @importFrom stringr str_count str_detect
 ##' @importFrom Matrix nearPD Matrix sparseMatrix bdiag
-##' @importFrom rgl abclines3d aspect3d axes3d planes3d points3d segments3d text3d title3d
+## @importFrom rgl abclines3d aspect3d axes3d planes3d points3d segments3d text3d title3d
 ##' @importFrom fields image.plot
 ##' @importFrom RandomFields CovarianceFct
 ##' @importFrom rgeos gBuffer
@@ -50,7 +50,7 @@
 
 
 ## @import stats
-## @import graphics
+##' @import graphics
 ## @import methods
 ## @import utils
 ## @import grDevices

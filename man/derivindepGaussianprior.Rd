@@ -4,7 +4,8 @@
 \alias{derivindepGaussianprior}
 \title{derivindepGaussianprior function}
 \usage{
-derivindepGaussianprior(beta = NULL, omega = NULL, eta = NULL, priors)
+derivindepGaussianprior(beta = NULL, omega = NULL, eta = NULL,
+  priors)
 }
 \arguments{
 \item{beta}{a vector, the parameter beta}

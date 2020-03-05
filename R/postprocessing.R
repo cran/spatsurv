@@ -948,6 +948,7 @@ reconstruct.bs.mcmcspatsurv <- function(mod,varname,probs=c(0.025,0.975),bw=FALS
     probs1 <- sort(probs)
     probs1 <- c(probs[1],0.5,probs[2])
     colidx <- str_detect(colnames(mod$X),paste("bs\\(",varname,"\\)",sep=""))
+
     bss <- mod$X[,colidx]
     idx <- which(colidx)
     #fit <- colSums(summary(mod)[idx,1]*t(bss))
@@ -955,8 +956,8 @@ reconstruct.bs.mcmcspatsurv <- function(mod,varname,probs=c(0.025,0.975),bw=FALS
     ul <- apply(fitall,2,quantile,probs=probs1)
     fit <- ul[2,]
     ul <- ul[-2,]
-    xx <- mod$data[,varname]
-
+    xx <- mod$data@data[,varname]
+    #browser()
     ord <- order(xx)
     xx <- xx[ord]
     yy <- exp(fit)
@@ -1092,7 +1093,12 @@ residuals.mcmcspatsurv <- function(object,type="Cox-Snell",...){
 
     betahat <- colMeans(object$beta)
     omegahat <- colMeans(object$omegasamp)
-    Yhat <- colMeans(object$Ysamp[,object$cellidx])
+    if(object$gridded){
+        Yhat <- colMeans(object$Ysamp[,object$cellidx])
+    }
+    else{
+        Yhat <- colMeans(object$Ysamp[,object$control$idx])
+    }
 
     Xbeta <- colSums(betahat*t(object$X))
     expXbeta <- exp(Xbeta)

@@ -4,10 +4,10 @@
 \alias{surv3d}
 \title{Spatial Survival Plot in 3D}
 \usage{
-surv3d(spp, ss, lwd = 2, lcol = "black", lalpha = 1, pstyle = c("point",
-  "text"), psize = c(20, 10), pcol = c("red", "black"), ptext = c("X",
-  ""), palpha = 1, title = "Spatial Survival", basegrid = TRUE,
-  baseplane = TRUE)
+surv3d(spp, ss, lwd = 2, lcol = "black", lalpha = 1,
+  pstyle = c("point", "text"), psize = c(20, 10), pcol = c("red",
+  "black"), ptext = c("X", ""), palpha = 1,
+  title = "Spatial Survival", basegrid = TRUE, baseplane = TRUE)
 }
 \arguments{
 \item{spp}{A spatial points data frame}

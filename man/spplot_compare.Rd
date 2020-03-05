@@ -4,9 +4,9 @@
 \alias{spplot_compare}
 \title{spplot_compare function}
 \usage{
-spplot_compare(x, y, what, what1 = what, palette = brewer.pal(9, "Oranges"),
-  legpos = "topleft", border = NA, fun = identity, t1 = "", t2 = "",
-  bw = FALSE, ...)
+spplot_compare(x, y, what, what1 = what, palette = brewer.pal(9,
+  "Oranges"), legpos = "topleft", border = NA, fun = identity,
+  t1 = "", t2 = "", bw = FALSE, ...)
 }
 \arguments{
 \item{x}{a SpatialPolgonsDataFrame or a SpatialPointsDataFrame}

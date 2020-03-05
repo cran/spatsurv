@@ -27,6 +27,8 @@
 ##' @param leafletLegend logical, display the leaflet legend?
 ##' @param alpha.f point transparency, see ?adjustcolor, default is 0.5
 ##' @param plotinorder whether to plot in order of the size of the variable being plotted, useful for overlapping windows where small counts may obscure big counts
+##' @param legendText X
+##' @param legendFun X
 ##' @param ... other arguments to be passed to plot
 ##' @return either produces a plot or if useLeaflet is TRUE, returns a leaflet map widget to which further layers can be added
 ##' @seealso \link{urlTemplate}, \link{getBackground}, brewer.pal
@@ -51,6 +53,8 @@ spplot1 <- function(x,
 					leafletLegend=TRUE,
 					alpha.f=0.5,
                     plotinorder=FALSE,
+                    legendText=NULL,
+                    legendFun=NULL,
 					...){
 
     if(plotinorder){
@@ -104,10 +108,26 @@ spplot1 <- function(x,
 			sp::plot(x,col=cols,add=TRUE,...)
 		}
 
+        messwithlegend <- function(txt,fun,dp=2){
+            txt <- t(gsub("]","",gsub("\\[","",gsub("\\(","",sapply(txt,function(x){unlist(strsplit(x,","))})))))
+            txt <- round(fun(matrix(as.numeric(txt),ncol=2)),dp)
+            txt <- apply(txt,1,function(x){paste("(",x[1],",",x[2],"]",sep="")})
+            substr(txt[1],1,1) <- "["
+            return(txt)
+        }
+
 		if(printlegend){
+            if(is.null(legendText)){
+                legendText <- lvls
+            }
+
+            if(!is.null(legendFun)){
+                legendText <- messwithlegend(legendText,legendFun)
+            }
+
 			lg <- legend(legpos,pch=rep(15,n),col=palette,legend=lvls,bty=bty,plot=FALSE)
 		    polygon(c(lg[[1]]$left,lg[[1]]$left,lg[[1]]$left+lg[[1]]$w,lg[[1]]$left+lg[[1]]$w),c(lg[[1]]$top-lg[[1]]$h,lg[[1]]$top,lg[[1]]$top,lg[[1]]$top-lg[[1]]$h),border=NA,col=bg)
-  			legend(legpos,pch=rep(15,n),col=palette,legend=lvls,bty=bty,bg=bg)
+  			legend(legpos,pch=rep(15,n),col=palette,legend=legendText,bty=bty,bg=bg)
 
 		}
 	}
@@ -227,6 +247,6 @@ spplot_compare <- function(x,y,what,what1=what,palette=brewer.pal(9,"Oranges"),l
 getBackground <- function(poly,type="stamen-toner"){
 	poly <- spTransform(poly,CRS("+init=epsg:4326"))
 	bb <- bbox(poly)
-	map <- openmap(upperLeft=c(lat=bb[2,2],lon=bb[1,1]), lowerRight=c(lat=bb[2,1],lon=bb[1,2]),type=type)
+	map <- OpenStreetMap::openmap(upperLeft=c(lat=bb[2,2],lon=bb[1,1]), lowerRight=c(lat=bb[2,1],lon=bb[1,2]),type=type)
 	return(map)
 }

@@ -4,8 +4,8 @@
 \alias{baseHazST}
 \title{baseHazST function}
 \usage{
-baseHazST(bh1 = NULL, survobj, t0, nbreaks = 5, breakmethod = "quantile",
-  MLinits = NULL)
+baseHazST(bh1 = NULL, survobj, t0, nbreaks = 5,
+  breakmethod = "quantile", MLinits = NULL)
 }
 \arguments{
 \item{bh1}{X}

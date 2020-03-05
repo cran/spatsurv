@@ -37,6 +37,8 @@ multiWayHaz <- function(bhlist,bhtime,bhfix,MLinits=NULL){
     }
     paridx <- lapply(1:length(csnpvec),vf) # indices of parameters to feed to each bhlist function
 
+    post_processing_mode <- FALSE
+
     flist <- list()
 
     flist$distinfo <- function(){
@@ -53,7 +55,11 @@ multiWayHaz <- function(bhlist,bhtime,bhfix,MLinits=NULL){
 
     flist$basehazard <- function(pars){
         fun <- function(t,...){
+            #browser()
             ans <- sapply(1:nhaz,function(i){bhlist[[i]]$basehazard(pars[paridx[[i]]])(bhtime[[i]])})
+            if(post_processing_mode){
+                return(ans)
+            }
             return(apply(ans,1,prod))
         }
         return(fun)
@@ -62,7 +68,9 @@ multiWayHaz <- function(bhlist,bhtime,bhfix,MLinits=NULL){
     flist$gradbasehazard <- function(pars){
         fun <- function(t,...){
             h <- sapply(1:nhaz,function(i){bhlist[[i]]$basehazard(pars[paridx[[i]]])(bhtime[[i]])})
-            hdash <- matrix(unlist(sapply(1:nhaz,function(i){apply(h[,-i,drop=FALSE],1,prod)*bhlist[[i]]$gradbasehazard(pars[paridx[[i]]])(bhtime[[i]])})),ncol=np)
+            #hdash <- matrix(unlist(sapply(1:nhaz,function(i){apply(h[,-i,drop=FALSE],1,prod)*bhlist[[i]]$gradbasehazard(pars[paridx[[i]]])(bhtime[[i]])})),ncol=np)
+            prodh <- apply(h,1,prod)
+            hdash <- matrix(unlist(sapply(1:nhaz,function(i){(prodh/h[,i])*bhlist[[i]]$gradbasehazard(pars[paridx[[i]]])(bhtime[[i]])})),ncol=np)
             return(hdash)
         }
         return(fun)
@@ -105,6 +113,9 @@ multiWayHaz <- function(bhlist,bhtime,bhfix,MLinits=NULL){
     flist$cumbasehazard <- function(pars){
         fun <- function(t,...){
             ans <- sapply(1:nhaz,function(i){bhlist[[i]]$cumbasehazard(pars[paridx[[i]]])(bhtime[[i]])})
+            if(post_processing_mode){
+                return(ans)
+            }
             return(apply(ans,1,prod))
         }
         return(fun)
@@ -113,7 +124,9 @@ multiWayHaz <- function(bhlist,bhtime,bhfix,MLinits=NULL){
     flist$gradcumbasehazard <- function(pars){
         fun <- function(t,...){
             H <- sapply(1:nhaz,function(i){bhlist[[i]]$cumbasehazard(pars[paridx[[i]]])(bhtime[[i]])})
-            hdash <- matrix(unlist(sapply(1:nhaz,function(i){apply(H[,-i,drop=FALSE],1,prod)*bhlist[[i]]$gradcumbasehazard(pars[paridx[[i]]])(bhtime[[i]])})),ncol=np)
+            #hdash <- matrix(unlist(sapply(1:nhaz,function(i){apply(H[,-i,drop=FALSE],1,prod)*bhlist[[i]]$gradcumbasehazard(pars[paridx[[i]]])(bhtime[[i]])})),ncol=np)
+            prodH <- apply(H,1,prod)
+            hdash <- matrix(unlist(sapply(1:nhaz,function(i){(prodH/H[,i])*bhlist[[i]]$gradcumbasehazard(pars[paridx[[i]]])(bhtime[[i]])})),ncol=np)
             return(hdash)
         }
         return(fun)
@@ -177,15 +190,15 @@ multiWayHaz <- function(bhlist,bhtime,bhfix,MLinits=NULL){
 ##' @export
 
 insert <- function(pars,idx,val){
-    n <- length(pars)
+    n <- length(pars) # note length(pars) is already reduced by 1 here, so true parameter length is n+1
     if(idx==1){
         return(c(val,pars))
     }
-    else if(idx==n){
+    else if(idx==(n+1)){
         return(c(pars,val))
     }
     else{
-        return(c(pars[1:(idx-1)],val,pars[(idx+1):n]))
+        return(c(pars[1:(idx-1)],val,pars[idx:n]))
     }
 }
 

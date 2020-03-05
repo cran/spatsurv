@@ -4,10 +4,10 @@
 \alias{plotsurv}
 \title{plotsurv function}
 \usage{
-plotsurv(spp, ss, maxcex = 1, transform = identity, background = NULL,
-  eventpt = 19, eventcol = "red", censpt = "+", censcol = "black",
-  xlim = NULL, ylim = NULL, xlab = NULL, ylab = NULL, add = FALSE,
-  ...)
+plotsurv(spp, ss, maxcex = 1, transform = identity,
+  background = NULL, eventpt = 19, eventcol = "red", censpt = "+",
+  censcol = "black", xlim = NULL, ylim = NULL, xlab = NULL,
+  ylab = NULL, add = FALSE, ...)
 }
 \arguments{
 \item{spp}{A spatial points data frame}

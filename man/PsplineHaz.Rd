@@ -4,7 +4,8 @@
 \alias{PsplineHaz}
 \title{PsplineHaz function}
 \usage{
-PsplineHaz(times, knots = quantile(times), degree = 3, MLinits = NULL)
+PsplineHaz(times, knots = quantile(times), degree = 3,
+  MLinits = NULL)
 }
 \arguments{
 \item{times}{vector of survival times (both censored and uncensored)}

@@ -4,8 +4,8 @@
 \alias{logPosterior_polygonal}
 \title{logPosterior_polygonal function}
 \usage{
-logPosterior_polygonal(surv, X, beta, omega, eta, gamma, priors, cov.model, u,
-  control, gradient = FALSE, hessian = FALSE)
+logPosterior_polygonal(surv, X, beta, omega, eta, gamma, priors, cov.model,
+  u, control, gradient = FALSE, hessian = FALSE)
 }
 \arguments{
 \item{surv}{an object of class Surv}

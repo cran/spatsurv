@@ -489,6 +489,8 @@ survspat <- function(   formula,
 
     LOGPOST <- get(paste("logPosterior",funtxt,sep=""))
 
+    #browser()
+
     oldlogpost <- LOGPOST(  surv=survivaldata,
                             X=X,
                             beta=beta,

@@ -31,7 +31,8 @@ maxlikparamPHsurv <- function(surv,X,control){
     betainit <- rep(0,ncol(X))
 
     if(is.null(distinfo(control$dist)()$MLinits)){
-        omegainit <- rep(1e-10,distinfo(control$dist)()$npars)
+        #omegainit <- rep(1e-10,distinfo(control$dist)()$npars)
+        omegainit <- rep(-10,distinfo(control$dist)()$npars)
     }
     else{
         omegainit <- distinfo(control$dist)()$MLinits
@@ -49,6 +50,8 @@ maxlikparamPHsurv <- function(surv,X,control){
     if(inherits(opt,"try-error")){
         stop("Possible problem with initial values in obtaining maximum likelihood estimates of parameters, try setting MLinits in function distinfo for chosen baseline hazard distribution")
     }
+
+    #browser()
 
     cat("Refining optimum via Nelder Mead ...\n")
     if(is.null(fix_some)){
@@ -217,7 +220,6 @@ NonSpatialLogLikelihood_or_gradient <- function(surv,X,beta,omega,control,loglik
         h <- haz$h(surv[,"time1"])
     }
 
-
     if(loglikelihood){
         if(censoringtype=="right"){
             loglik <-  (if(Utest){sum(Xbeta[notcensored] + log(h)[notcensored] - J[notcensored])}else{0}) +
@@ -234,6 +236,8 @@ NonSpatialLogLikelihood_or_gradient <- function(surv,X,beta,omega,control,loglik
                        (if(Ltest){sum(log(1-S1[leftcensored]))}else{0}) +
                        (if(Itest){sum(log(S1[intervalcensored]-S2[intervalcensored]))}else{0})
         }
+
+        #browser()
 
         return(-loglik)
     }

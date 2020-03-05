@@ -4,7 +4,8 @@
 \alias{derivindepGaussianpriorST}
 \title{derivindepGaussianpriorST function}
 \usage{
-derivindepGaussianpriorST(beta = NULL, omega = NULL, eta = NULL, priors)
+derivindepGaussianpriorST(beta = NULL, omega = NULL, eta = NULL,
+  priors)
 }
 \arguments{
 \item{beta}{X}

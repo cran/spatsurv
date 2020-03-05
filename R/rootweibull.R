@@ -1,4 +1,4 @@
-##' weibullHaz function
+##' rootWeibullHaz function
 ##'
 ##' A function to define a parametric proportional hazards model where the baseline hazard is taken from the Weibull model.
 ##' This function returns an object inheriting class 'basehazardspec', list of functions 'distinfo', 'basehazard', 'gradbasehazard', 'hessbasehazard',
@@ -39,7 +39,7 @@
 ##' @seealso \link{tpowHaz}, \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}
 ##' @export
 
-weibullHaz <- function(MLinits=NULL){
+rootWeibullHaz <- function(MLinits=NULL){
 
     flist <- list()
 
@@ -58,14 +58,14 @@ weibullHaz <- function(MLinits=NULL){
     flist$basehazard <- function(pars){
         fun <- function(t,...){
             #browser()
-            return(pars[2]*pars[1]*t^(pars[1]-1)) # in this case alpha=pars[1], lambda=pars[2]
+            return(0.5*pars[2]^0.5*pars[1]*t^(pars[1]/2-1)) # in this case alpha=pars[1], lambda=pars[2]
         }
         return(fun)
     }
 
     flist$gradbasehazard <- function(pars){
         fun <- function(t,...){
-            return(t^(pars[1]-1)*cbind(pars[2]*(1+pars[1]*log(t)),pars[1])) # in this case alpha=pars[1], lambda=pars[2]
+            return(0.5*t^(pars[1]/2-1)*cbind(pars[2]^0.5*(1+0.5*pars[1]*log(t)),0.5*pars[1]*pars[2]^(-0.5))) # in this case alpha=pars[1], lambda=pars[2]
         }
         return(fun)
 
@@ -74,8 +74,9 @@ weibullHaz <- function(MLinits=NULL){
     flist$hessbasehazard <- function(pars){
         funfun <- function(t,pars){
             m <- matrix(0,2,2) # note m[2,2]=0 i.e. d2h_0/dlambda^2 = 0
-            m[1,2] <- m[2,1] <- t^(pars[1]-1)*(1+pars[1]*log(t))
-            m[1,1] <- pars[2]*t^(pars[1]-1)*log(t)*(2+pars[1]*log(t))
+            m[1,2] <- m[2,1] <- 0.25*t^(pars[1]/2-1) * (pars[2]^(-0.5)*(1+0.5*pars[1]))
+            m[1,1] <- 0.25*t^(pars[1]/2-1) * (2*pars[2]^0.5*log(t) + 0.5*pars[1]*pars[2]^0.5*log(t)^2)
+            m[2,2] <- 0.25*t^(pars[1]/2-1) * (0.5*pars[1]*pars[2]^(-3/2))
             return(m) # in this case alpha=pars[1], lambda=pars[2]
         }
 
@@ -89,14 +90,14 @@ weibullHaz <- function(MLinits=NULL){
     flist$cumbasehazard <- function(pars){
         fun <- function(t,...){
             #browser()
-            return(pars[2]*t^(pars[1])) # in this case alpha=pars[1], lambda=pars[2]
+            return(pars[2]^0.5*t^(pars[1]/2)) # in this case alpha=pars[1], lambda=pars[2]
         }
         return(fun)
     }
 
     flist$gradcumbasehazard <- function(pars){
         fun <- function(t,...){
-            return(t^(pars[1])*cbind(pars[2]*log(t),1)) # in this case alpha=pars[1], lambda=pars[2]
+            return(0.5*t^(pars[1]/2)*cbind(pars[2]^0.5*log(t),pars[2]^(-0.5))) # in this case alpha=pars[1], lambda=pars[2]
         }
         return(fun)
     }
@@ -104,9 +105,9 @@ weibullHaz <- function(MLinits=NULL){
     flist$hesscumbasehazard <- function(pars){
         funfun <- function(t,pars){
             m <- matrix(0,2,2) # note m[2,2]=0 i.e. d2H_0/dlambda^2 = 0
-            other <- log(t)*t^pars[1]
-            m[1,2] <- m[2,1] <- other
-            m[1,1] <- pars[2]*other*log(t)
+            m[1,2] <- m[2,1] <- 0.25*t^(pars[1]/2) * (pars[2]^(-0.5)*log(t))
+            m[1,1] <- 0.25*t^(pars[1]/2) * (pars[2]^(0.5)*log(t)^2)
+            m[2,2] <- 0.25*t^(pars[1]/2) * (-pars[2]^(-3/2))
             return(m) # in this case alpha=pars[1], lambda=pars[2]
         }
 
@@ -118,7 +119,7 @@ weibullHaz <- function(MLinits=NULL){
 
     flist$densityquantile <- function(pars,other){
         fun <- function(probs,...){
-            return((-log(1-probs)/(pars[2]*other$expXbetaplusY))^(1/pars[1]))
+            stop("densityquantile not available yet")
         }
         return(fun)
     }
