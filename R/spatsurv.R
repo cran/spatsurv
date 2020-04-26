@@ -44,7 +44,6 @@
 ##' @importFrom sp coordinates<- bbox proj4string<- proj4string SpatialPixelsDataFrame SpatialGridDataFrame Polygon Polygons SpatialPolygons coordinates CRS geometry GridTopology over proj4string SpatialGrid SpatialPixels SpatialPoints SpatialPolygonsDataFrame split spTransform
 ##' @importFrom spatstat rpoint progressreport inside.owin
 ##' @importFrom survival Surv survfit
-##' @importFrom geostatsp asImRaster
 ##' @importFrom raster crop brick raster
 ##' @import lubridate
 

@@ -4,8 +4,17 @@
 \alias{proposalVariance_gridded}
 \title{proposalVariance_gridded function}
 \usage{
-proposalVariance_gridded(X, surv, betahat, omegahat, Yhat, priors,
-  cov.model, u, control)
+proposalVariance_gridded(
+  X,
+  surv,
+  betahat,
+  omegahat,
+  Yhat,
+  priors,
+  cov.model,
+  u,
+  control
+)
 }
 \arguments{
 \item{X}{the design matrix, containing covariate information}

@@ -4,8 +4,7 @@
 \alias{print.mlspatsurv}
 \title{print.mlspatsurv function}
 \usage{
-\method{print}{mlspatsurv}(x, probs = c(0.5, 0.025, 0.975), digits = 3,
-  scientific = -3, ...)
+\method{print}{mlspatsurv}(x, probs = c(0.5, 0.025, 0.975), digits = 3, scientific = -3, ...)
 }
 \arguments{
 \item{x}{an object inheriting class mcmcspatsurv}

@@ -4,8 +4,15 @@
 \alias{priorposterior}
 \title{priorposterior function}
 \usage{
-priorposterior(x, breaks = 30, ylab = "Density", main = "",
-  pause = TRUE, bw = FALSE, ...)
+priorposterior(
+  x,
+  breaks = 30,
+  ylab = "Density",
+  main = "",
+  pause = TRUE,
+  bw = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{an object inheriting class mcmcspatsurv}

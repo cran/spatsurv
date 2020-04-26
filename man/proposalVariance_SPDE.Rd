@@ -4,8 +4,17 @@
 \alias{proposalVariance_SPDE}
 \title{proposalVariance_SPDE function}
 \usage{
-proposalVariance_SPDE(X, surv, betahat, omegahat, Yhat, priors, cov.model,
-  u, control)
+proposalVariance_SPDE(
+  X,
+  surv,
+  betahat,
+  omegahat,
+  Yhat,
+  priors,
+  cov.model,
+  u,
+  control
+)
 }
 \arguments{
 \item{X}{the design matrix, containing covariate information}

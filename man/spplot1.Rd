@@ -4,13 +4,30 @@
 \alias{spplot1}
 \title{spplot1 function}
 \usage{
-spplot1(x, what, palette = brewer.pal(5, "Oranges"), breaks = NULL,
-  legpos = "topleft", fun = identity, include.lowest = TRUE,
-  bty = "n", bg = NULL, printlegend = TRUE, bw = FALSE,
-  useLeaflet = FALSE, urltemplate = urlTemplate("Stamen_Toner"),
-  fillOpacity = 0.5, legendOpacity = 0.5, OSMbg = NULL,
-  leafletLegend = TRUE, alpha.f = 0.5, plotinorder = FALSE,
-  legendText = NULL, legendFun = NULL, ...)
+spplot1(
+  x,
+  what,
+  palette = brewer.pal(5, "Oranges"),
+  breaks = NULL,
+  legpos = "topleft",
+  fun = identity,
+  include.lowest = TRUE,
+  bty = "n",
+  bg = NULL,
+  printlegend = TRUE,
+  bw = FALSE,
+  useLeaflet = FALSE,
+  urltemplate = urlTemplate("Stamen_Toner"),
+  fillOpacity = 0.5,
+  legendOpacity = 0.5,
+  OSMbg = NULL,
+  leafletLegend = TRUE,
+  alpha.f = 0.5,
+  plotinorder = FALSE,
+  legendText = NULL,
+  legendFun = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{a SpatialPolgonsDataFrame or a SpatialPointsDataFrame}

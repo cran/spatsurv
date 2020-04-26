@@ -4,8 +4,16 @@
 \alias{timevaryingPL}
 \title{timevaryingPL function}
 \usage{
-timevaryingPL(formula, t0, t, delta, dist, data, ties = "Efron",
-  optimcontrol = NULL)
+timevaryingPL(
+  formula,
+  t0,
+  t,
+  delta,
+  dist,
+  data,
+  ties = "Efron",
+  optimcontrol = NULL
+)
 }
 \arguments{
 \item{formula}{a formula of the form 'S ~ coef1 + coef2' etc the object S will be created}

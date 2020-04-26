@@ -4,9 +4,18 @@
 \alias{predict.mcmcspatsurv}
 \title{predict.mcmcspatsurv function}
 \usage{
-\method{predict}{mcmcspatsurv}(object, type = "density", t = NULL,
-  n = 110, indx = NULL, probs = c(0.025, 0.5, 0.975), plot = TRUE,
-  pause = TRUE, bw = FALSE, ...)
+\method{predict}{mcmcspatsurv}(
+  object,
+  type = "density",
+  t = NULL,
+  n = 110,
+  indx = NULL,
+  probs = c(0.025, 0.5, 0.975),
+  plot = TRUE,
+  pause = TRUE,
+  bw = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{an object of class mcmcspatsurv}

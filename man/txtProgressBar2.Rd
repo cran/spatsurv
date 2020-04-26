@@ -4,8 +4,16 @@
 \alias{txtProgressBar2}
 \title{A text progress bar with label}
 \usage{
-txtProgressBar2(min = 0, max = 1, initial = 0, char = "=",
-  width = NA, title = "", label = "", style = 1)
+txtProgressBar2(
+  min = 0,
+  max = 1,
+  initial = 0,
+  char = "=",
+  width = NA,
+  title = "",
+  label = "",
+  style = 1
+)
 }
 \arguments{
 \item{min}{min value for bar}

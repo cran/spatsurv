@@ -4,8 +4,7 @@
 \alias{BsplineHaz}
 \title{BsplineHaz function}
 \usage{
-BsplineHaz(times, knots = quantile(times), degree = 3,
-  MLinits = NULL)
+BsplineHaz(times, knots = quantile(times), degree = 3, MLinits = NULL)
 }
 \arguments{
 \item{times}{vector of survival times (both censored and uncensored)}

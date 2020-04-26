@@ -4,8 +4,7 @@
 \alias{getOptCellwidth}
 \title{getOptCellwidth function}
 \usage{
-getOptCellwidth(dat, cellwidth, ext = 2, plot = TRUE,
-  boundingbox = NULL)
+getOptCellwidth(dat, cellwidth, ext = 2, plot = TRUE, boundingbox = NULL)
 }
 \arguments{
 \item{dat}{any spatial data object whose bounding box can be computed using the function bbox.}

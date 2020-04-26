@@ -4,9 +4,17 @@
 \alias{reconstruct.bs.coxph}
 \title{reconstruct.bs.coxph function}
 \usage{
-\method{reconstruct.bs}{coxph}(mod, varname, fun = NULL,
-  probs = c(0.025, 0.975), bw = FALSE, xlab = NULL, ylab = NULL,
-  plot = TRUE, ...)
+\method{reconstruct.bs}{coxph}(
+  mod,
+  varname,
+  fun = NULL,
+  probs = c(0.025, 0.975),
+  bw = FALSE,
+  xlab = NULL,
+  ylab = NULL,
+  plot = TRUE,
+  ...
+)
 }
 \arguments{
 \item{mod}{model output, created by function survspat}

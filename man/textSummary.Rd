@@ -4,8 +4,14 @@
 \alias{textSummary}
 \title{textSummary function}
 \usage{
-textSummary(obj, digits = 3, scientific = -3, inclIntercept = FALSE,
-  printmode = "LaTeX", ...)
+textSummary(
+  obj,
+  digits = 3,
+  scientific = -3,
+  inclIntercept = FALSE,
+  printmode = "LaTeX",
+  ...
+)
 }
 \arguments{
 \item{obj}{an object produced by a call to lgcpPredictSpatialPlusPars, lgcpPredictAggregateSpatialPlusPars, lgcpPredictSpatioTemporalPlusPars orlgcpPredictMultitypeSpatialPlusPars}

@@ -4,11 +4,23 @@
 \alias{inference.control}
 \title{inference.control function}
 \usage{
-inference.control(gridded = FALSE, cellwidth = NULL, ext = 2,
-  imputation = NULL, optimcontrol = NULL, hessian = FALSE,
-  plotcal = FALSE, timeonlyMCMC = FALSE, nugget = FALSE,
-  savenugget = FALSE, split = 0.5, logUsigma_priormean = 0,
-  logUsigma_priorsd = 0.5, nis = NULL, olinfo = NULL)
+inference.control(
+  gridded = FALSE,
+  cellwidth = NULL,
+  ext = 2,
+  imputation = NULL,
+  optimcontrol = NULL,
+  hessian = FALSE,
+  plotcal = FALSE,
+  timeonlyMCMC = FALSE,
+  nugget = FALSE,
+  savenugget = FALSE,
+  split = 0.5,
+  logUsigma_priormean = 0,
+  logUsigma_priorsd = 0.5,
+  nis = NULL,
+  olinfo = NULL
+)
 }
 \arguments{
 \item{gridded}{logical. Whether to perform compuation on a grid. Default is FALSE.}

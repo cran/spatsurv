@@ -4,8 +4,13 @@
 \alias{mcmcPriors}
 \title{mcmcPriors function}
 \usage{
-mcmcPriors(betaprior = NULL, omegaprior = NULL, etaprior = NULL,
-  call = NULL, derivative = NULL)
+mcmcPriors(
+  betaprior = NULL,
+  omegaprior = NULL,
+  etaprior = NULL,
+  call = NULL,
+  derivative = NULL
+)
 }
 \arguments{
 \item{betaprior}{prior for beta, the covariate effects}

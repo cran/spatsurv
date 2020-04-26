@@ -4,8 +4,20 @@
 \alias{logPosterior}
 \title{logPosterior function}
 \usage{
-logPosterior(surv, X, beta, omega, eta, gamma, priors, cov.model, u,
-  control, gradient = FALSE, hessian = FALSE)
+logPosterior(
+  surv,
+  X,
+  beta,
+  omega,
+  eta,
+  gamma,
+  priors,
+  cov.model,
+  u,
+  control,
+  gradient = FALSE,
+  hessian = FALSE
+)
 }
 \arguments{
 \item{surv}{an object of class Surv}

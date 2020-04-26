@@ -4,9 +4,16 @@
 \alias{baselinehazard_multiWay}
 \title{baselinehazard_multiWay function}
 \usage{
-baselinehazard_multiWay(x, probs = c(0.025, 0.5, 0.975),
-  cumulative = FALSE, plot = TRUE, joint = FALSE, xlims = NULL,
-  ylims = NULL, ...)
+baselinehazard_multiWay(
+  x,
+  probs = c(0.025, 0.5, 0.975),
+  cumulative = FALSE,
+  plot = TRUE,
+  joint = FALSE,
+  xlims = NULL,
+  ylims = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{X}

@@ -4,9 +4,18 @@
 \alias{optifix}
 \title{optifix function}
 \usage{
-optifix(par, fixed, fn, gr = NULL, ..., method = c("Nelder-Mead",
-  "BFGS", "CG", "L-BFGS-B", "SANN"), lower = -Inf, upper = Inf,
-  control = list(), hessian = FALSE)
+optifix(
+  par,
+  fixed,
+  fn,
+  gr = NULL,
+  ...,
+  method = c("Nelder-Mead", "BFGS", "CG", "L-BFGS-B", "SANN"),
+  lower = -Inf,
+  upper = Inf,
+  control = list(),
+  hessian = FALSE
+)
 }
 \arguments{
 \item{par}{X}

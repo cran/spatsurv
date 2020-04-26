@@ -4,8 +4,16 @@
 \alias{reconstruct.bs.mcmcspatsurv}
 \title{reconstruct.bs.mcmcspatsurv function}
 \usage{
-\method{reconstruct.bs}{mcmcspatsurv}(mod, varname, probs = c(0.025,
-  0.975), bw = FALSE, xlab = NULL, ylab = NULL, plot = TRUE, ...)
+\method{reconstruct.bs}{mcmcspatsurv}(
+  mod,
+  varname,
+  probs = c(0.025, 0.975),
+  bw = FALSE,
+  xlab = NULL,
+  ylab = NULL,
+  plot = TRUE,
+  ...
+)
 }
 \arguments{
 \item{mod}{model output, created by function survspat}

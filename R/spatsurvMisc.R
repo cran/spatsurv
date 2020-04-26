@@ -432,7 +432,10 @@ allocate <- function(poly,popden,survdat,pid,sid,n=2,wid=2000){
     for(i in 1:nr){
         progressreport(i,nr)
         spol <- gBuffer(poly[i,],width=wid)
-        den <- asImRaster(crop(popden,spol))
+        stop("function needs updating to use maptools::as.im.RasterLayer")
+        den <- 1 # DELETE THIS LINE 
+        #den <- asImRaster(crop(popden,spol))
+
         win <- as(poly[i,],"owin")
         idx <- survdat[,sid]==poly@data[i,pid]
         ns <- sum(idx)

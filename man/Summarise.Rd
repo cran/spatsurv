@@ -4,8 +4,15 @@
 \alias{Summarise}
 \title{Summarise function}
 \usage{
-Summarise(obj, digits = 3, scientific = -3, inclIntercept = FALSE,
-  printmode = "LaTeX", displaymode = "console", ...)
+Summarise(
+  obj,
+  digits = 3,
+  scientific = -3,
+  inclIntercept = FALSE,
+  printmode = "LaTeX",
+  displaymode = "console",
+  ...
+)
 }
 \arguments{
 \item{obj}{an object produced by a call to lgcpPredictSpatialPlusPars, lgcpPredictAggregateSpatialPlusPars, lgcpPredictSpatioTemporalPlusPars orlgcpPredictMultitypeSpatialPlusPars}

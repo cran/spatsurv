@@ -4,8 +4,17 @@
 \alias{proposalVariance}
 \title{proposalVariance function}
 \usage{
-proposalVariance(X, surv, betahat, omegahat, Yhat, priors, cov.model, u,
-  control)
+proposalVariance(
+  X,
+  surv,
+  betahat,
+  omegahat,
+  Yhat,
+  priors,
+  cov.model,
+  u,
+  control
+)
 }
 \arguments{
 \item{X}{the design matrix, containing covariate information}

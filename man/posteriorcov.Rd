@@ -4,8 +4,16 @@
 \alias{posteriorcov}
 \title{posteriorcov function}
 \usage{
-posteriorcov(x, probs = c(0.025, 0.5, 0.975), rmax = NULL, n = 100,
-  plot = TRUE, bw = FALSE, corr = FALSE, ...)
+posteriorcov(
+  x,
+  probs = c(0.025, 0.5, 0.975),
+  rmax = NULL,
+  n = 100,
+  plot = TRUE,
+  bw = FALSE,
+  corr = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{an object of class mcmcspatsurv}

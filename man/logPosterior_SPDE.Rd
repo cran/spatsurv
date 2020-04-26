@@ -4,8 +4,20 @@
 \alias{logPosterior_SPDE}
 \title{logPosterior_SPDE function}
 \usage{
-logPosterior_SPDE(surv, X, beta, omega, eta, gamma, priors, cov.model, u,
-  control, gradient = FALSE, hessian = FALSE)
+logPosterior_SPDE(
+  surv,
+  X,
+  beta,
+  omega,
+  eta,
+  gamma,
+  priors,
+  cov.model,
+  u,
+  control,
+  gradient = FALSE,
+  hessian = FALSE
+)
 }
 \arguments{
 \item{surv}{an object of class Surv}
