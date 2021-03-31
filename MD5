@@ -1,5 +1,5 @@
-576d7ab0f533b80e4859bc3270b66ec7 *DESCRIPTION
-e9755d45483357043d3be7f75a1e5c4e *NAMESPACE
+877c21dde9307a037e882c0eddae3a34 *DESCRIPTION
+68e9f66b1e946a67d3f66149f177992a *NAMESPACE
 71abee37e5f2896ccb3523ff5119fbd0 *NEWS
 ceb864640fe88f88cd651d63b4bb46a3 *R/BsplineHaz.R
 efb630e87d126d88544a8e48dca3faa2 *R/GMRF.R
@@ -35,7 +35,7 @@ d4bae5df6aae06b3be3a1c01b03e66f3 *R/plottingfunctions.R
 1414d44c70c9cabedcc79dde7cc816e8 *R/rootweibull.R
 3365fc326f441447a9aea0721031cdd4 *R/spatgrid.R
 e900d6d58f3ac4624537136375fb7dc9 *R/spatial_imputation.R
-a36a3c4cd805e9a1b050a69d5528ef4f *R/spatsurv.R
+d4d39ef8204d10846ce425ab94668c99 *R/spatsurv.R
 39c38413c159a4eb4f9d7cd6e79de9de *R/spatsurvMisc.R
 be3940865324402e318fecfb64500d66 *R/splineFunctions.R
 4e9e1b57ef10f6af24c23ec1635c42e0 *R/surv3d.R
@@ -47,9 +47,9 @@ e65f69f2bb638bfdaf8c5166c7a7972a *R/txtProgressBar2.R
 64550c2b424ec3119cf6d01a325dd814 *R/weibull.R
 e06b009e38ee7832728d20c7269f88ca *R/zzz.R
 c96ba61e8ab6f57f570b4660251e6348 *README.md
-296732fdbd3c6875163a9810998eda88 *build/partial.rdb
-f5fc0d8b4d03ee614489012becdcf4f0 *data/fs.rda
-ce42ba4a76da5555b4ccab66011e5494 *data/fstimes.rda
+db194d3ddaad279630b603a766aec2e2 *build/partial.rdb
+a3d694b0e1cfe7afb7039b681fc9a198 *data/fs.rda
+c6f2d07a92e120305d440c1a275852ad *data/fstimes.rda
 7634316ca0490912654f911c59d52168 *inst/CITATION
 28566bb3e221e17e4059429a9d5bb61b *man/B.Rd
 f917c7725b303f590d3fa99e05b6426c *man/Bspline.construct.Rd
@@ -109,8 +109,8 @@ d81fbf6c0f153935aafe1ebdef565020 *man/fixParHaz.Rd
 672d32ab710a93f8df9c3ed612a3911b *man/fixedpars.Rd
 c0e27d632c622173521eadd0a705c6d8 *man/fixmatrix.Rd
 c51e375fd9944ad665edba5e78c541f6 *man/frailtylag1.Rd
-f0fbd3c619874aca4cdf02e5e6d752f7 *man/fs.Rd
-069b1bd1f2a66cf16ba60a924ad30a52 *man/fstimes.Rd
+fd53818a582ac946a358dc7e998ac5e9 *man/fs.Rd
+070cf7667128fac272f27b7b8d076325 *man/fstimes.Rd
 225f293b4fc33449d8e85504ea24f9a6 *man/gamma2risk.Rd
 1e61313a3bf4a41bf616bc31e591cc62 *man/gencens.Rd
 7012f7125d778c67b2dfdb4fd97e536f *man/getBackground.Rd
@@ -205,7 +205,7 @@ cd25a0536b1ae4e8ffc7ca471edb1388 *man/setTxtProgressBar2.Rd
 cb5e9dba4ce1081f304f3e4cd4b2e977 *man/showGrid.Rd
 de4aff9b0cf7f491762c936471b1f1ca *man/simsurv.Rd
 54a077a129b660176c911b44543de78d *man/spatialpars.Rd
-5ca3e4ef06cface952acaca330d27a88 *man/spatsurv-package.Rd
+95e6d1a8946321417cbe710215ee777d *man/spatsurv-package.Rd
 bf091703bfd170226fbca4d91b7e3bbd *man/spatsurvVignette.Rd
 29da12cbf999f35e4542dca19b0cbc33 *man/spplot1.Rd
 2c27ded11237e23e6c6df2176ad3f609 *man/spplot_compare.Rd
@@ -227,4 +227,4 @@ e4bd3e180a2f8ba3da9ab39449fa93e5 *man/txtProgressBar2.Rd
 4a2c445eebb129886b49ebe29fc901dc *tests/iteratorTest.R
 2f8d3e6fe9d9169cef1819e829399b06 *tests/test_QuadApprox.R
 8cb0c7d03d8e84376c15a4227bed9050 *tests/test_sim_ana.R
-b9f858ae09eefefdb0c4e25a7e56ae4a *tests/test_survspat.R
+b80a8be6769e13d073c33a83860bdacd *tests/test_survspat.R

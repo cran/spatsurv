@@ -5,7 +5,9 @@
 \alias{spatsurv-package}
 \alias{spatsurv}
 \title{spatsurv}
-\format{An object of class \code{logical} of length 1.}
+\format{
+An object of class \code{logical} of length 1.
+}
 \usage{
 spatsurv
 }

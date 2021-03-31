@@ -42,7 +42,8 @@
 ##' @importFrom rgeos gBuffer
 ##' @importFrom iterators icount iter nextElem
 ##' @importFrom sp coordinates<- bbox proj4string<- proj4string SpatialPixelsDataFrame SpatialGridDataFrame Polygon Polygons SpatialPolygons coordinates CRS geometry GridTopology over proj4string SpatialGrid SpatialPixels SpatialPoints SpatialPolygonsDataFrame split spTransform
-##' @importFrom spatstat rpoint progressreport inside.owin
+#' @importFrom spatstat.core rpoint
+#' @importFrom spatstat.geom inside.owin progressreport
 ##' @importFrom survival Surv survfit
 ##' @importFrom raster crop brick raster
 ##' @import lubridate

@@ -5,7 +5,7 @@
 \description{London Fire Brigade response times to dwelling fires, 2009}
 \usage{data(fstimes)}
 \format{data.frame}
-\source{http://data.london.gov.uk/}
-\references{\url{http://data.london.gov.uk/},\url{http://www.nationalarchives.gov.uk/doc/open-government-licence/}}
+\source{https://data.london.gov.uk/}
+\references{\url{https://data.london.gov.uk/},\url{http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/}}
 \keyword{datasets}
 \examples{firetimes <- data(fstimes)}
