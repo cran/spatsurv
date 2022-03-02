@@ -6,6 +6,6 @@
 \usage{data(fstimes)}
 \format{data.frame}
 \source{https://data.london.gov.uk/}
-\references{\url{https://data.london.gov.uk/},\url{http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/}}
+\references{\url{https://data.london.gov.uk/},\url{https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/}}
 \keyword{datasets}
 \examples{firetimes <- data(fstimes)}
