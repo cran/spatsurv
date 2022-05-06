@@ -16,5 +16,5 @@ an covariance function based on the SPDE model
 A function to declare and evaluate an SPDE covariance function.
 }
 \seealso{
-\link{ExponentialCovFct}, \link{covmodel}, CovarianceFct
+\link{ExponentialCovFct}, \link{covmodel}
 }

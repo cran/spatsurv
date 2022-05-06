@@ -12,7 +12,7 @@ simsurv(
   dist = exponentialHaz(),
   coords = matrix(runif(2 * nrow(X)), nrow(X), 2),
   cov.parameters = c(1, 0.1),
-  cov.model = covmodel(model = "exponential", pars = NULL),
+  cov.model = ExponentialCovFct(),
   mcmc.control = mcmcpars(nits = 1e+05, burn = 10000, thin = 90),
   savechains = TRUE
 )
@@ -37,7 +37,7 @@ simsurv(
 \item{savechains}{save all chains? runs faster if set to FALSE, but then you'll be unable to conduct convergence/mixing diagnostics}
 }
 \value{
-in list element 'survtimes', a vector of simulated survival times (the last simulated value from the MCMC chains) 
+in list element 'survtimes', a vector of simulated survival times (the last simulated value from the MCMC chains)
 in list element 'T' the MCMC chains
 }
 \description{

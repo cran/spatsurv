@@ -13,5 +13,5 @@ the spiked exponential covariance function
 A function to declare and also evaluate a spiked exponential covariance function. This is an exponential covariance function with a nugget.
 }
 \seealso{
-\link{ExponentialCovFct}, \link{covmodel}, CovarianceFct
+\link{ExponentialCovFct}, \link{covmodel}
 }

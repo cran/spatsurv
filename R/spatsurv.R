@@ -38,7 +38,7 @@
 #' @importFrom Matrix nearPD Matrix sparseMatrix bdiag
 # @importFrom rgl abclines3d aspect3d axes3d planes3d points3d segments3d text3d title3d
 #' @importFrom fields image.plot
-#' @importFrom RandomFields CovarianceFct
+# @importFrom RandomFields CovarianceFct
 #' @importFrom rgeos gBuffer
 #' @importFrom iterators icount iter nextElem
 #' @importFrom sp coordinates<- bbox proj4string<- proj4string SpatialPixelsDataFrame SpatialGridDataFrame Polygon Polygons SpatialPolygons coordinates CRS geometry GridTopology over proj4string SpatialGrid SpatialPixels SpatialPoints SpatialPolygonsDataFrame split spTransform

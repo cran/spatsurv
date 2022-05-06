@@ -19,6 +19,7 @@ OMEGA <- 1
 dat <- simsurv(X=cbind( age=runif(n,5,50),sex=rbinom(n,1,0.5),cancer=rbinom(n,1,0.2)),
                         dist=DIST,
                         omega=OMEGA,
+                        cov.model=ExponentialCovFct(),
                         mcmc.control=mcmcpars(nits=100,burn=10,thin=10))
 
 coords <- dat$coords
@@ -55,7 +56,8 @@ if(TRUE){
     ss <- survspat( formula=ss~age+sex+cancer,
                     data=spatdat,
                     dist=DIST,
-                    cov.model=covmodel(model="exponential",pars=NULL),
+                    #cov.model=covmodel(model="exponential",pars=NULL),
+                    cov.model=ExponentialCovFct(),
                     mcmc.control=mcmcpars(nits=100,burn=10,thin=9),
                     priors=priors)
 }

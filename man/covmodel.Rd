@@ -16,9 +16,6 @@ an object of class covmodel
 }
 \description{
 A function to define the spatial covariance model, see also ?CovarianceFct. Note that the parameters defined by the 'pars' argument are fixed,
-i.e. not estimated by the MCMC algorithm. To have spatsurv estimate these parameters, the user must construct a new covariance function to do so, 
+i.e. not estimated by the MCMC algorithm. To have spatsurv estimate these parameters, the user must construct a new covariance function to do so, stop("")
 see the spatsurv vignette.
-}
-\seealso{
-CovarianceFct
 }

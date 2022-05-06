@@ -433,7 +433,7 @@ allocate <- function(poly,popden,survdat,pid,sid,n=2,wid=2000){
         progressreport(i,nr)
         spol <- gBuffer(poly[i,],width=wid)
         stop("function needs updating to use maptools::as.im.RasterLayer")
-        den <- 1 # DELETE THIS LINE 
+        den <- 1 # DELETE THIS LINE
         #den <- asImRaster(crop(popden,spol))
 
         win <- as(poly[i,],"owin")
