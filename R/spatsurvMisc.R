@@ -294,7 +294,7 @@ getsurvdata <- function(x){
 
 checkSurvivalData <- function(s){
 
-    if(class(s)!="Surv"){
+    if(!inherits(s,"Surv")){
         stop("Survival data must be of class 'Surv', see ?Surv")
     }
 

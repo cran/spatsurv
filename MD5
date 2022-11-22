@@ -1,5 +1,5 @@
-2ce306e86b85a50a47586fac129e117f *DESCRIPTION
-ae59db09c4112c32d5450ba361f974cb *NAMESPACE
+8f471b1014da483b967052b8f13906ed *DESCRIPTION
+5822df15b280e9e9a76b4e80456fb0e4 *NAMESPACE
 71abee37e5f2896ccb3523ff5119fbd0 *NEWS
 ceb864640fe88f88cd651d63b4bb46a3 *R/BsplineHaz.R
 efb630e87d126d88544a8e48dca3faa2 *R/GMRF.R
@@ -11,7 +11,7 @@ f2075fee459e99c5bebee462f26325a9 *R/TPSHaz.R
 b4d44beb6d8f9c19da1406309ba831b7 *R/basehazardspec.R
 1c7c7f8d7768e884e50c88908a52586b *R/calibratemcmc.R
 0d439b044d271eeb482f782d1f36fb1e *R/circulant.R
-352bf8a38a87098801177e98d89a5996 *R/covarianceFunctions.R
+6f653f2a3771eed9ccdf3e5c9c8dbcc0 *R/covarianceFunctions.R
 d41b691763e120df3dafd68a334c87c0 *R/exponential.R
 70c906fabe52945bcd9535fe06e31cd8 *R/gompertz.R
 03400ebe824fff338ef18ddc40888d42 *R/log_posteriors_and_derivatives.R
@@ -35,8 +35,8 @@ d4bae5df6aae06b3be3a1c01b03e66f3 *R/plottingfunctions.R
 1414d44c70c9cabedcc79dde7cc816e8 *R/rootweibull.R
 3365fc326f441447a9aea0721031cdd4 *R/spatgrid.R
 e900d6d58f3ac4624537136375fb7dc9 *R/spatial_imputation.R
-60ed4b23d22de283721bfe28aea6ed46 *R/spatsurv.R
-bb68ad12a93ef5c5c8c539d2a51bc305 *R/spatsurvMisc.R
+ec93bc0d5644bb9283d5f08b4e62429e *R/spatsurv.R
+e35213b89644dad07d2d1b5e8a3a0b20 *R/spatsurvMisc.R
 be3940865324402e318fecfb64500d66 *R/splineFunctions.R
 4e9e1b57ef10f6af24c23ec1635c42e0 *R/surv3d.R
 e5102c6141e5f9ac831d57fc179dfa0b *R/survsim.R
@@ -47,9 +47,9 @@ e65f69f2bb638bfdaf8c5166c7a7972a *R/txtProgressBar2.R
 64550c2b424ec3119cf6d01a325dd814 *R/weibull.R
 e06b009e38ee7832728d20c7269f88ca *R/zzz.R
 c96ba61e8ab6f57f570b4660251e6348 *README.md
-a798aab6860acc39f0aadb646443f366 *build/partial.rdb
-44f1f7fa76e12f7f7e1a97b66f4b5065 *data/fs.rda
-03035319b843503d5a27ac818813e3fe *data/fstimes.rda
+051097bcfb0673ee240b1249dd8d4c7c *build/partial.rdb
+cf207c0ee4268a0a0c79e85a6aa47a06 *data/fs.rda
+0cae748ff49e0ff48a469af99e551811 *data/fstimes.rda
 7634316ca0490912654f911c59d52168 *inst/CITATION
 28566bb3e221e17e4059429a9d5bb61b *man/B.Rd
 f917c7725b303f590d3fa99e05b6426c *man/Bspline.construct.Rd
@@ -227,4 +227,4 @@ e4bd3e180a2f8ba3da9ab39449fa93e5 *man/txtProgressBar2.Rd
 4a2c445eebb129886b49ebe29fc901dc *tests/iteratorTest.R
 2f8d3e6fe9d9169cef1819e829399b06 *tests/test_QuadApprox.R
 8cb0c7d03d8e84376c15a4227bed9050 *tests/test_sim_ana.R
-d51553a43c336dff71c2b8e17878b45c *tests/test_survspat.R
+1f59b21d48ba09aaa538c340720592b1 *tests/test_survspat.R

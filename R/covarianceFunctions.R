@@ -11,7 +11,18 @@
 ##' @export
 
 getcov <- function(u,sigma,phi,model,pars){
-    stop("This function is temporarily unavailable. Note that it is possible to write your own covariance function using LGCP, see the function 'ExponentialCovFct' for example.")
+    if(model=="exponential"){
+        return(sigma^2*exp(-u/phi))
+    }
+    else if(model=="Matern32"){
+        return(sigma^2*(1+sqrt(3)*u/phi)*exp(-sqrt(3)*u/phi))
+    }
+    else if(model=="Matern52"){
+        return(sigma^2*(1+sqrt(5)*u/phi+5*u^2/(3*phi^2))*exp(-sqrt(5)*u/phi))
+    }
+    else{
+        stop("Functionality is temporarily unavailable due to deprecation of RandomFields package. Models: 'exponential', 'Matern32' and 'Matern52' are currently available")
+    }
     #return(suppressWarnings(CovarianceFct(x=u,param=c(mean=0,variance=sigma^2,nugget=0,scale=phi,pars),model=model)))
 }
 

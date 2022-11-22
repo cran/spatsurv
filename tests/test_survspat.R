@@ -1,6 +1,6 @@
 library(spatsurv)
 library(sp)
-library(spatstat.core)
+library(spatstat.explore)
 library(survival)
 
 par(mfrow=c(1,1))
