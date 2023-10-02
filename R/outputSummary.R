@@ -279,55 +279,56 @@ Summarise <- function(obj,digits=3,scientific=-3,inclIntercept=FALSE,printmode="
 
     expY <- exp(obj$Ysamp)
 
-    BG <- getBackground(gr)
+    cat("Much of the code in this function is now broken, due to sp/rgeos deprecation :-( \n\n")
+    #BG <- getBackground(gr)
 
-    if(any(expY>1.25)){
-        suppressWarnings(spplot1(gr,"ex1_25",OSMbg=BG,border=NA))
-    }
+    #if(any(expY>1.25)){
+    #    suppressWarnings(spplot1(gr,"ex1_25",OSMbg=BG,border=NA))
+    #}
 
     cat("A plot of the probability the covariate adjusted hazard exceeds 1.5:\n\n")
 
-    if(any(expY>1.5)){
-        suppressWarnings(spplot1(gr,"ex1_5",OSMbg=BG,border=NA))
-    }
+    #if(any(expY>1.5)){
+    #    suppressWarnings(spplot1(gr,"ex1_5",OSMbg=BG,border=NA))
+    #}
 
     cat("A plot of the probability the covariate adjusted hazard exceeds 2:\n\n")
 
-    if(any(expY>2)){
-        suppressWarnings(spplot1(gr,"ex2",OSMbg=BG,border=NA))
-    }
+    #if(any(expY>2)){
+    #    suppressWarnings(spplot1(gr,"ex2",OSMbg=BG,border=NA))
+    #}
 
     cat("A plot of the probability the covariate adjusted hazard exceeds 3:\n\n")
 
-    if(any(expY>3)){
-        suppressWarnings(spplot1(gr,"ex3",OSMbg=BG,border=NA))
-    }
+    #if(any(expY>3)){
+    #    suppressWarnings(spplot1(gr,"ex3",OSMbg=BG,border=NA))
+    #}
 
 
 
     cat("A plot of the probability the covariate adjusted hazard is below 0.8:\n\n")
 
-    if(any(expY<0.8)){
-        suppressWarnings(spplot1(gr,"ex0_8",OSMbg=BG,border=NA))
-    }
+    #if(any(expY<0.8)){
+    #    suppressWarnings(spplot1(gr,"ex0_8",OSMbg=BG,border=NA))
+    #}
 
     cat("A plot of the probability the covariate adjusted hazard is below 2/3:\n\n")
 
-    if(any(expY<0.66)){
-        suppressWarnings(spplot1(gr,"ex0_66",OSMbg=BG,border=NA))
-    }
+    #if(any(expY<0.66)){
+    #    suppressWarnings(spplot1(gr,"ex0_66",OSMbg=BG,border=NA))
+    #}
 
     cat("A plot of the probability the covariate adjusted hazard is below 1/2:\n\n")
 
-    if(any(expY<0.5)){
-        suppressWarnings(spplot1(gr,"ex0_5",OSMbg=BG,border=NA))
-    }
+    #if(any(expY<0.5)){
+    #    suppressWarnings(spplot1(gr,"ex0_5",OSMbg=BG,border=NA))
+    #}
 
     cat("A plot of the probability the covariate adjusted hazard is below 1/3:\n\n")
 
-    if(any(expY<0.33)){
-        suppressWarnings(spplot1(gr,"ex0_33",OSMbg=BG,border=NA))
-    }
+    #if(any(expY<0.33)){
+    #    suppressWarnings(spplot1(gr,"ex0_33",OSMbg=BG,border=NA))
+    #}
 
     cat("A plot of the baseline hazard (left) and cumulative hazard (right):")
 

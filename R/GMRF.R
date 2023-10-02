@@ -37,8 +37,8 @@ getbb <- function(obj){
 ##' @export
 
 getgrd <- function(shape,cellwidth){
-	shape <- gBuffer(shape,width=cellwidth)
-	bb <- bbox(shape)
+	shape <- as(st_buffer(st_as_sf(shape),dist=cellwidth),"Spatial")
+	bb <- matrix(st_bbox(shape),2,2)
 	xwid <- diff(bb[1,])
 	ywid <- diff(bb[2,])
 

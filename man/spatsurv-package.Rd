@@ -21,7 +21,7 @@ An R package for spatially correlated parametric proportional hazards survial an
 
 section{Dependencies}{
 The package \code{spatsurv} depends upon some other important contributions to CRAN in order to operate; their uses here are indicated:\cr\cr
-    survival, sp, spatstat, raster, iterators, RandomFields, fields, rgl, Matrix, stringr, RColorBrewer, geostatsp, rgeos.
+    survival, sp, spatstat, raster, iterators, RandomFields, fields, rgl, Matrix, stringr, RColorBrewer, geostatsp.
 }
 
 section{Citation}{

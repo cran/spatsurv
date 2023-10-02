@@ -8,7 +8,7 @@
 ##'
 ##' section{Dependencies}{
 ##' The package \code{spatsurv} depends upon some other important contributions to CRAN in order to operate; their uses here are indicated:\cr\cr
-##'     survival, sp, spatstat, raster, iterators, RandomFields, fields, rgl, Matrix, stringr, RColorBrewer, geostatsp, rgeos.
+##'     survival, sp, spatstat, raster, iterators, RandomFields, fields, rgl, Matrix, stringr, RColorBrewer, geostatsp.
 ##' }
 ##'
 ##' section{Citation}{
@@ -39,7 +39,8 @@
 # @importFrom rgl abclines3d aspect3d axes3d planes3d points3d segments3d text3d title3d
 #' @importFrom fields image.plot
 # @importFrom RandomFields CovarianceFct
-#' @importFrom rgeos gBuffer
+# @importFrom rgeos gBuffer
+#' @importFrom sf st_as_sf st_buffer st_bbox
 #' @importFrom iterators icount iter nextElem
 #' @importFrom sp coordinates<- bbox proj4string<- proj4string SpatialPixelsDataFrame SpatialGridDataFrame Polygon Polygons SpatialPolygons coordinates CRS geometry GridTopology over proj4string SpatialGrid SpatialPixels SpatialPoints SpatialPolygonsDataFrame split spTransform
 #' @import spatstat.explore

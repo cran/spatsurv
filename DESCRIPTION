@@ -2,8 +2,8 @@ Package: spatsurv
 Type: Package
 Title: Bayesian Spatial Survival Analysis with Parametric Proportional
         Hazards Models
-Version: 1.8-2
-Date: 2022-11-22
+Version: 2.0
+Date: 2023-10-02
 Author: Benjamin M. Taylor and Barry S. Rowlingson
         Additional contributions
         Ziyu Zheng
@@ -13,12 +13,12 @@ Description: Bayesian inference for parametric proportional hazards spatial
 License: GPL-3
 Imports: survival, sp, spatstat.explore, spatstat.geom,
         spatstat.random, raster, iterators, fields, Matrix, stringr,
-        rgeos, RColorBrewer, methods, lubridate
-Suggests: rgdal, rgl, OpenStreetMap
+        sf, RColorBrewer, methods, lubridate
+Suggests: rgdal, rgl
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2022-11-22 14:11:17 UTC; taylorb7
+Packaged: 2023-10-02 12:39:43 UTC; ben
 Depends: R (>= 2.10)
 Repository: CRAN
-Date/Publication: 2022-11-22 14:30:02 UTC
+Date/Publication: 2023-10-02 13:40:02 UTC
