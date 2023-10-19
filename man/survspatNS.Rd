@@ -28,6 +28,6 @@ A function to perform maximun likelihood inference for non-spatial survival data
 }
 \seealso{
 \link{tpowHaz}, \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{weibullHaz},
-\link{covmodel}, link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
+\link{covmodel}, \link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
 \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control}
 }

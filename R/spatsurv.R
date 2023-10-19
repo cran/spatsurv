@@ -6,21 +6,24 @@
 ##' \packageIndices{spatsurv}
 ##'
 ##'
-##' section{Dependencies}{
+##' Dependencies
+##' 
 ##' The package \code{spatsurv} depends upon some other important contributions to CRAN in order to operate; their uses here are indicated:\cr\cr
 ##'     survival, sp, spatstat, raster, iterators, RandomFields, fields, rgl, Matrix, stringr, RColorBrewer, geostatsp.
-##' }
+##' 
 ##'
-##' section{Citation}{
+##' Citation
+##' 
 ##' To cite use of \code{spatsurv}, the user may refer to the following work:\cr\cr
 ##' Benjamin M. Taylor and Barry S. Rowlingson (2017).\cr
 ##' spatsurv: An R Package for Bayesian Inference with Spatial Survival Models.\cr
 ##' Journal of Statistical Software, 77(4), 1-32, doi:10.18637/jss.v077.i04.
-##' }
+##' 
 ##'
-##' references{
+##' references
+##' 
 ##' X
-##' }
+##'
 ##'
 ##' @docType package
 ##' @name spatsurv-package

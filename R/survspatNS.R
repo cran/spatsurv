@@ -8,7 +8,7 @@
 ##' @param control additional control parameters, see ?inference.control
 ##' @return an object inheriting class 'mcmcspatsurv' for which there exist methods for printing, summarising and making inference from.
 ##' @seealso \link{tpowHaz}, \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{weibullHaz},
-##' \link{covmodel}, link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
+##' \link{covmodel}, \link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
 ##' \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control}
 ##' @references
 ##' \enumerate{

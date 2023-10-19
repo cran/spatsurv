@@ -15,7 +15,7 @@
 ##' @param boundingbox optional bounding box over which to construct computational grid, supplied as an object on which the function 'bbox' returns the bounding box
 ##' @return an object inheriting class 'mcmcspatsurv' for which there exist methods for printing, summarising and making inference from.
 ##' @seealso \link{tpowHaz}, \link{exponentialHaz}, \link{gompertzHaz}, \link{makehamHaz}, \link{weibullHaz},
-##' \link{covmodel}, link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
+##' \link{covmodel}, \link{ExponentialCovFct}, \code{SpikedExponentialCovFct},
 ##' \link{mcmcpars}, \link{mcmcPriors}, \link{inference.control}
 ##' @references
 ##' \enumerate{
